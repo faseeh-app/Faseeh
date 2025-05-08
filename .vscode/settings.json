@@ -7,5 +7,44 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true,
+    "node_modules": true,
+    "out": true,
+    ".prettierignore": true,
+    "build": true,
+    ".prettierrc.yaml": true,
+    ".editorconfig": true,
+    "dev-app-update.yml": true,
+    "eslint.config.mjs": true,
+    "package-lock.json": true,
+    "electron-builder.yml": true
+  },
+  "hide-files.files": [
+    "node_modules",
+    "out",
+    ".prettierignore",
+    "build",
+    ".prettierrc.yaml",
+    ".editorconfig",
+    "dev-app-update.yml",
+    "eslint.config.mjs",
+    "package-lock.json",
+    "electron-builder.yml"
+  ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
   }
 }
