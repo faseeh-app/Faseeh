@@ -1,7 +1,29 @@
 <script setup lang="ts">
-import { IconCloseFill } from '@iconify-prerendered/vue-eva'
-import { IconMinimize12Filled } from '@iconify-prerendered/vue-fluent'
-import { IconSquareMultiple16Regular } from '@iconify-prerendered/vue-fluent'
+import { ref, onMounted, onUnmounted } from 'vue'
+import HSpacer from '@/components/ui/HSpacer.vue'
+import TooltipProvider from '@/components/ui/tooltip/TooltipProvider.vue'
+import TooltipTrigger from './tooltip/TooltipTrigger.vue'
+import TooltipContent from './tooltip/TooltipContent.vue'
+import Tooltip from './tooltip/Tooltip.vue'
+
+// Track window maximized state
+const isMaximized = ref(false)
+
+function setupWindowStateListener(): void {
+  window.electron.ipcRenderer.on('window:maximized-state', (_, state) => {
+    isMaximized.value = state
+  })
+
+  window.electron.ipcRenderer.send('window:get-maximized-state')
+}
+
+onMounted(() => {
+  setupWindowStateListener()
+})
+
+onUnmounted(() => {
+  window.electron.ipcRenderer.removeAllListeners('window:maximized-state')
+})
 
 function minimizeWindow(): void {
   window.electron.ipcRenderer.send('window:minimize')
@@ -14,21 +36,46 @@ function maximizeWindow(): void {
 function closeWindow(): void {
   window.electron.ipcRenderer.send('window:close')
 }
+
+const windowControls = [
+  {
+    id: 'minimize',
+    icon: 'icon-[fluent--minimize-16-regular]',
+    action: minimizeWindow,
+    tooltip: 'Minimize'
+  },
+  {
+    id: 'maximize',
+    icon: isMaximized.value
+      ? 'icon-[fluent--square-multiple-16-regular]'
+      : 'icon-[fluent--square-12-regular]',
+    action: maximizeWindow,
+    tooltip: isMaximized.value ? 'Restore' : 'Maximize'
+  },
+  {
+    id: 'close',
+    icon: 'icon-[eva--close-fill]',
+    action: closeWindow,
+    tooltip: 'Close'
+  }
+]
 </script>
 
 <template>
-  <div class="faseeh-titlebar">
-    <img src="@/assets/Faseeh_H_Dark.svg" class="faseeh-titlebar__logo" />
-    <div class="faseeh-titlebar__window-controls">
-      <div class="faseeh-titlebar__window-controls__button" @click="minimizeWindow">
-        <IconMinimize12Filled />
-      </div>
-      <div class="faseeh-titlebar__window-controls__button" @click="maximizeWindow">
-        <IconSquareMultiple16Regular />
-      </div>
-      <div class="faseeh-titlebar__window-controls__button--close" @click="closeWindow">
-        <IconCloseFill />
+  <TooltipProvider>
+    <div class="faseeh-titlebar">
+      <img src="@/assets/Faseeh_H_Dark.svg" class="faseeh-titlebar__logo" />
+      <HSpacer />
+      <div class="faseeh-titlebar__window-controls">
+        <Tooltip v-for="control in windowControls" :key="control.id">
+          <TooltipTrigger as-child>
+            <button class="faseeh-titlebar__window-controls__button" @click="control.action">
+              <span :class="control.icon" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{{ control.tooltip }}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
-  </div>
+  </TooltipProvider>
 </template>

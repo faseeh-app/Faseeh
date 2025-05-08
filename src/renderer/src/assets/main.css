@@ -1,9 +1,6 @@
 @import './base.css';
 @import 'tailwindcss';
-
-@utility faseeh-border {
-  border-bottom: var(--faseeh-border-width) solid var(--faseeh-border-primary);
-}
+@plugin "@iconify/tailwind4";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Button                                   */
@@ -36,12 +33,24 @@
 }
 
 /* -------------------------------------------------------------------------- */
+/*                                   Spacers                                  */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-spacer--h {
+  @apply w-full;
+}
+
+@utility faseeh-spacer--v {
+  @apply h-full;
+}
+
+/* -------------------------------------------------------------------------- */
 /*                                  TitleBar                                  */
 /* -------------------------------------------------------------------------- */
 @utility faseeh-titlebar {
-  @apply flex flex-row justify-between items-center;
+  @apply flex items-center;
   @apply h-9 w-screen;
-  @apply faseeh-border;
+  border-bottom: var(--faseeh-border-width) solid var(--faseeh-border-primary);
   -webkit-app-region: drag;
 }
 
@@ -62,7 +71,7 @@
     background-color: var(--faseeh-interactive-background-hover);
   }
 
-  > * {
+  > span {
     @apply h-5 w-5;
     @apply text-accent-foreground;
     @apply group-hover:text-primary-foreground;
@@ -73,9 +82,48 @@
   }
 }
 
-@utility faseeh-titlebar__window-controls__button--close {
+@utility faseeh-titlebar__window-controls__button--danger {
   @apply faseeh-titlebar__window-controls__button;
   &:hover {
     @apply bg-destructive;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   SideBar                                  */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-sidebar {
+  @apply flex flex-col;
+  @apply h-full w-14;
+  border-right: var(--faseeh-border-width) solid var(--faseeh-border-primary);
+}
+
+@utility faseeh-sidebar__button {
+  @apply flex flex-col items-center justify-center;
+  @apply w-full h-12 p-2;
+  @apply text-sidebar-foreground transition-colors;
+  @apply relative;
+
+  &:hover {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  &.active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground;
+    &::before {
+      content: '';
+      @apply absolute left-0 top-0 h-full w-1;
+      @apply bg-sidebar-primary;
+    }
+  }
+
+  > span {
+    @apply h-5 w-5;
+  }
+}
+
+@utility faseeh-sidebar__divider {
+  @apply w-full h-px my-2;
+  @apply bg-sidebar-border;
 }
