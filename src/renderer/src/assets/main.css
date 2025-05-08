@@ -1,6 +1,14 @@
 @import './base.css';
 @import 'tailwindcss';
 
+@utility faseeh-border {
+  border-bottom: var(--faseeh-border-width) solid var(--faseeh-border-primary);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   Button                                   */
+/* -------------------------------------------------------------------------- */
+
 @utility faseeh-button {
   @apply inline-flex items-center justify-center px-4 py-2 rounded-md;
   @apply text-sm font-medium transition-colors;
@@ -24,5 +32,50 @@
   @apply bg-primary text-primary-foreground border-transparent;
   &:hover {
     background-color: var(--faseeh-button-primary-background-hover);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  TitleBar                                  */
+/* -------------------------------------------------------------------------- */
+@utility faseeh-titlebar {
+  @apply flex flex-row justify-between items-center;
+  @apply h-9 w-screen;
+  @apply faseeh-border;
+  -webkit-app-region: drag;
+}
+
+@utility faseeh-titlebar__logo {
+  @apply h-full px-1.5 py-1;
+}
+
+@utility faseeh-titlebar__window-controls {
+  @apply flex items-center;
+  @apply h-full w-fit;
+  -webkit-app-region: no-drag;
+}
+
+@utility faseeh-titlebar__window-controls__button {
+  @apply flex items-center justify-center;
+  @apply h-full w-10;
+  &:hover {
+    background-color: var(--faseeh-interactive-background-hover);
+  }
+
+  > * {
+    @apply h-5 w-5;
+    @apply text-accent-foreground;
+    @apply group-hover:text-primary-foreground;
+  }
+
+  &:hover > * {
+    @apply text-primary-foreground;
+  }
+}
+
+@utility faseeh-titlebar__window-controls__button--close {
+  @apply faseeh-titlebar__window-controls__button;
+  &:hover {
+    @apply bg-destructive;
   }
 }

@@ -26,7 +26,7 @@
   --input: var(--faseeh-border-primary); /* Input border often same as primary border */
   --ring: var(--faseeh-border-interactive); /* Focus ring color */
   --radius: var(--faseeh-radius-md); /* Base radius */
-
+  
   /* Chart & Sidebar colors - map them to your semantic vars as needed */
   /* Example - you might need more specific --faseeh vars for these */
   --chart-1: var(--faseeh-color-cyan-mid);

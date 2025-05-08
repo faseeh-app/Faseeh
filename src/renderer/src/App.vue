@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import TitleBar from '@/components/ui/TitleBar.vue'
+
 </script>
 
 <template>
-  <div></div>
+  <div class="flex flex-col">
+    <TitleBar />
+  </div>
 </template>
