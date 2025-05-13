@@ -9,48 +9,47 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from '@/common/components/ui/dropdown-menu'
-import { computed, type PropType, ref } from 'vue'
-import { LibraryFilterStore } from '@/features/user-library/stores/filterStore'
+import { computed, ref, watch, type PropType } from 'vue'
 
-const store = LibraryFilterStore()
 const props = defineProps({
   class: { type: String, default: '' },
-  value: { type: String },
+  placeholder: { type: String, default: 'All' },
   label: { type: String, default: '' },
-  disabled: { type: Boolean, default: false },
-  isActive: { type: Boolean, default: false },
-  resetAction: { type: Function as PropType<() => void> },
   options: {
-    type: Array as PropType<
-      Array<{
-        value: string
-        label: string
-        isActive: boolean
-        disabled: boolean
-        onClick: () => void
-      }>
-    >,
+    type: Array as PropType<Array<{ value: string; label: string; disabled?: boolean }>>,
     required: true
   }
 })
 
-const slectedValue = ref(props.value)
+let selectedItem = defineModel('selectedValue', {
+  type: Object as PropType<{
+    value: string
+    label: string
+    disabled?: boolean
+  }>
+})
 
-const leftPadding = computed(() => (props.isActive ? 'pr-0' : ''))
-const variant = computed(() => (props.isActive ? 'default' : 'outline'))
+const selectedValue = ref(selectedItem.value?.value)
+watch(selectedValue, (newVal) => {
+  const selectedOption = props.options.find((option) => option.value === newVal)
+  selectedItem.value = selectedOption
+})
+
+const leftPadding = computed(() => (selectedItem.value ? 'pr-0' : ''))
+const variant = computed(() => (selectedItem.value ? 'default' : 'outline'))
 </script>
 
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
       <Button :class="props.class + ' ' + leftPadding" :variant="variant">
-        {{ value }}
+        {{ selectedItem?.label || props.placeholder }}
         <Button
-          v-if="isActive"
+          v-if="selectedItem"
           size="icon"
           variant="ghost"
-          class="hover:bg-transparent"
-          @click.stop="resetAction"
+          class="hover:bg-transparent size-10"
+          @click.stop="() => (selectedValue = undefined)"
         >
           <span class="icon-[fluent-emoji-high-contrast--multiply]"> </span>
         </Button>
@@ -59,12 +58,11 @@ const variant = computed(() => (props.isActive ? 'default' : 'outline'))
     <DropdownMenuContent class="faseeh-filter-menu__content">
       <DropdownMenuLabel v-if="props.label">{{ props.label }}</DropdownMenuLabel>
       <DropdownMenuSeparator v-if="props.label" />
-      <DropdownMenuRadioGroup v-model="slectedValue" :disabled="props.disabled">
+      <DropdownMenuRadioGroup v-model="selectedValue">
         <DropdownMenuRadioItem
           v-for="option in options"
           :value="option.value"
           :disabled="option.disabled"
-          @click="option.onClick"
         >
           <slot name="radio-item" :value="option.value">
             {{ option.label }}
