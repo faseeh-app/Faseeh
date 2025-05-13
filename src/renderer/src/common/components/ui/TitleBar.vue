@@ -5,6 +5,7 @@ import TooltipProvider from '@/common/components/ui/tooltip/TooltipProvider.vue'
 import TooltipTrigger from './tooltip/TooltipTrigger.vue'
 import TooltipContent from './tooltip/TooltipContent.vue'
 import Tooltip from './tooltip/Tooltip.vue'
+import { Button } from '@/common/components/ui/button'
 
 // Track window maximized state
 const isMaximized = ref(false)
@@ -42,7 +43,8 @@ const windowControls = [
     id: 'minimize',
     icon: 'icon-[fluent--minimize-16-regular]',
     action: minimizeWindow,
-    tooltip: 'Minimize'
+    tooltip: 'Minimize',
+    class: 'faseeh-titlebar__window-controls__button'
   },
   {
     id: 'maximize',
@@ -50,13 +52,15 @@ const windowControls = [
       ? 'icon-[fluent--square-multiple-16-regular]'
       : 'icon-[fluent--square-12-regular]',
     action: maximizeWindow,
-    tooltip: isMaximized.value ? 'Restore' : 'Maximize'
+    tooltip: isMaximized.value ? 'Restore' : 'Maximize',
+    class: 'faseeh-titlebar__window-controls__button'
   },
   {
     id: 'close',
     icon: 'icon-[eva--close-fill]',
     action: closeWindow,
-    tooltip: 'Close'
+    tooltip: 'Close',
+    class: 'faseeh-titlebar__window-controls__button--danger'
   }
 ]
 </script>
@@ -64,12 +68,26 @@ const windowControls = [
 <template>
   <TooltipProvider>
     <div class="faseeh-titlebar">
-      <div class="faseeh-titlebar__tab flex items-center"></div>
+      <div class="faseeh-titlebar__tabs">
+        <div class="faseeh-titlebar__tabs__item">
+          <span>Library</span>
+          <Button variant="ghost" size="icon" class="faseeh-titlebar__tabs__item__button">
+            <span class="icon-[fluent-emoji-high-contrast--multiply] size-2.5" />
+          </Button>
+        </div>
+
+        <div class="faseeh-titlebar__tabs__item">
+          <span>Settings</span>
+          <Button variant="ghost" size="icon" class="faseeh-titlebar__tabs__item__button">
+            <span class="icon-[fluent-emoji-high-contrast--multiply] size-2.5" />
+          </Button>
+        </div>
+      </div>
       <HSpacer />
       <div class="faseeh-titlebar__window-controls">
         <Tooltip v-for="control in windowControls" :key="control.id">
           <TooltipTrigger as-child>
-            <button class="faseeh-titlebar__window-controls__button" @click="control.action">
+            <button :class="control.class" @click="control.action">
               <span :class="control.icon" />
             </button>
           </TooltipTrigger>

@@ -11,13 +11,18 @@ interface Props extends PrimitiveProps {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  as: 'button',
+  as: 'button'
 })
 </script>
 
 <template>
-  <Primitive data-slot="button" :as="as" :as-child="asChild" class="border-accent"
-    :class="cn(buttonVariants({ variant, size }), props.class)">
+  <Primitive
+    data-slot="button"
+    :as="as"
+    :as-child="asChild"
+    class="border-input"
+    :class="cn(buttonVariants({ variant, size }), props.class)"
+  >
     <slot />
   </Primitive>
 </template>

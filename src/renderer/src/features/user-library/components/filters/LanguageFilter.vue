@@ -2,20 +2,20 @@
 import FilterMenu from '@/common/components/ui/FilterMenu.vue'
 import { ref } from 'vue'
 
-const languageOptions = ref([
+const options = ref([
   { value: 'en-us', label: 'English', disabled: false },
   { value: 'ar', label: 'Arabic' },
   { value: 'fr', label: 'French' },
   { value: 'es', label: 'Spanish' }
 ])
 
-const selectedLanguage = ref()
+const selected = ref()
 </script>
 <template>
   <FilterMenu
-    v-model:selected-value="selectedLanguage"
+    v-model:selected-value="selected"
     class="w-28"
-    :options="languageOptions"
+    :options="options"
     label="Select Language"
     placeholder="All Languages"
   />

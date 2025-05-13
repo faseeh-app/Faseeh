@@ -1,4 +1,4 @@
-@import '@/common/assets/styles/base.css';
+@import './base.css';
 @import 'tailwindcss';
 @plugin "@iconify/tailwind4";
 
@@ -46,8 +46,11 @@
 @utility faseeh-titlebar {
   @apply flex items-center;
   @apply h-9 w-full;
-  border-bottom: var(--faseeh-border-width) solid var(--faseeh-border-primary);
   -webkit-app-region: drag;
+  > *:not(.faseeh-titlebar__tabs) {
+    @apply h-full;
+    @apply border-b-1 border-input;
+  }
 }
 
 @utility faseeh-titlebar__logo {
@@ -82,6 +85,63 @@
   @apply faseeh-titlebar__window-controls__button;
   &:hover {
     @apply bg-destructive;
+  }
+}
+
+@utility faseeh-titlebar__tabs {
+  @apply flex-grow flex;
+}
+
+@utility faseeh-titlebar__tabs__item {
+  @apply flex-grow flex justify-between items-center;
+  @apply px-3;
+  @apply border-input;
+  @apply last:border-b-1;
+  @apply last:border-r-1;
+  @apply last:nth-[2]:border-l-1;
+  @apply not-first:not-last:border-x-1;
+  -webkit-app-region: no-drag;
+  &:hover {
+    @apply bg-accent;
+  }
+
+  &:hover {
+    @apply border-b-0;
+  }
+
+  &:hover::before,
+  &:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0px; /* Aligns to the very bottom edge */
+    width: var(--faseeh-tab-corner-radius);
+    height: var(--faseeh-tab-corner-radius);
+    /* This is the background color of the area "revealed" by the scoop */
+    background-color: var(--faseeh-titlebar-base-bg);
+  }
+
+  &:hover::before {
+    /* For the left bottom corner */
+    left: 0;
+    /* Rounds the top-right corner of the ::before pseudo-element,
+         creating the "scoop" into the tab's bottom-left. */
+    border-top-right-radius: var(--faseeh-tab-corner-radius);
+    /* Optional: helps fill tiny gaps due to anti-aliasing or border interactions.
+         Adjust or remove if not needed or causes issues.
+         This paints a bit of the base background color upwards. */
+    box-shadow: 0px calc(-1 * var(--faseeh-tab-corner-radius) * 0.3) 0 0
+      var(--faseeh-titlebar-base-bg);
+  }
+
+  &:hover::after {
+    /* For the right bottom corner */
+    right: 0;
+    /* Rounds the top-left corner of the ::after pseudo-element,
+         creating the "scoop" into the tab's bottom-right. */
+    border-top-left-radius: var(--faseeh-tab-corner-radius);
+    /* Optional: same as ::before */
+    box-shadow: 0px calc(-1 * var(--faseeh-tab-corner-radius) * 0.3) 0 0
+      var(--faseeh-titlebar-base-bg);
   }
 }
 

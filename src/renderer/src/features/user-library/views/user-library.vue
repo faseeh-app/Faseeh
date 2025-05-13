@@ -8,6 +8,7 @@ import { Button } from '@/common/components/ui/button'
 import AspectRatio from '@/common/components/ui/aspect-ratio/AspectRatio.vue'
 import ScrollArea from '@/common/components/ui/scroll-area/ScrollArea.vue'
 import LanguageFilter from '../components/filters/LanguageFilter.vue'
+import TypeFilter from '../components/filters/TypeFilter.vue'
 </script>
 <template>
   <div class="flex flex-col">
@@ -22,6 +23,7 @@ import LanguageFilter from '../components/filters/LanguageFilter.vue'
     </div>
     <div class="flex p-4 space-x-1.5">
       <LanguageFilter />
+      <TypeFilter />
     </div>
     <HDivider />
     <ScrollArea class="flex-grow h-1">

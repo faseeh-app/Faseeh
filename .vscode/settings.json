@@ -50,6 +50,7 @@
     "LICENSE",
     ".vscode"
   ],
+
   "files.associations": {
     "*.css": "tailwindcss"
   },
