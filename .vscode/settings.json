@@ -8,6 +8,9 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -19,27 +22,33 @@
     "**/.settings": true,
     "**/.factorypath": true,
     "node_modules": true,
-    "out": true,
     ".prettierignore": true,
-    "build": true,
-    ".prettierrc.yaml": true,
     ".editorconfig": true,
     "dev-app-update.yml": true,
-    "eslint.config.mjs": true,
     "package-lock.json": true,
-    "electron-builder.yml": true
+    "electron-builder.yml": true,
+    "build": true,
+    "out": true,
+    "eslint.config.mjs": true,
+    "desktop.ini": true,
+    ".prettierrc.yaml": true,
+    "LICENSE": true,
+    ".vscode": true
   },
   "hide-files.files": [
     "node_modules",
-    "out",
     ".prettierignore",
-    "build",
-    ".prettierrc.yaml",
     ".editorconfig",
     "dev-app-update.yml",
-    "eslint.config.mjs",
     "package-lock.json",
-    "electron-builder.yml"
+    "electron-builder.yml",
+    "build",
+    "out",
+    "eslint.config.mjs",
+    "desktop.ini",
+    ".prettierrc.yaml",
+    "LICENSE",
+    ".vscode"
   ],
   "files.associations": {
     "*.css": "tailwindcss"

@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import TitleBar from '@/components/ui/TitleBar.vue'
-import Sidebar from '@/components/ui/Sidebar.vue'
+import TitleBar from '@/common/components/ui/TitleBar.vue'
+import Sidebar from '@/common/components/ui/Sidebar.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div class="flex flex-col h-screen">
-    <TitleBar />
-    <div class="flex h-full">
-      <Sidebar />
-      <main class="flex"></main>
-      <div class="faseeh-sidebar--right"></div>
+  <div class="flex h-screen">
+    <Sidebar />
+    <div class="flex flex-col flex-grow">
+      <TitleBar />
+      <main class="flex flex-col flex-grow">
+        <router-view class="flex-grow" />
+      </main>
+      <!-- <div class=" flex flex-col w-72">
+        </div> -->
     </div>
   </div>
 </template>
