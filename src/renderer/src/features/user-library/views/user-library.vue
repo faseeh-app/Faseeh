@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // Changed to script setup
-import SearchBar from '@/common/components/ui/SearchBar.vue'
-import VDivider from '@/common/components/ui/dividers/VDivider.vue'
-import HDivider from '@/common/components/ui/dividers/HDivider.vue'
-import SortMenu from '@/common/components/ui/SortMenu.vue'
-import { Button } from '@/common/components/ui/button'
-import AspectRatio from '@/common/components/ui/aspect-ratio/AspectRatio.vue'
-import ScrollArea from '@/common/components/ui/scroll-area/ScrollArea.vue'
+import SearchBar from '@renderer/common/components/ui/SearchBar.vue'
+import VDivider from '@renderer/common/components/ui/dividers/VDivider.vue'
+import HDivider from '@renderer/common/components/ui/dividers/HDivider.vue'
+import SortMenu from '@renderer/common/components/ui/SortMenu.vue'
+import { Button } from '@renderer/common/components/ui/button'
+import AspectRatio from '@renderer/common/components/ui/aspect-ratio/AspectRatio.vue'
+import ScrollArea from '@renderer/common/components/ui/scroll-area/ScrollArea.vue'
 import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
 </script>

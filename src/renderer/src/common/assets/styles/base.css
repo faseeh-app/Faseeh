@@ -1,4 +1,4 @@
-@import url('@/common/assets/styles/faseeh-dark.css');
+@import url('@renderer/common/assets/styles/faseeh-dark.css');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 

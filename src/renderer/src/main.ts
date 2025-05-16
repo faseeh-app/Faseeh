@@ -1,10 +1,10 @@
-import '@/common/assets/styles/main.css'
+import '@renderer/common/assets/styles/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { routes } from '@/common/router/routes'
+import { routes } from '@renderer/common/router/routes'
 
 const pinia = createPinia()
 export const router = createRouter({

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Button } from '@/common/components/ui/button'
+import { Button } from '@renderer/common/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator
-} from '@/common/components/ui/dropdown-menu'
+} from '@renderer/common/components/ui/dropdown-menu'
 import { computed, ref, watch, type PropType } from 'vue'
 
 const props = defineProps({

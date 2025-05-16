@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Input } from '@/common/components/ui/input'
+import { Input } from '@renderer/common/components/ui/input'
 </script>
 
 <template>

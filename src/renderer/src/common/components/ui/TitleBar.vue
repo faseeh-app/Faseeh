@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import HSpacer from '@/common/components/ui/Spacer.vue'
-import TooltipProvider from '@/common/components/ui/tooltip/TooltipProvider.vue'
+import HSpacer from '@renderer/common/components/ui/Spacer.vue'
+import TooltipProvider from '@renderer/common/components/ui/tooltip/TooltipProvider.vue'
 import TooltipTrigger from './tooltip/TooltipTrigger.vue'
 import TooltipContent from './tooltip/TooltipContent.vue'
 import Tooltip from './tooltip/Tooltip.vue'
-import { Button } from '@/common/components/ui/button'
+import { Button } from '@renderer/common/components/ui/button'
 
 // Track window maximized state
 const isMaximized = ref(false)

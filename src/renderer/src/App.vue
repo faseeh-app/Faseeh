@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import TitleBar from '@/common/components/ui/TitleBar.vue'
-import Sidebar from '@/common/components/ui/Sidebar.vue'
+import TitleBar from '@renderer/common/components/ui/TitleBar.vue'
+import Sidebar from '@renderer/common/components/ui/Sidebar.vue'
 import { RouterView } from 'vue-router'
 </script>
 

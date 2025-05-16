@@ -5,8 +5,8 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider
-} from '@/common/components/ui/tooltip'
-import { RouteNames } from '@/common/router/routes'
+} from '@renderer/common/components/ui/tooltip'
+import { RouteNames } from '@renderer/common/router/routes'
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -53,7 +53,7 @@ const navButtons = [
 <template>
   <TooltipProvider>
     <div class="faseeh-sidebar">
-      <img src="@/common/assets/svg/Fasseh_Logo_Dark.svg" class="faseeh-sidebar__logo" />
+      <img src="@renderer/common/assets/svg/Fasseh_Logo_Dark.svg" class="faseeh-sidebar__logo" />
       <Tooltip v-for="button in navButtons" :key="button.id">
         <TooltipTrigger as-child>
           <button

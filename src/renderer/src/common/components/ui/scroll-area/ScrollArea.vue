@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { cn } from '@/common/lib/utils'
+import { cn } from '@renderer/common/lib/utils'
 import {
   ScrollAreaCorner,
   ScrollAreaRoot,
   type ScrollAreaRootProps,
-  ScrollAreaViewport,
+  ScrollAreaViewport
 } from 'reka-ui'
 import { computed, type HTMLAttributes } from 'vue'
 import ScrollBar from './ScrollBar.vue'
