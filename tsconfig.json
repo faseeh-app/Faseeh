@@ -3,8 +3,12 @@
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }],
   "compilerOptions": {
     "baseUrl": ".",
+    "strict": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@root/*": ["*"],
+      "@renderer/*": ["src/renderer/src/*"],
+      "@main/*": ["src/main/*"],
+      "@preload/*": ["src/preload/*"]
     }
   }
 }
