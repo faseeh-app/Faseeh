@@ -16,3 +16,15 @@ const app = createApp(App)
 app.use(pinia)
 app.use(router)
 app.mount('#app')
+
+async function testStorageService() {
+  await window.storageAPI.setAppSetting({ key: 'testKey', value: JSON.stringify([1, 2, 3, 4, 5]) })
+  const setting = await window.storageAPI.getAppSetting('testKey')
+  if (setting) {
+    console.log('Value from storage:', JSON.parse(setting.value))
+  } else {
+    console.log('Setting "testKey" not found.')
+  }
+}
+
+testStorageService()

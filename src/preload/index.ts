@@ -1,5 +1,6 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { storageApi } from './storage/storage-api'
 
 // Custom APIs for renderer
 const api = {}
@@ -11,6 +12,11 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    try {
+      contextBridge.exposeInMainWorld('storageAPI', storageApi)
+    } catch (error) {
+      console.error('Failed to expose storageAPI to the main world:', error)
+    }
   } catch (error) {
     console.error(error)
   }

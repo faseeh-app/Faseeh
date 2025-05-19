@@ -3,7 +3,7 @@ import { ColumnType, Generated, Insertable, JSONColumnType, Selectable, Updateab
 export interface Database {
   libraryItems: LibraryItemTable
   pluginData: PluginDataTable
-  appSetting: AppSettingTable
+  appSettings: AppSettingsTable
   contentGroups: ContentGroupTable
   collections: CollectionTable
   collectionMembers: CollectionMemberTable
@@ -48,17 +48,17 @@ export type PluginData = Selectable<PluginDataTable>
 export type NewPluginData = Insertable<PluginDataTable>
 export type PluginDataUpdate = Updateable<PluginDataTable>
 
-// AppSetting Table
-export interface AppSettingTable {
+// AppSettings Table
+export interface AppSettingsTable {
   key: string // Primary key
   value: JSONColumnType<any>
   createdAt: ColumnType<Date, string | undefined, never>
   updatedAt: ColumnType<Date, string | undefined, string | undefined>
 }
 
-export type AppSetting = Selectable<AppSettingTable>
-export type NewAppSetting = Insertable<AppSettingTable>
-export type AppSettingUpdate = Updateable<AppSettingTable>
+export type AppSettings = Selectable<AppSettingsTable>
+export type NewAppSettings = Insertable<AppSettingsTable>
+export type AppSettingsUpdate = Updateable<AppSettingsTable>
 
 // ContentGroup Table
 export interface ContentGroupTable {

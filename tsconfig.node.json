@@ -10,7 +10,7 @@
     "composite": true,
     "strict": true,
     "moduleResolution": "bundler",
-    "types": ["electron-vite/node"],
+    "types": ["electron-vite/node", "vite/client"],
     "baseUrl": ".",
     "paths": {
       "@root/*": ["*"],

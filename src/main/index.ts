@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { setupWindowControls } from './utilities/window-controls'
 import { db, migrateToLatest } from './db/database'
+import { initializeFaseehDirectory, setupStorageServiceIPC } from './services/storage-service'
 
 function createWindow(): void {
   // Create the browser window.
@@ -45,7 +46,17 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  // 1. Initialize and migrate database
   await migrateToLatest(db)
+  console.log('Database migrated successfully.')
+
+  // 2. Initialize .faseeh directory structure
+  await initializeFaseehDirectory()
+  console.log('.faseeh directory initialized.')
+
+  // 3. Setup StorageService IPC handlers
+  setupStorageServiceIPC(db) // Pass the Kysely db instance
+  
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
