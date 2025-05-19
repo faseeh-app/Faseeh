@@ -45,10 +45,10 @@ export function setupStorageServiceIPC(db: Kysely<Database>): void {
   // == Path Management ==
   handlePath('storage:getFaseehFolderPath', pathHandlers.getFaseehFolderPath)
   handlePath('storage:getLibraryItemDirectoryPath', pathHandlers.getLibraryItemDirectoryPath)
-  handle('storage:getEmbeddedAssetAbsolutePath', assetHandlers.getEmbeddedAssetAbsolutePathFromId)
+  handle('storage:getEmbeddedAssetAbsolutePath', pathHandlers.getEmbeddedAssetAbsolutePathFromId)
   handle(
     'storage:getSupplementaryFileAbsolutePath',
-    supplementaryFileHandlers.getSupplementaryFileAbsolutePathFromId
+    pathHandlers.getSupplementaryFileAbsolutePathFromId
   )
   handlePath('storage:getPluginDirectoryPath', pathHandlers.getPluginDirectoryPath)
   handlePath('storage:getConfigDirectoryPath', pathHandlers.getConfigDirectoryPath)

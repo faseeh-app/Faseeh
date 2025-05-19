@@ -106,21 +106,4 @@ export async function deleteSupplementaryFile(db: Kysely<Database>, id: string):
   return result.numDeletedRows > 0
 }
 
-export async function getSupplementaryFileAbsolutePathFromId(
-  db: Kysely<Database>,
-  fileId: string
-): Promise<string | undefined> {
-  const file = await db
-    .selectFrom('supplementaryFiles')
-    .select(['libraryItemId', 'storagePath'])
-    .where('id', '=', fileId)
-    .executeTakeFirst()
-  if (!file || !file.libraryItemId || !file.storagePath) return undefined
-  return path.join(
-    FASEEH_BASE_PATH,
-    LIBRARY_DIR_NAME,
-    file.libraryItemId,
-    SUPPLEMENTARY_FILES_DIR_NAME,
-    file.storagePath
-  )
-}
+

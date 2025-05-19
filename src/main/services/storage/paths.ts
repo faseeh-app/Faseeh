@@ -1,6 +1,8 @@
 import { app } from 'electron'
 import path from 'node:path'
 import fs from 'node:fs/promises'
+import { Kysely } from 'kysely'
+import { Database } from '../../db/types'
 
 // --- Path Constants ---
 export const USER_DATA_PATH = app.getPath('userData')
@@ -61,10 +63,44 @@ export async function getLibraryItemDirectoryPath(
     return undefined
   }
 }
-// ... (getEmbeddedAssetAbsolutePath, getSupplementaryFileAbsolutePath etc. might need db access,
-// so they might fit better in their respective modules like assets.ts or supplementary.ts,
-// or be refactored to take db as an argument if they stay in paths.ts for pure path logic)
-// For now, let's assume methods needing DB go to their feature modules.
+
+export async function getSupplementaryFileAbsolutePathFromId(
+  db: Kysely<Database>,
+  fileId: string
+): Promise<string | undefined> {
+  const file = await db
+    .selectFrom('supplementaryFiles')
+    .select(['libraryItemId', 'storagePath'])
+    .where('id', '=', fileId)
+    .executeTakeFirst()
+  if (!file || !file.libraryItemId || !file.storagePath) return undefined
+  return path.join(
+    FASEEH_BASE_PATH,
+    LIBRARY_DIR_NAME,
+    file.libraryItemId,
+    SUPPLEMENTARY_FILES_DIR_NAME,
+    file.storagePath
+  )
+}
+
+export async function getEmbeddedAssetAbsolutePathFromId(
+  db: Kysely<Database>,
+  assetId: string
+): Promise<string | undefined> {
+  const asset = await db
+    .selectFrom('embeddedAssets')
+    .select(['libraryItemId', 'storagePath'])
+    .where('id', '=', assetId)
+    .executeTakeFirst()
+  if (!asset || !asset.libraryItemId || !asset.storagePath) return undefined
+  return path.join(
+    FASEEH_BASE_PATH,
+    LIBRARY_DIR_NAME,
+    asset.libraryItemId,
+    EMBEDDED_ASSETS_DIR_NAME,
+    asset.storagePath
+  )
+}
 
 export async function getPluginDirectoryPath(pluginId: string): Promise<string | undefined> {
   if (!pluginId) return undefined

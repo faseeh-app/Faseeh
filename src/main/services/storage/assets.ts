@@ -97,21 +97,4 @@ export async function deleteEmbeddedAsset(db: Kysely<Database>, id: string): Pro
   return result.numDeletedRows > 0
 }
 
-export async function getEmbeddedAssetAbsolutePathFromId(
-  db: Kysely<Database>,
-  assetId: string
-): Promise<string | undefined> {
-  const asset = await db
-    .selectFrom('embeddedAssets')
-    .select(['libraryItemId', 'storagePath'])
-    .where('id', '=', assetId)
-    .executeTakeFirst()
-  if (!asset || !asset.libraryItemId || !asset.storagePath) return undefined
-  return path.join(
-    FASEEH_BASE_PATH,
-    LIBRARY_DIR_NAME,
-    asset.libraryItemId,
-    EMBEDDED_ASSETS_DIR_NAME,
-    asset.storagePath
-  )
-}
+
