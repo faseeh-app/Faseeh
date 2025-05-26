@@ -32,12 +32,12 @@ function initializeDatabaseInstances(): Kysely<DBInterface> {
   })
 
   kyselyInstance = new Kysely<DBInterface>({
-    dialect,
-    log(event) {
-      if (event.level === 'query') {
-        console.log('[Query]', event.query.sql, event.query.parameters)
-      }
-    }
+    dialect
+    // log(event) {
+    //   if (event.level === 'query') {
+    //     console.log('[Query]', event.query.sql, event.query.parameters)
+    //   }
+    // }
   })
   console.log('[DB] Kysely instance created.')
   return kyselyInstance
