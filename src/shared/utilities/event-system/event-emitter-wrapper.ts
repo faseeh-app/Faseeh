@@ -17,9 +17,10 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
    */
   constructor(namespace: string) {
     this.namespace = namespace
+    this.setupListeners()
   }
 
-  public setupRendererListeners(): void {
+  public setupListeners(): void {
     const channelPrefix = `event:${this.namespace}:`
 
     // Renderer process
@@ -35,18 +36,10 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
       })
 
       this.cleanupFunctions.push(cleanup)
-    }
-  }
-
-  public setupMainListeners(): void {
-    const channelPrefix = `event:${this.namespace}:`
-
-    if (!this.isRenderer()) {
+    } else {
       try {
-        // Main process
-        const { ipcMain, webContents } = require('electron')
-
         // In main process
+        const { ipcMain, webContents } = require('electron')
         ipcMain.on('ipc-event', (event, channel, payload) => {
           if (channel.startsWith(channelPrefix)) {
             // Send to all other renderer processes
