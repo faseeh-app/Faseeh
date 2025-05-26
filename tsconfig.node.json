@@ -4,7 +4,8 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
-    "src/main/db/migrations"
+    "src/main/db/migrations",
+    "src/shared/**/*",
   ],
   "compilerOptions": {
     "composite": true,
@@ -16,6 +17,7 @@
       "@root/*": ["*"],
       "@renderer/*": ["src/renderer/src/*"],
       "@main/*": ["src/main/*"],
+      "@shared/*": ["src/shared/*"],
       "@preload/*": ["src/preload/*"]
     }
   }

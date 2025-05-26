@@ -1,6 +1,6 @@
 import type { Kysely } from 'kysely'
 import type { Database, LibraryItem, NewLibraryItem, LibraryItemUpdate } from '../../db/types'
-import type { ContentDocument } from '@renderer/core/types/content-document'
+import type { ContentDocument } from '@shared/types/content-document'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {

@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron'
-import type { IStorageAPI } from '@renderer/core/types/storage-api' // Adjust path if needed
+import type { IStorageAPI } from '@shared/types/storage-api'
 
 export const storageApi: IStorageAPI = {
   // == Path Management ==

@@ -5,6 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { setupWindowControls } from './utilities/window-controls'
 import { db, migrateToLatest } from './db/database'
 import { initializeFaseehDirectory, setupStorageServiceIPC } from './services/storage-service'
+import { workspaceEvents } from '@shared/constants/event-emitters'
 
 function createWindow(): void {
   // Create the browser window.
@@ -18,6 +19,8 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
+      nodeIntegration: true,
+      contextIsolation: true,
       sandbox: false
     }
   })
@@ -56,7 +59,12 @@ app.whenReady().then(async () => {
 
   // 3. Setup StorageService IPC handlers
   setupStorageServiceIPC(db) // Pass the Kysely db instance
-  
+
+  workspaceEvents.setupMainListeners()
+  workspaceEvents.on('media:opened', (event) => {
+    console.log('Media opened:', event.mediaId, 'from', event.source)
+  })
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 

@@ -1,9 +1,27 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { storageApi } from './storage/storage-api'
+import type { IEventsBridge } from '@shared/types/events-bridge'
 
 // Custom APIs for renderer
 const api = {}
+
+const eventBridge: IEventsBridge = {
+  send: (channel: string, data: any) => {
+    ipcRenderer.send('ipc-event', channel, data)
+  },
+
+  on: (callback: (channel: string, data: any) => void) => {
+    const subscription = (_event: any, channel: string, data: any) => {
+      callback(channel, data)
+    }
+    ipcRenderer.on('ipc-event', subscription)
+
+    return () => {
+      ipcRenderer.removeListener('ipc-event', subscription)
+    }
+  }
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
@@ -12,11 +30,8 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
-    try {
-      contextBridge.exposeInMainWorld('storageAPI', storageApi)
-    } catch (error) {
-      console.error('Failed to expose storageAPI to the main world:', error)
-    }
+    contextBridge.exposeInMainWorld('electronEvents', eventBridge)
+    contextBridge.exposeInMainWorld('storageAPI', storageApi)
   } catch (error) {
     console.error(error)
   }
