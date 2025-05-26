@@ -103,45 +103,7 @@
   -webkit-app-region: no-drag;
   &:hover {
     @apply bg-accent;
-  }
-
-  &:hover {
     @apply border-b-0;
-  }
-
-  &:hover::before,
-  &:hover::after {
-    content: '';
-    position: absolute;
-    bottom: 0px; /* Aligns to the very bottom edge */
-    width: var(--faseeh-tab-corner-radius);
-    height: var(--faseeh-tab-corner-radius);
-    /* This is the background color of the area "revealed" by the scoop */
-    background-color: var(--faseeh-titlebar-base-bg);
-  }
-
-  &:hover::before {
-    /* For the left bottom corner */
-    left: 0;
-    /* Rounds the top-right corner of the ::before pseudo-element,
-         creating the "scoop" into the tab's bottom-left. */
-    border-top-right-radius: var(--faseeh-tab-corner-radius);
-    /* Optional: helps fill tiny gaps due to anti-aliasing or border interactions.
-         Adjust or remove if not needed or causes issues.
-         This paints a bit of the base background color upwards. */
-    box-shadow: 0px calc(-1 * var(--faseeh-tab-corner-radius) * 0.3) 0 0
-      var(--faseeh-titlebar-base-bg);
-  }
-
-  &:hover::after {
-    /* For the right bottom corner */
-    right: 0;
-    /* Rounds the top-left corner of the ::after pseudo-element,
-         creating the "scoop" into the tab's bottom-right. */
-    border-top-left-radius: var(--faseeh-tab-corner-radius);
-    /* Optional: same as ::before */
-    box-shadow: 0px calc(-1 * var(--faseeh-tab-corner-radius) * 0.3) 0 0
-      var(--faseeh-titlebar-base-bg);
   }
 }
 
@@ -199,7 +161,3 @@
 @utility faseeh-filter-menu__content {
   @apply w-auto;
 }
-
-/* -------------------------------------------------------------------------- */
-/*                                                                       */
-/* -------------------------------------------------------------------------- */
