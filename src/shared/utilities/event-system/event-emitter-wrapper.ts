@@ -1,9 +1,9 @@
-import { EventType, Handler, IListenerOwner } from '@shared/types/event-types'
+import { EventType, Handler } from '@shared/types/event-types'
 import { IEventsBridge } from '@shared/types/events-bridge'
 
 declare global {
   interface Window {
-    electronEvents?: IEventsBridge
+    eventsBridge?: IEventsBridge
   }
 }
 
@@ -24,8 +24,8 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
     const channelPrefix = `event:${this.namespace}:`
 
     // Renderer process
-    if (this.isRenderer() && typeof window !== 'undefined' && window.electronEvents) {
-      const cleanup = window.electronEvents.on((channel, payload) => {
+    if (this.isRenderer() && typeof window !== 'undefined' && window.eventsBridge) {
+      const cleanup = window.eventsBridge.on((channel, payload) => {
         if (channel.startsWith(channelPrefix)) {
           const eventName = channel.slice(channelPrefix.length)
           const handlers = this.localHandlers.get(eventName)
@@ -75,24 +75,17 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
    *
    * @param eventName The name of the event to listen to.
    * @param handler The function to call when the event is emitted.
-   * @param owner Optional. The owner of this listener (e.g., a BasePlugin instance).
    * @returns A function that when called, removes the registered event handler.
    */
   public on<Key extends keyof Events>(
     eventName: Key,
-    handler: Handler<Events[Key]>,
-    owner?: IListenerOwner
+    handler: Handler<Events[Key]>
   ): () => void {
     const eventNameStr = String(eventName)
     if (!this.localHandlers.has(eventNameStr)) {
       this.localHandlers.set(eventNameStr, new Set())
     }
     this.localHandlers.get(eventNameStr)!.add(handler)
-
-    // If there's an owner, notify it to track this registration
-    if (owner) {
-      owner._trackListenerRegistration(this, eventName as EventType, handler)
-    }
 
     // Return a disposer function that removes this specific handler
     return () => {
@@ -123,8 +116,8 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
     // Send through IPC
     if (this.isRenderer()) {
       // Renderer process
-      if (typeof window !== 'undefined' && window.electronEvents) {
-        window.electronEvents.send(channel, payload)
+      if (typeof window !== 'undefined' && window.eventsBridge) {
+        window.eventsBridge.send(channel, payload)
       }
     } else {
       // Main process

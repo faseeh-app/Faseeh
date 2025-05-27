@@ -1,4 +1,5 @@
 import { PluginInfo } from '@renderer/core/services/plugin-manager'
+import { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
 
 export type EventType = string | symbol | number
 export type Handler<T = any> = (event: T) => void
@@ -7,13 +8,6 @@ export type WildcardHandler<Events extends Record<EventType, unknown>> = (
   event: Events[keyof Events]
 ) => void
 
-export interface IListenerOwner {
-  _trackListenerRegistration(
-    emitterWrapperInstance: EventEmitterWrapper<any>,
-    eventName: EventType,
-    handler: Handler<any> | WildcardHandler<any>
-  ): void
-}
 
 export type VaultEvents = {
   'media:saved': { mediaId: string; path?: string }

@@ -167,7 +167,7 @@ export async function listPluginDataFiles(
   try {
     await fs.access(targetDir) // Check if directory exists
     const entries = await fs.readdir(targetDir, { withFileTypes: true })
-    // Return names, could also return more detailed info (isFile, isDirectory)
+    // TODO: Return names for now, later on we could return more detailed info (isFile, isDirectory)
     return entries.map((entry) => entry.name)
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
