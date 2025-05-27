@@ -12,6 +12,7 @@ export const storageApi: IStorageAPI = {
     ipcRenderer.invoke('storage:getSupplementaryFileAbsolutePath', fileId),
   getPluginDirectoryPath: (pluginId) =>
     ipcRenderer.invoke('storage:getPluginDirectoryPath', pluginId),
+  listPluginDirectories: () => ipcRenderer.invoke('storage:listPluginDirectories'),
   getConfigDirectoryPath: () => ipcRenderer.invoke('storage:getConfigDirectoryPath'),
 
   // == LibraryItems & Document.json ==

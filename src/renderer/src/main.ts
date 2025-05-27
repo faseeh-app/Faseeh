@@ -53,17 +53,19 @@ class RendererLifecycle {
 
   private async testStorage(): Promise<void> {
     try {
-      await window.storageAPI.setAppSetting({
-        key: 'testKey',
-        value: JSON.stringify([1, 2, 3, 4, 5])
-      })
+      console.log(await window.storageAPI.listPluginDirectories())
 
-      const setting = await window.storageAPI.getAppSetting('testKey')
-      if (setting) {
-        console.log('Value from storage:', JSON.parse(setting.value))
-      } else {
-        console.log('Setting "testKey" not found.')
-      }
+      // await window.storageAPI.setAppSetting({
+      //   key: 'testKey',
+      //   value: JSON.stringify([1, 2, 3, 4, 5])
+      // })
+
+      // const setting = await window.storageAPI.getAppSetting('testKey')
+      // if (setting) {
+      //   console.log('Value from storage:', JSON.parse(setting.value))
+      // } else {
+      //   console.log('Setting "testKey" not found.')
+      // }
     } catch (error) {
       console.error('Storage service test failed:', error)
     }

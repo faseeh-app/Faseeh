@@ -39,6 +39,7 @@ export interface IStorageAPI {
   getEmbeddedAssetAbsolutePath: (assetId: string) => Promise<string | undefined>
   getSupplementaryFileAbsolutePath: (fileId: string) => Promise<string | undefined>
   getPluginDirectoryPath: (pluginId: string) => Promise<string | undefined>
+  listPluginDirectories: () => Promise<string[]>
   getConfigDirectoryPath: () => Promise<string | undefined>
 
   // == LibraryItems & Document.json ==

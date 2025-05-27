@@ -107,6 +107,19 @@ export async function getPluginDirectoryPath(pluginId: string): Promise<string |
   return path.join(FASEEH_BASE_PATH, PLUGINS_DIR_NAME, pluginId)
 }
 
+export async function listPluginDirectories(): Promise<string[]> {
+  try {
+    const pluginsPath = path.join(FASEEH_BASE_PATH, PLUGINS_DIR_NAME)
+    const entries = await fs.readdir(pluginsPath, { withFileTypes: true })
+    return entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+  } catch (error) {
+    console.error('Failed to list plugin directories:', error)
+    return []
+  }
+}
+
 export async function getConfigDirectoryPath(): Promise<string | undefined> {
   return path.join(FASEEH_BASE_PATH, CONFIG_DIR_NAME)
 }

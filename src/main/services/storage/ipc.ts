@@ -51,6 +51,7 @@ export function setupStorageServiceIPC(db: Kysely<Database>): void {
     pathHandlers.getSupplementaryFileAbsolutePathFromId
   )
   handlePath('storage:getPluginDirectoryPath', pathHandlers.getPluginDirectoryPath)
+  handlePath('storage:listPluginDirectories', pathHandlers.listPluginDirectories)
   handlePath('storage:getConfigDirectoryPath', pathHandlers.getConfigDirectoryPath)
 
   // == LibraryItems & Document.json ==
