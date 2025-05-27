@@ -77,10 +77,7 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
    * @param handler The function to call when the event is emitted.
    * @returns A function that when called, removes the registered event handler.
    */
-  public on<Key extends keyof Events>(
-    eventName: Key,
-    handler: Handler<Events[Key]>
-  ): () => void {
+  public on<Key extends keyof Events>(eventName: Key, handler: Handler<Events[Key]>): () => void {
     const eventNameStr = String(eventName)
     if (!this.localHandlers.has(eventNameStr)) {
       this.localHandlers.set(eventNameStr, new Set())

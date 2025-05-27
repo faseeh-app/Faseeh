@@ -6,7 +6,7 @@ import type { IEventsBridge } from '@shared/types/events-bridge'
 // Custom APIs for renderer
 const api = {}
 
-const eventBridge: IEventsBridge = {
+const eventsBridge: IEventsBridge = {
   send: (channel: string, data: any) => {
     ipcRenderer.send('ipc-event', channel, data)
   },
@@ -30,7 +30,7 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
-    contextBridge.exposeInMainWorld('electronEvents', eventBridge)
+    contextBridge.exposeInMainWorld('eventsBridge', eventsBridge)
     contextBridge.exposeInMainWorld('storageAPI', storageApi)
   } catch (error) {
     console.error(error)
