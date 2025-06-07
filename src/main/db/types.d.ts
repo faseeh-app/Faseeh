@@ -160,3 +160,7 @@ export interface SupplementaryFileTable {
 export type SupplementaryFile = Selectable<SupplementaryFileTable>
 export type NewSupplementaryFile = Insertable<SupplementaryFileTable>
 export type SupplementaryFileUpdate = Updateable<SupplementaryFileTable>
+
+
+
+

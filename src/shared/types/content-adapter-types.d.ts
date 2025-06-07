@@ -1,8 +1,9 @@
+import { ContentAdapterRegistration } from './content-adapter-types.d';
 import { FaseehApp } from './../../renderer/src/core/plugins/plugin-types.d';
 export type ContentAdapterSource = string | Buffer | File;
 import { LibraryItem } from '@root/src/main/db/types';
 import { ContentDocument } from './content-document';
-
+import { ContentAdapter } from './../../renderer/src/core/services/content-adapter';
 export interface AssetDetail {
   format : string ;
   content : Buffer | string ;
@@ -74,14 +75,21 @@ export interface ContentAdapterInfo {
 }
 
 
-export interface ContentAdapterRegistration {
-  adapt : ContentAdapterFunction;
+// _______________ Adapter Registration types _______________
+
+export type ContentAdapterClass = new (info : ContentAdapterInfo) => ContentAdapter ;
 
 
 
-
-}
-
-
+export type ContentAdapterRegistration = ContentAdapterInfo & (
+  {
+    adapter: ContentAdapterFunction;
+    adapterClass?: undefined;
+  } |
+  {
+    adapterClass: ContentAdapterClass;
+    adapter?: undefined;
+  }
+);
 
 
