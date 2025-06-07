@@ -1,0 +1,37 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Inputs                                   */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-input {
+  @apply file:text-foreground placeholder:text-muted-foreground;
+  @apply selection:bg-primary selection:text-primary-foreground;
+  @apply flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent;
+  @apply px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none;
+  @apply file:inline-flex file:h-7 file:border-0 file:bg-transparent;
+  @apply file:text-sm file:font-medium;
+  @apply disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50;
+  @apply md:text-sm;
+  @apply focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px];
+  @apply aria-invalid:ring-destructive/20 aria-invalid:border-destructive;
+
+  &.dark {
+    @apply bg-input/30;
+
+    &[aria-invalid='true'] {
+      @apply ring-destructive/40;
+    }
+  }
+}
+
+@utility faseeh-search-bar {
+  @apply relative w-full items-center;
+
+  .faseeh-search-bar__input {
+    @apply faseeh-input pl-10;
+  }
+
+  .faseeh-search-bar__icon {
+    @apply absolute start-0 inset-y-0 flex items-center justify-center px-2;
+    @apply size-5 bg-accent-foreground icon-[iconamoon--search-bold];
+  }
+}

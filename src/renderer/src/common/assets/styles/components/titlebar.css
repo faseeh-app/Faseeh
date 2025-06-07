@@ -1,0 +1,67 @@
+/* -------------------------------------------------------------------------- */
+/*                                  TitleBar                                  */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-titlebar {
+  @apply flex items-center;
+  @apply h-9 w-full;
+  -webkit-app-region: drag;
+  > *:not(.faseeh-titlebar__tabs) {
+    @apply h-full;
+    @apply border-b-1 border-input;
+  }
+}
+
+@utility faseeh-titlebar__logo {
+  @apply h-full px-1.5 py-1;
+}
+
+@utility faseeh-titlebar__window-controls {
+  @apply flex items-center;
+  @apply h-full w-fit;
+  -webkit-app-region: no-drag;
+}
+
+@utility faseeh-titlebar__window-controls__button {
+  @apply flex items-center justify-center;
+  @apply h-full w-10;
+  &:hover {
+    background-color: var(--faseeh-interactive-background-hover);
+  }
+
+  > span {
+    @apply h-5 w-5;
+    @apply text-accent-foreground;
+    @apply group-hover:text-primary-foreground;
+  }
+
+  &:hover > * {
+    @apply text-primary-foreground;
+  }
+}
+
+@utility faseeh-titlebar__window-controls__button--danger {
+  @apply faseeh-titlebar__window-controls__button;
+  &:hover {
+    @apply bg-destructive;
+  }
+}
+
+@utility faseeh-titlebar__tabs {
+  @apply flex-grow flex;
+}
+
+@utility faseeh-titlebar__tabs__item {
+  @apply flex-grow flex justify-between items-center;
+  @apply px-3;
+  @apply border-input;
+  @apply last:border-b-1;
+  @apply last:border-r-1;
+  @apply last:nth-[2]:border-l-1;
+  @apply not-first:not-last:border-x-1;
+  -webkit-app-region: no-drag;
+  &:hover {
+    @apply bg-accent;
+    @apply border-b-0;
+  }
+}

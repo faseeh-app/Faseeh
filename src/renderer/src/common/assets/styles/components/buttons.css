@@ -1,0 +1,29 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Buttons                                  */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-button {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md;
+  @apply text-sm font-medium transition-colors;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+  background-color: var(--faseeh-interactive-background);
+  color: var(--faseeh-interactive-text);
+  border: 1px solid var(--faseeh-interactive-border);
+  &:hover {
+    background-color: var(--faseeh-interactive-background-hover);
+  }
+  &:focus-visible {
+    border-color: var(--faseeh-border-interactive);
+    box-shadow:
+      0 0 0 2px var(--faseeh-background-primary),
+      0 0 0 4px var(--faseeh-border-interactive);
+  }
+}
+
+@utility faseeh-button-primary {
+  @apply faseeh-button;
+  @apply bg-primary text-primary-foreground border-transparent;
+  &:hover {
+    background-color: var(--faseeh-button-primary-background-hover);
+  }
+}
