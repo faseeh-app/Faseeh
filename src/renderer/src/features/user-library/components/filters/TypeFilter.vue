@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FilterMenu from '@renderer/common/components/ui/FilterMenu.vue'
 import { ref } from 'vue'
+import { useTabState } from '@renderer/common/composables/useTabState'
 
 const options = ref([
   { value: 'collection', label: 'Collection', disabled: false },
@@ -10,7 +11,7 @@ const options = ref([
   { value: 'article', label: 'Article' }
 ])
 
-const selected = ref()
+const { state: selected } = useTabState('typeFilter', undefined)
 </script>
 <template>
   <FilterMenu

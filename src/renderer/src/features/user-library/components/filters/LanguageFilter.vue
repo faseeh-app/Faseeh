@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FilterMenu from '@renderer/common/components/ui/FilterMenu.vue'
 import { ref } from 'vue'
+import { useTabState } from '@renderer/common/composables/useTabState'
 
 const options = ref([
   { value: 'en-us', label: 'English', disabled: false },
@@ -9,7 +10,7 @@ const options = ref([
   { value: 'es', label: 'Spanish' }
 ])
 
-const selected = ref()
+const { state: selected } = useTabState('languageFilter', undefined)
 </script>
 <template>
   <FilterMenu

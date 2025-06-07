@@ -3,9 +3,23 @@
 /* -------------------------------------------------------------------------- */
 
 @utility faseeh-titlebar {
-  @apply flex items-center;
-  @apply h-9 w-full;
+  @apply flex flex-col;
+  @apply h-12 w-full;
   -webkit-app-region: drag;
+}
+
+@utility faseeh-titlebar__center-area {
+  @apply flex-grow;
+  @apply flex flex-col;
+}
+
+@utility faseeh-titlebar__drag-area {
+  @apply h-2 w-full;
+  -webkit-app-region: drag;
+}
+
+@utility faseeh-titlebar__content {
+  @apply flex items-center flex-1;
   > *:not(.faseeh-titlebar__tabs) {
     @apply h-full;
     @apply border-b-1 border-input;
@@ -18,7 +32,7 @@
 
 @utility faseeh-titlebar__window-controls {
   @apply flex items-center;
-  @apply h-full w-fit;
+  @apply h-full w-fit flex-shrink-0;
   -webkit-app-region: no-drag;
 }
 
@@ -48,20 +62,97 @@
 }
 
 @utility faseeh-titlebar__tabs {
-  @apply flex-grow flex;
+  @apply flex overflow-x-auto overflow-y-hidden;
+  @apply gap-0 scroll-smooth;
+  @apply flex-1 min-w-0;
+  -webkit-app-region: no-drag;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @utility faseeh-titlebar__tabs__item {
-  @apply flex-grow flex justify-between items-center;
-  @apply px-3;
-  @apply border-input;
-  @apply last:border-b-1;
-  @apply last:border-r-1;
-  @apply last:nth-[2]:border-l-1;
-  @apply not-first:not-last:border-x-1;
+  @apply flex items-center gap-2;
+  @apply px-1 py-1;
+  @apply border-input border-r-1;
+  @apply bg-background;
+  @apply cursor-pointer;
+  @apply flex-shrink-0;
+  @apply transition-all duration-200;
+  @apply w-auto max-w-[200px];
   -webkit-app-region: no-drag;
+
   &:hover {
     @apply bg-accent;
-    @apply border-b-0;
   }
+
+  &.active {
+    @apply bg-accent;
+    @apply border-b-0;
+    @apply relative;
+
+    /* Active tab indicator */
+    &::after {
+      content: '';
+      @apply absolute bottom-0 left-0 right-0;
+      @apply h-0.5 bg-primary;
+    }
+  }
+
+  &.dirty::before {
+    content: '•';
+    @apply text-orange-500 font-bold;
+    @apply absolute top-1 right-6;
+  }
+}
+
+@utility faseeh-titlebar__tabs__item__content {
+  @apply flex items-center gap-2 flex-1 min-w-0 px-3;
+}
+
+@utility faseeh-titlebar__tabs__item__icon {
+  @apply size-4 flex-shrink-0;
+}
+
+@utility faseeh-titlebar__tabs__item__title {
+  @apply text-sm truncate;
+  @apply select-none;
+}
+
+@utility faseeh-titlebar__tabs__item__button {
+  @apply flex-shrink-0;
+  @apply opacity-0 group-hover:opacity-100;
+  @apply transition-opacity duration-200;
+  @apply size-4;
+  @apply cursor-pointer;
+
+  &:hover {
+    @apply bg-accent-foreground/20 rounded-full;
+  }
+}
+
+.faseeh-titlebar__tabs__item.active .faseeh-titlebar__tabs__item__button {
+  @apply opacity-60;
+}
+
+@utility faseeh-titlebar__tabs__add-button {
+  @apply flex items-center justify-center;
+  @apply size-8 ml-1;
+  @apply bg-transparent hover:bg-accent;
+  @apply border-0 rounded;
+  @apply cursor-pointer;
+  @apply transition-colors duration-200;
+  -webkit-app-region: no-drag;
+}
+
+@utility faseeh-titlebar__tabs__overflow-indicator {
+  @apply flex items-center justify-center;
+  @apply size-8;
+  @apply bg-transparent hover:bg-accent;
+  @apply cursor-pointer;
+  @apply transition-colors duration-200;
+  -webkit-app-region: no-drag;
 }

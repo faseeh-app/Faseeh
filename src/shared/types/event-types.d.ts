@@ -8,7 +8,6 @@ export type WildcardHandler<Events extends Record<EventType, unknown>> = (
   event: Events[keyof Events]
 ) => void
 
-
 export type VaultEvents = {
   'media:saved': { mediaId: string; path?: string }
   'media:deleted': { mediaId: string }
@@ -18,6 +17,11 @@ export type VaultEvents = {
 export type WorkspaceEvents = {
   'media:opened': { mediaId: string; source: string }
   'layout:changed': { newLayout: string }
+  'tab:reload': { tabId: string; title: string }
+  'tab:duplicate': { tabId: string; title: string }
+  'tab:close': { tabId: string; title: string }
+  'tab:close-others': { exceptTabId: string; closedCount: number }
+  'tab:close-all': { closedCount: number }
   // ... other workspace events
 }
 

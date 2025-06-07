@@ -1,18 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider
 } from '@renderer/common/components/ui/tooltip'
+import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useRouter } from 'vue-router'
 import { RouteNames } from '@renderer/common/router/routes'
-import { useRoute, useRouter } from 'vue-router'
 
+const tabStore = useTabStore()
 const router = useRouter()
 
-// Track active view
-const activeView = ref('library')
+// Track active view based on current active tab
+const activeView = computed(() => {
+  const activeTab = tabStore.activeTab
+  if (!activeTab) return 'library'
+
+  switch (activeTab.route.name) {
+    case 'library':
+      return 'library'
+    case 'community':
+      return 'discover'
+    case 'settings':
+      return 'settings'
+    default:
+      return 'library'
+  }
+})
 
 const navButtons = [
   {
@@ -21,7 +37,8 @@ const navButtons = [
     activeIcon: 'icon-[solar--library-bold]',
     label: 'Library',
     action: () => {
-      router.replace({ name: RouteNames.LIBRARY })
+      const tabId = tabStore.openLibraryTab()
+      router.push({ name: RouteNames.LIBRARY })
     }
   },
   {
@@ -30,7 +47,8 @@ const navButtons = [
     activeIcon: 'icon-[fa-solid--compass]',
     label: 'Discover',
     action: () => {
-      router.replace({ name: RouteNames.COMMUNITY })
+      const tabId = tabStore.openCommunityTab()
+      router.push({ name: RouteNames.COMMUNITY })
     }
   },
   {
@@ -38,14 +56,20 @@ const navButtons = [
     icon: 'icon-[iconamoon--search-bold]',
     activeIcon: 'icon-[iconamoon--search-duotone]',
     label: 'Search',
-    action: () => {}
+    action: () => {
+      // For now, just a placeholder
+      console.log('Search functionality coming soon!')
+    }
   },
   {
     id: 'settings',
     icon: 'icon-[solar--settings-linear]',
     activeIcon: 'icon-[solar--settings-bold]',
     label: 'Settings',
-    action: () => {}
+    action: () => {
+      const tabId = tabStore.openSettingsTab()
+      router.push({ name: RouteNames.SETTINGS })
+    }
   }
 ]
 </script>
@@ -61,7 +85,6 @@ const navButtons = [
             :class="{ active: activeView === button.id }"
             @click="
               () => {
-                activeView = button.id
                 button.action()
               }
             "

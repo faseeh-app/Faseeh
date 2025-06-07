@@ -3,15 +3,13 @@ import { Button } from '@renderer/common/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@renderer/common/components/ui/dropdown-menu'
-import { ref } from 'vue'
+import { useTabState } from '@renderer/common/composables/useTabState'
 
-const sortOption = ref('bottom')
+const { state: sortOption } = useTabState('sortOption', 'recently-added')
 
 const sortOptions = [
   {

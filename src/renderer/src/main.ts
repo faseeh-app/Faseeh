@@ -10,7 +10,6 @@ import { workspaceEvents } from '@shared/constants/event-emitters'
 class RendererLifecycle {
   private app: VueApp | null = null
   private router: Router | null = null
-
   init(): void {
     const pinia = createPinia()
 
@@ -22,6 +21,9 @@ class RendererLifecycle {
     this.app = createApp(App)
     this.app.use(pinia)
     this.app.use(this.router)
+
+    // Navigate to the initial route (Library)
+    this.router.push({ name: 'library' })
 
     workspaceEvents.on('media:opened', (event) =>
       console.log('Media opened:', event.mediaId, 'from', event.source)
