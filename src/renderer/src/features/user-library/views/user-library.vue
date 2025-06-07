@@ -5,10 +5,55 @@ import VDivider from '@renderer/common/components/ui/dividers/VDivider.vue'
 import HDivider from '@renderer/common/components/ui/dividers/HDivider.vue'
 import SortMenu from '@renderer/common/components/ui/SortMenu.vue'
 import { Button } from '@renderer/common/components/ui/button'
-import AspectRatio from '@renderer/common/components/ui/aspect-ratio/AspectRatio.vue'
 import ScrollArea from '@renderer/common/components/ui/scroll-area/ScrollArea.vue'
+import MediaCard from '@renderer/common/components/ui/MediaCard.vue'
 import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
+import { ref } from 'vue'
+import videoThumbnail from '@renderer/common/assets/images/yt_video_thumbnail_1.webp'
+import playlistThumbnail from '@renderer/common/assets/images/yt_playlist_thumbnail_1.webp'
+import bookCover1 from '@renderer/common/assets/images/book_cover_1.webp'
+import bookCover2 from '@renderer/common/assets/images/book_cover_2.webp'
+
+// Sample media data
+const mediaItems = ref([
+  {
+    id: '1',
+    title: 'Introduction to Arabic Grammar',
+    subtitle: 'Learn the fundamentals of Arabic grammar',
+    type: 'video' as const,
+    duration: '45:30',
+    language: 'ar',
+    thumbnail: videoThumbnail
+  },
+  {
+    id: '2',
+    title: 'Understanding Arabic Poetry',
+    subtitle: 'A deep dive into classical Arabic poetry',
+    type: 'collection' as const,
+    duration: '30:15',
+    thumbnail: playlistThumbnail
+  },
+  {
+    id: '3',
+    title: 'Arabic Literature Classics',
+    subtitle: 'A collection of classic Arabic literature',
+    type: 'document' as const,
+    thumbnail: bookCover1
+  },
+  {
+    id: '4',
+    title: 'Modern Arabic Novels',
+    subtitle: 'Exploring contemporary Arabic novels',
+    type: 'document' as const,
+    thumbnail: bookCover2
+  },
+  {
+    id: '5',
+    title: 'Arabic Calligraphy Techniques',
+    type: 'document' as const
+  }
+])
 </script>
 <template>
   <div class="flex flex-col">
@@ -27,12 +72,8 @@ import TypeFilter from '../components/filters/TypeFilter.vue'
     </div>
     <HDivider />
     <ScrollArea class="flex-grow h-1">
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-1 gap-1"
-      >
-        <AspectRatio v-for="i in 10" :key="i" :ratio="16 / 9" class="flex">
-          <div class="bg-card flex-grow rounded-md"></div>
-        </AspectRatio>
+      <div class="faseeh-media-grid">
+        <MediaCard v-for="item in mediaItems" :key="item.id" :item="item" />
       </div>
     </ScrollArea>
   </div>
