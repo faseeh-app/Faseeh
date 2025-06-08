@@ -8,6 +8,7 @@ export function useKeyboardShortcuts() {
   const pressedKeys = new Set<string>()
 
   const handleAddTab = () => {
+    tabStore.openLibraryTab(true)
     router.push({ name: 'library' })
   }
 

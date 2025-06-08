@@ -1,17 +1,29 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider
 } from '@renderer/common/components/ui/tooltip'
+import CommandPalette from '@renderer/common/components/ui/CommandPalette.vue'
 import { useTabStore } from '@renderer/common/stores/useTabStore'
 import { useRouter } from 'vue-router'
 import { RouteNames } from '@renderer/common/router/routes'
 
 const tabStore = useTabStore()
 const router = useRouter()
+
+// Command palette state
+const isCommandPaletteOpen = ref(false)
+
+const openCommandPalette = () => {
+  isCommandPaletteOpen.value = true
+}
+
+const closeCommandPalette = () => {
+  isCommandPaletteOpen.value = false
+}
 
 const activeView = computed(() => {
   const activeTab = tabStore.activeTab
@@ -49,15 +61,13 @@ const navButtons = [
       tabStore.openCommunityTab(forceNew)
       router.push({ name: RouteNames.COMMUNITY })
     }
-  },
-  {
+  },  {
     id: 'search',
     icon: 'icon-[iconamoon--search-bold]',
     activeIcon: 'icon-[iconamoon--search-duotone]',
     label: 'Search',
     action: (_forceNew: boolean = false) => {
-      // For now, just a placeholder
-      console.log('Search functionality coming soon!')
+      openCommandPalette()
     }
   },
   {
@@ -101,5 +111,8 @@ const handleNavButtonClick = (button: (typeof navButtons)[0], event: MouseEvent)
         </TooltipContent>
       </Tooltip>
     </div>
+
+    <!-- Command Palette -->
+    <CommandPalette :is-open="isCommandPaletteOpen" @close="closeCommandPalette" />
   </TooltipProvider>
 </template>
