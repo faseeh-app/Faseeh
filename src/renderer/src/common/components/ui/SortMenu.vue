@@ -7,34 +7,30 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger
 } from '@renderer/common/components/ui/dropdown-menu'
-import { useTabState } from '@renderer/common/composables/useTabState'
+import { ref } from 'vue'
 
-const { state: sortOption } = useTabState('sortOption', 'recently-added')
+const sortOption = ref('recently-added')
 
 const sortOptions = [
   {
     value: 'alphabetical',
     label: 'A-Z',
-    icon: 'icon-[iconamoon--sort-asc-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--sort-asc-bold]'
   },
   {
     value: 'reverse-alphabetical',
     label: 'Z-A',
-    icon: 'icon-[iconamoon--sort-desc-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--sort-desc-bold]'
   },
   {
     value: 'recently-added',
     label: 'Recently Added',
-    icon: 'icon-[iconamoon--clock-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--clock-bold]'
   },
   {
     value: 'recently-modified',
     label: 'Recently Modified',
-    icon: 'icon-[iconamoon--clock-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--clock-bold]'
   }
 ]
 </script>

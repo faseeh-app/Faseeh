@@ -11,15 +11,15 @@ import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useTabStateManager } from '@renderer/common/composables/useTabState'
 import videoThumbnail from '@renderer/common/assets/images/yt_video_thumbnail_1.webp'
 import playlistThumbnail from '@renderer/common/assets/images/yt_playlist_thumbnail_1.webp'
 import bookCover1 from '@renderer/common/assets/images/book_cover_1.webp'
 import bookCover2 from '@renderer/common/assets/images/book_cover_2.webp'
 
-// Tab state management
 const route = useRoute()
-const tabStateManager = useTabStateManager()
+
+const visitCount = ref(0)
+const lastVisitTime = ref<string>('')
 
 // Sample media data
 const mediaItems = ref([
@@ -73,15 +73,11 @@ const currentContext = computed(() => {
 
 // Record visit when component mounts
 onMounted(() => {
-  const currentCount = tabStateManager.getState<number>('visitCount') || 0
-  tabStateManager.setState('visitCount', currentCount + 1)
-  tabStateManager.setState('lastVisitTime', new Date().toLocaleTimeString())
+  visitCount.value += 1
+  lastVisitTime.value = new Date().toLocaleTimeString()
 
-  console.log(
-    `[Library Tab ${tabStateManager.tabId.value}] Mounted with context:`,
-    currentContext.value
-  )
-  console.log(`[Library Tab ${tabStateManager.tabId.value}] Visit count:`, currentCount + 1)
+  console.log(`[Library Tab] Mounted with context:`, currentContext.value)
+  console.log(`[Library Tab] Visit count:`, visitCount.value)
 })
 </script>
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watchEffect } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   TooltipProvider,
@@ -10,17 +10,9 @@ import {
 import TabItem from './TabItem.vue'
 import TabContextMenu from './TabContextMenu.vue'
 import { useTabStore } from '@renderer/common/stores/useTabStore'
-import { provideTabId } from '@renderer/common/composables/useTabState'
 
 const tabStore = useTabStore()
 const router = useRouter()
-
-// Provide current tab ID to child components
-watchEffect(() => {
-  if (tabStore.activeTabId) {
-    provideTabId(tabStore.activeTabId)
-  }
-})
 
 const contextMenu = ref({
   isOpen: false,
@@ -133,7 +125,7 @@ const handleContextMenuClose = () => {
 // Add tab functionality
 const handleAddTab = () => {
   // Always create a fresh Library tab without duplicating state
-  const tabId = tabStore.openLibraryTab()
+  tabStore.openLibraryTab()
   // Navigate to the library route
   router.push({ name: 'library' })
 }

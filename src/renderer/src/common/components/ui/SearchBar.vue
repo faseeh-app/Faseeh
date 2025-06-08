@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { Input } from '@renderer/common/components/ui/input'
-import { useTabState } from '@renderer/common/composables/useTabState'
+import { ref } from 'vue'
 
-// Use tab-specific state for search query
-const { state: searchQuery } = useTabState('searchQuery', '')
+const searchQuery = ref('')
 </script>
 
 <template>

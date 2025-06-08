@@ -221,7 +221,7 @@ export const useTabStore = defineStore('tabs', () => {
   function generateTabId(): string {
     return `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
-  
+
   // Tab creation helpers for common routes
   function openLibraryTab(): string {
     return addTab({

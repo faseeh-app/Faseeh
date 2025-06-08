@@ -37,7 +37,7 @@ const navButtons = [
     activeIcon: 'icon-[solar--library-bold]',
     label: 'Library',
     action: () => {
-      const tabId = tabStore.openLibraryTab()
+      tabStore.openLibraryTab()
       router.push({ name: RouteNames.LIBRARY })
     }
   },
@@ -47,7 +47,7 @@ const navButtons = [
     activeIcon: 'icon-[fa-solid--compass]',
     label: 'Discover',
     action: () => {
-      const tabId = tabStore.openCommunityTab()
+      tabStore.openCommunityTab()
       router.push({ name: RouteNames.COMMUNITY })
     }
   },
@@ -67,7 +67,7 @@ const navButtons = [
     activeIcon: 'icon-[solar--settings-bold]',
     label: 'Settings',
     action: () => {
-      const tabId = tabStore.openSettingsTab()
+      tabStore.openSettingsTab()
       router.push({ name: RouteNames.SETTINGS })
     }
   }
