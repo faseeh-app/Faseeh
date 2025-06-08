@@ -12,13 +12,12 @@ export interface Tab {
     query?: Record<string, any>
   }
   closable: boolean
-  isDirty?: boolean // For unsaved changes indicator
-  state?: Record<string, any> // Independent state storage for each tab
-  lastAccessed?: number // Timestamp for tab management
+  isDirty?: boolean
+  state?: Record<string, any>
+  lastAccessed?: number
 }
 
 export const useTabStore = defineStore('tabs', () => {
-  // State
   const initialTabId = `tab_${Date.now()}_initial`
   const tabs = ref<Tab[]>([
     {
@@ -31,11 +30,10 @@ export const useTabStore = defineStore('tabs', () => {
 
   const activeTabId = ref<string>(initialTabId)
 
-  // Getters
   const activeTab = computed(() => tabs.value.find((tab) => tab.id === activeTabId.value))
   const closableTabs = computed(() => tabs.value.filter((tab) => tab.closable))
   const hasMultipleTabs = computed(() => tabs.value.length > 1)
-  // Actions
+
   function addTab(tab: Omit<Tab, 'id'> & { id?: string }): string {
     const newId = tab.id || generateTabId()
 
@@ -47,7 +45,6 @@ export const useTabStore = defineStore('tabs', () => {
 
     tabs.value.push(newTab)
     activeTabId.value = newId
-    console.log(`[TabStore] Added new tab: ${newTab.title} (${newId})`)
 
     return newId
   }
@@ -59,14 +56,8 @@ export const useTabStore = defineStore('tabs', () => {
     if (!tabToRemove.closable) return
 
     // Prevent closing the last tab
-    if (tabs.value.length <= 1) {
-      console.log(`[TabStore] Cannot close last tab: ${tabToRemove.title}`)
-      return
-    }
+    if (tabs.value.length <= 1) return
 
-    console.log(`[TabStore] Removing tab: ${tabToRemove.title} (${tabId})`)
-
-    // Emit event after successful validation but before removal
     workspaceEvents.emit('tab:close', {
       tabId: tabToRemove.id,
       title: tabToRemove.title
@@ -74,13 +65,11 @@ export const useTabStore = defineStore('tabs', () => {
 
     tabs.value.splice(tabIndex, 1)
 
-    // If we removed the active tab, switch to another tab
+    // Switch to another tab if we removed the active one
     if (activeTabId.value === tabId) {
       if (tabs.value.length > 0) {
-        // Switch to the tab before the removed one, or the first tab if it was the first
         const newActiveIndex = Math.max(0, tabIndex - 1)
         activeTabId.value = tabs.value[newActiveIndex].id
-        console.log(`[TabStore] Switched to tab: ${tabs.value[newActiveIndex].title}`)
       }
     }
   }
@@ -107,11 +96,7 @@ export const useTabStore = defineStore('tabs', () => {
     const closedCount = tabsToClose.length
 
     if (closedCount > 0) {
-      // Emit event before closing tabs
-      workspaceEvents.emit('tab:close-all', {
-        closedCount
-      })
-
+      workspaceEvents.emit('tab:close-all', { closedCount })
       const tabsToCloseIds = tabsToClose.map((tab) => tab.id)
       tabsToCloseIds.forEach((tabId) => removeTab(tabId))
     }
@@ -122,22 +107,15 @@ export const useTabStore = defineStore('tabs', () => {
     const closedCount = tabsToClose.length
 
     if (closedCount > 0) {
-      // Emit event before closing tabs
-      workspaceEvents.emit('tab:close-others', {
-        exceptTabId,
-        closedCount
-      })
-
+      workspaceEvents.emit('tab:close-others', { exceptTabId, closedCount })
       const tabsToCloseIds = tabsToClose.map((tab) => tab.id)
       tabsToCloseIds.forEach((tabId) => removeTab(tabId))
     }
   }
-
   function reloadTab(tabId: string): void {
     const tab = tabs.value.find((t) => t.id === tabId)
     if (!tab) return
 
-    // Emit event for tab reload
     workspaceEvents.emit('tab:reload', {
       tabId: tab.id,
       title: tab.title
@@ -148,18 +126,15 @@ export const useTabStore = defineStore('tabs', () => {
       tab.state = {}
     }
 
-    // Switch to the tab to trigger re-render
     switchToTab(tabId)
   }
-
-  // Tab state management functions
+  // Tab state management
   function getTabState(tabId: string, key?: string): any {
     const tab = tabs.value.find((t) => t.id === tabId)
     if (!tab || !tab.state) return undefined
 
     return key ? tab.state[key] : tab.state
   }
-
   function setTabState(tabId: string, key: string, value: any): void {
     const tab = tabs.value.find((t) => t.id === tabId)
     if (!tab) return
@@ -170,7 +145,6 @@ export const useTabStore = defineStore('tabs', () => {
 
     tab.state[key] = value
     tab.lastAccessed = Date.now()
-    console.log(`[TabStore] Set state for tab ${tab.title}: ${key} = ${JSON.stringify(value)}`)
   }
 
   function updateTabState(tabId: string, stateUpdates: Record<string, any>): void {
@@ -183,7 +157,6 @@ export const useTabStore = defineStore('tabs', () => {
 
     Object.assign(tab.state, stateUpdates)
     tab.lastAccessed = Date.now()
-    console.log(`[TabStore] Updated state for tab ${tab.title}:`, stateUpdates)
   }
   function clearTabState(tabId: string, key?: string): void {
     const tab = tabs.value.find((t) => t.id === tabId)
@@ -194,8 +167,6 @@ export const useTabStore = defineStore('tabs', () => {
     } else {
       tab.state = {}
     }
-
-    console.log(`[TabStore] Cleared state for tab ${tab.title}${key ? ` (key: ${key})` : ''}`)
   }
   function duplicateTab(tabId: string): string | null {
     const tab = tabs.value.find((t) => t.id === tabId)
@@ -208,7 +179,6 @@ export const useTabStore = defineStore('tabs', () => {
       state: tab.state ? { ...tab.state } : undefined
     })
 
-    // Emit event after successful duplication
     workspaceEvents.emit('tab:duplicate', {
       tabId: tab.id,
       title: tab.title
@@ -216,56 +186,100 @@ export const useTabStore = defineStore('tabs', () => {
 
     return newTabId
   }
-
-  // Helper function to generate unique tab IDs
   function generateTabId(): string {
     return `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
 
-  // Tab creation helpers for common routes
-  function openLibraryTab(): string {
-    return addTab({
-      title: 'Library',
-      route: { name: RouteNames.LIBRARY },
-      closable: true
+  // Find existing tab by route name and parameters
+  function findTabByRoute(routeName: string, params?: Record<string, any>): Tab | undefined {
+    return tabs.value.find((tab) => {
+      if (tab.route.name !== routeName) return false
+
+      // If no params to match, just check route name
+      if (!params && !tab.route.params) return true
+      if (!params || !tab.route.params) return false
+
+      // Check if all required params match
+      return Object.keys(params).every(
+        (key) => tab.route.params && tab.route.params[key] === params[key]
+      )
     })
   }
 
-  function openCommunityTab(): string {
-    return addTab({
-      title: 'Community',
-      route: { name: RouteNames.COMMUNITY },
-      closable: true
-    })
-  }
+  // Navigate active tab to new route or create new tab if forceNew is true
+  function navigateActiveTabOrCreateNew(
+    tabConfig: Omit<Tab, 'id'> & { id?: string },
+    forceNew: boolean = false
+  ): string {
+    if (forceNew) {
+      return addTab(tabConfig)
+    }
 
-  function openMediaPlayerTab(mediaId?: string, title?: string): string {
-    return addTab({
-      title: title || 'Media Player',
-      route: {
-        name: RouteNames.MEDIA_PLAYER,
-        params: mediaId ? { id: mediaId } : undefined
+    // Change the active tab's route
+    const currentTab = activeTab.value
+    if (currentTab) {
+      updateTab(currentTab.id, {
+        title: tabConfig.title,
+        route: tabConfig.route
+      })
+      return currentTab.id
+    } else {
+      return addTab(tabConfig)
+    }
+  }
+  // Tab creation helpers
+  function openLibraryTab(forceNew: boolean = false): string {
+    return navigateActiveTabOrCreateNew(
+      {
+        title: 'Library',
+        route: { name: RouteNames.LIBRARY },
+        closable: true
       },
-      closable: true
-    })
-  }
-  function openSettingsTab(): string {
-    return addTab({
-      title: 'Settings',
-      route: { name: RouteNames.SETTINGS },
-      closable: true
-    })
+      forceNew
+    )
   }
 
+  function openCommunityTab(forceNew: boolean = false): string {
+    return navigateActiveTabOrCreateNew(
+      {
+        title: 'Community',
+        route: { name: RouteNames.COMMUNITY },
+        closable: true
+      },
+      forceNew
+    )
+  }
+
+  function openMediaPlayerTab(mediaId?: string, title?: string, forceNew: boolean = false): string {
+    return navigateActiveTabOrCreateNew(
+      {
+        title: title || 'Media Player',
+        route: {
+          name: RouteNames.MEDIA_PLAYER,
+          params: mediaId ? { id: mediaId } : undefined
+        },
+        closable: true
+      },
+      forceNew
+    )
+  }
+
+  function openSettingsTab(forceNew: boolean = false): string {
+    return navigateActiveTabOrCreateNew(
+      {
+        title: 'Settings',
+        route: { name: RouteNames.SETTINGS },
+        closable: true
+      },
+      forceNew
+    )
+  }
   return {
-    // State
     tabs,
     activeTabId,
-
-    // Getters
     activeTab,
     closableTabs,
-    hasMultipleTabs, // Actions
+    hasMultipleTabs,
     addTab,
     removeTab,
     switchToTab,
@@ -275,14 +289,12 @@ export const useTabStore = defineStore('tabs', () => {
     closeOtherTabs,
     reloadTab,
     duplicateTab,
-
-    // Helpers
+    findTabByRoute,
+    navigateActiveTabOrCreateNew,
     openLibraryTab,
     openCommunityTab,
     openMediaPlayerTab,
     openSettingsTab,
-
-    // Tab state management
     getTabState,
     setTabState,
     updateTabState,

@@ -35,8 +35,8 @@ const navButtons = [
     icon: 'icon-[solar--library-linear]',
     activeIcon: 'icon-[solar--library-bold]',
     label: 'Library',
-    action: () => {
-      tabStore.openLibraryTab()
+    action: (forceNew: boolean = false) => {
+      tabStore.openLibraryTab(forceNew)
       router.push({ name: RouteNames.LIBRARY })
     }
   },
@@ -45,8 +45,8 @@ const navButtons = [
     icon: 'icon-[fa-regular--compass]',
     activeIcon: 'icon-[fa-solid--compass]',
     label: 'Discover',
-    action: () => {
-      tabStore.openCommunityTab()
+    action: (forceNew: boolean = false) => {
+      tabStore.openCommunityTab(forceNew)
       router.push({ name: RouteNames.COMMUNITY })
     }
   },
@@ -55,7 +55,7 @@ const navButtons = [
     icon: 'icon-[iconamoon--search-bold]',
     activeIcon: 'icon-[iconamoon--search-duotone]',
     label: 'Search',
-    action: () => {
+    action: (_forceNew: boolean = false) => {
       // For now, just a placeholder
       console.log('Search functionality coming soon!')
     }
@@ -65,12 +65,18 @@ const navButtons = [
     icon: 'icon-[solar--settings-linear]',
     activeIcon: 'icon-[solar--settings-bold]',
     label: 'Settings',
-    action: () => {
-      tabStore.openSettingsTab()
+    action: (forceNew: boolean = false) => {
+      tabStore.openSettingsTab(forceNew)
       router.push({ name: RouteNames.SETTINGS })
     }
   }
 ]
+
+// Handle navbar button click with Ctrl key detection
+const handleNavButtonClick = (button: (typeof navButtons)[0], event: MouseEvent) => {
+  const forceNew = event.ctrlKey || event.metaKey // Support both Ctrl (Windows/Linux) and Cmd (Mac)
+  button.action(forceNew)
+}
 </script>
 
 <template>
@@ -82,11 +88,7 @@ const navButtons = [
           <button
             class="faseeh-sidebar__button"
             :class="{ active: activeView === button.id }"
-            @click="
-              () => {
-                button.action()
-              }
-            "
+            @click="(event) => handleNavButtonClick(button, event)"
           >
             <span
               :class="`faseeh-icon ${activeView === button.id ? button.activeIcon : button.icon}`"
@@ -95,6 +97,7 @@ const navButtons = [
         </TooltipTrigger>
         <TooltipContent side="right">
           {{ button.label }}
+          <div class="text-xs text-muted-foreground mt-1">Hold Ctrl to open in new tab</div>
         </TooltipContent>
       </Tooltip>
     </div>

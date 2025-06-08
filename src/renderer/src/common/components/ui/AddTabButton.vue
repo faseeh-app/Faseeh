@@ -13,8 +13,7 @@ const router = useRouter()
 
 // Add tab functionality
 const handleAddTab = () => {
-  // Always create a fresh Library tab without duplicating state
-  tabStore.openLibraryTab()
+  tabStore.openLibraryTab(true)
   // Navigate to the library route
   router.push({ name: 'library' })
 }

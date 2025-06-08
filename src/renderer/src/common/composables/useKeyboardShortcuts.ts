@@ -5,17 +5,21 @@ import { useTabStore } from '@renderer/common/stores/useTabStore'
 export function useKeyboardShortcuts() {
   const tabStore = useTabStore()
   const router = useRouter()
+  const pressedKeys = new Set<string>()
 
   const handleAddTab = () => {
-    // Always create a fresh Library tab without duplicating state
-    tabStore.openLibraryTab()
-    // Navigate to the library route
     router.push({ name: 'library' })
   }
 
   onMounted(() => {
-    // Add keyboard shortcuts for tab management
     const handleKeyDown = (event: KeyboardEvent) => {
+      const keyCombo = `${event.ctrlKey ? 'ctrl+' : ''}${event.shiftKey ? 'shift+' : ''}${event.altKey ? 'alt+' : ''}${event.key.toLowerCase()}`
+      if (pressedKeys.has(keyCombo)) {
+        return
+      }
+
+      pressedKeys.add(keyCombo)
+
       // Ctrl+T for new tab
       if (event.ctrlKey && event.key === 't') {
         event.preventDefault()
@@ -34,6 +38,7 @@ export function useKeyboardShortcuts() {
           }
         }
       }
+
       // Ctrl+Tab for next tab
       else if (event.ctrlKey && event.key === 'Tab') {
         event.preventDefault()
@@ -45,11 +50,31 @@ export function useKeyboardShortcuts() {
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown)
+    const handleKeyUp = (event: KeyboardEvent) => {
+      // Create a unique key combination identifier
+      const keyCombo = `${event.ctrlKey ? 'ctrl+' : ''}${event.shiftKey ? 'shift+' : ''}${event.altKey ? 'alt+' : ''}${event.key.toLowerCase()}`
 
-    // Clean up event listener
+      // Remove from pressed keys set when key is released
+      pressedKeys.delete(keyCombo)
+
+      // Also handle the case where modifier keys are released
+      if (!event.ctrlKey) {
+        // Remove all ctrl+ combinations when ctrl is released
+        for (const key of pressedKeys) {
+          if (key.startsWith('ctrl+')) {
+            pressedKeys.delete(key)
+          }
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keyup', handleKeyUp)
+
     onUnmounted(() => {
       document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keyup', handleKeyUp)
+      pressedKeys.clear()
     })
   })
 }
