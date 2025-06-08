@@ -9,7 +9,7 @@ const tabStore = useTabStore()
 <template>
   <div class="flex h-screen">
     <Sidebar />
-    <div class="flex flex-col flex-grow">
+    <div class="flex flex-col w-full min-w-0">
       <TitleBar />
       <main class="flex flex-col flex-grow">
         <router-view v-slot="{ Component }">

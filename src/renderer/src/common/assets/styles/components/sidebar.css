@@ -8,13 +8,13 @@
 
 @utility faseeh-sidebar {
   @apply flex flex-col items-center space-y-4;
-  @apply h-full px-1;
-  width: var(--faseeh-sidebar-width);
+  @apply h-full px-1.5 pt-1;
+  max-width: var(--faseeh-sidebar-width);
   border-right: var(--faseeh-border-width) solid var(--faseeh-border-primary);
 }
 
 @utility faseeh-sidebar__logo {
-  @apply h-9 px-1.5 pt-1 mb-5;
+  @apply h-9 pt-1 mb-5;
 }
 
 @utility faseeh-sidebar__button {

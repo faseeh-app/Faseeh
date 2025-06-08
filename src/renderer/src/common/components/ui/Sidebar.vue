@@ -13,7 +13,6 @@ import { RouteNames } from '@renderer/common/router/routes'
 const tabStore = useTabStore()
 const router = useRouter()
 
-// Track active view based on current active tab
 const activeView = computed(() => {
   const activeTab = tabStore.activeTab
   if (!activeTab) return 'library'

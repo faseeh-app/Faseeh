@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Button } from '@renderer/common/components/ui/button'
 import { type Tab } from '@renderer/common/stores/useTabStore'
 import {
@@ -15,6 +15,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const isHovered = ref(false)
 
 const emit = defineEmits<{
   close: [tabId: string]
@@ -54,6 +55,14 @@ const handleMiddleClick = (event: MouseEvent) => {
     emit('close', props.tab.id)
   }
 }
+
+const handleMouseEnter = () => {
+  isHovered.value = true
+}
+
+const handleMouseLeave = () => {
+  isHovered.value = false
+}
 </script>
 
 <template>
@@ -65,22 +74,25 @@ const handleMiddleClick = (event: MouseEvent) => {
           @click="handleTabClick"
           @contextmenu="handleContextMenu"
           @mousedown="handleMiddleClick"
+          @mouseenter="handleMouseEnter"
+          @mouseleave="handleMouseLeave"
         >
-          <div class="faseeh-titlebar__tabs__item__content">
-            <span class="faseeh-titlebar__tabs__item__title">
-              {{ tab.title }}
-            </span>
+          <div class="fasseh-titlebar__tabs__item__container">
+            <div class="faseeh-titlebar__tabs__item__content">
+              <span class="faseeh-titlebar__tabs__item__title">
+                {{ tab.title }}
+              </span>
+            </div>
+            <Button
+              v-if="tab.closable && (isActive || isHovered)"
+              variant="ghost"
+              size="icon"
+              class="faseeh-titlebar__tabs__item__button size-6"
+              @click="handleCloseClick"
+            >
+              <span class="icon-[fluent-emoji-high-contrast--multiply] size-2.5" />
+            </Button>
           </div>
-
-          <Button
-            v-if="tab.closable && isActive"
-            variant="ghost"
-            size="icon"
-            class="faseeh-titlebar__tabs__item__button size-6"
-            @click="handleCloseClick"
-          >
-            <span class="icon-[fluent-emoji-high-contrast--multiply] size-2.5" />
-          </Button>
         </div>
       </TooltipTrigger>
       <TooltipContent side="bottom">
