@@ -2,9 +2,14 @@
 /*                                   SideBar                                  */
 /* -------------------------------------------------------------------------- */
 
+:root {
+  --faseeh-sidebar-width: calc(var(--spacing) * 12);
+}
+
 @utility faseeh-sidebar {
   @apply flex flex-col items-center space-y-4;
-  @apply h-full w-12 px-1;
+  @apply h-full px-1;
+  width: var(--faseeh-sidebar-width);
   border-right: var(--faseeh-border-width) solid var(--faseeh-border-primary);
 }
 

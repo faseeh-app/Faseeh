@@ -3,36 +3,27 @@
 /* -------------------------------------------------------------------------- */
 
 @utility faseeh-titlebar {
-  @apply flex flex-col;
-  @apply h-12 w-full;
+  @apply flex;
+  max-width: calc(100vw - 100px);
   -webkit-app-region: drag;
-}
-
-@utility faseeh-titlebar__center-area {
-  @apply flex-grow;
-  @apply flex flex-col;
-}
-
-@utility faseeh-titlebar__drag-area {
-  @apply h-2 w-full;
-  -webkit-app-region: drag;
-}
-
-@utility faseeh-titlebar__content {
-  @apply flex items-center flex-1;
   > *:not(.faseeh-titlebar__tabs) {
-    @apply h-full;
     @apply border-b-1 border-input;
   }
 }
 
-@utility faseeh-titlebar__logo {
-  @apply h-full px-1.5 py-1;
+@utility faseeh-titlebar__center-area {
+  @apply w-full flex-shrink-1;
+  @apply flex flex-col;
+}
+
+@utility faseeh-titlebar__drag-area {
+  @apply h-2;
+  -webkit-app-region: drag;
 }
 
 @utility faseeh-titlebar__window-controls {
   @apply flex items-center;
-  @apply h-full w-fit flex-shrink-0;
+  @apply h-full w-32;
   -webkit-app-region: no-drag;
 }
 
@@ -61,28 +52,27 @@
   }
 }
 
-@utility faseeh-titlebar__tabs {
-  @apply flex overflow-x-auto overflow-y-hidden;
-  @apply gap-0 scroll-smooth;
-  @apply flex-1 min-w-0;
+@utility faseeh-titlebar__container {
+  @apply flex w-fit max-w-full;
+  @apply gap-1;
+  @apply flex-shrink-1 min-h-0;
   -webkit-app-region: no-drag;
+}
 
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+@utility faseeh-titlebar__tabs {
+  @apply flex;
+  @apply flex-1 min-w-0 flex-shrink-1;
+  -webkit-app-region: no-drag;
 }
 
 @utility faseeh-titlebar__tabs__item {
-  @apply flex items-center gap-2;
-  @apply px-1 py-1;
+  @apply flex items-center;
   @apply border-input border-r-1;
   @apply bg-background;
   @apply cursor-pointer;
-  @apply flex-shrink-0;
+  @apply min-w-0;
   @apply transition-all duration-200;
-  @apply w-auto max-w-[200px];
+  @apply max-w-[200px] min-h-0;
   -webkit-app-region: no-drag;
 
   &:hover {
@@ -110,7 +100,10 @@
 }
 
 @utility faseeh-titlebar__tabs__item__content {
-  @apply flex items-center gap-2 flex-1 min-w-0 px-3;
+  @apply flex items-start;
+  @apply overflow-ellipsis;
+  padding-left: clamp(0rem, 5vw, 1rem);
+  padding-right: clamp(0rem, 5vw, 1rem);
 }
 
 @utility faseeh-titlebar__tabs__item__icon {
@@ -118,7 +111,7 @@
 }
 
 @utility faseeh-titlebar__tabs__item__title {
-  @apply text-sm truncate;
+  @apply text-sm truncate flex-1 min-w-0;
   @apply select-none;
 }
 
@@ -140,19 +133,11 @@
 
 @utility faseeh-titlebar__tabs__add-button {
   @apply flex items-center justify-center;
-  @apply size-8 ml-1;
+  @apply size-8;
   @apply bg-transparent hover:bg-accent;
   @apply border-0 rounded;
   @apply cursor-pointer;
   @apply transition-colors duration-200;
-  -webkit-app-region: no-drag;
-}
-
-@utility faseeh-titlebar__tabs__overflow-indicator {
-  @apply flex items-center justify-center;
-  @apply size-8;
-  @apply bg-transparent hover:bg-accent;
-  @apply cursor-pointer;
-  @apply transition-colors duration-200;
+  @apply flex-shrink-0;
   -webkit-app-region: no-drag;
 }

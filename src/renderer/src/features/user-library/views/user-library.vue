@@ -9,19 +9,12 @@ import ScrollArea from '@renderer/common/components/ui/scroll-area/ScrollArea.vu
 import MediaCard from '@renderer/common/components/ui/MediaCard.vue'
 import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
 import videoThumbnail from '@renderer/common/assets/images/yt_video_thumbnail_1.webp'
 import playlistThumbnail from '@renderer/common/assets/images/yt_playlist_thumbnail_1.webp'
 import bookCover1 from '@renderer/common/assets/images/book_cover_1.webp'
 import bookCover2 from '@renderer/common/assets/images/book_cover_2.webp'
 
-const route = useRoute()
-
-const visitCount = ref(0)
-const lastVisitTime = ref<string>('')
-
-// Sample media data
 const mediaItems = ref([
   {
     id: '1',
@@ -60,25 +53,6 @@ const mediaItems = ref([
     type: 'document' as const
   }
 ])
-
-// Computed properties based on route queries
-const currentContext = computed(() => {
-  const filter = route.query.filter as string
-  const type = route.query.type as string
-
-  if (filter) return `Filter: ${filter}`
-  if (type) return `Type: ${type}`
-  return 'All Content'
-})
-
-// Record visit when component mounts
-onMounted(() => {
-  visitCount.value += 1
-  lastVisitTime.value = new Date().toLocaleTimeString()
-
-  console.log(`[Library Tab] Mounted with context:`, currentContext.value)
-  console.log(`[Library Tab] Visit count:`, visitCount.value)
-})
 </script>
 <template>
   <div class="flex flex-col">

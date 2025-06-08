@@ -73,7 +73,7 @@ const handleMiddleClick = (event: MouseEvent) => {
           </div>
 
           <Button
-            v-if="tab.closable"
+            v-if="tab.closable && isActive"
             variant="ghost"
             size="icon"
             class="faseeh-titlebar__tabs__item__button size-6"
