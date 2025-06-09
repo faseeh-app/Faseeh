@@ -1,9 +1,9 @@
 import { ContentAdapterRegistration } from './content-adapter-types.d'
-import { FaseehApp } from './../../renderer/src/core/plugins/plugin-types.d'
+import { FaseehApp } from '@renderer/core/plugins/plugin-types.d'
 export type ContentAdapterSource = string | Buffer | File
 import { LibraryItem } from '@root/src/main/db/types'
 import { ContentDocument } from './content-document'
-import { ContentAdapter } from './../../renderer/src/core/services/content-adapter'
+import { ContentAdapter } from '@renderer/core/services/content-adapter'
 export interface AssetDetail {
   format: string
   content: Buffer | string
