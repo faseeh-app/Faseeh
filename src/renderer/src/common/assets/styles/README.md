@@ -123,6 +123,24 @@ src/renderer/src/common/assets/styles/
 - `faseeh-command-palette__command-title` - Command title text
 - `faseeh-command-palette__command-description` - Command description text
 
+#### Mobile-Specific Utilities
+
+- `faseeh-command-palette__mobile-list-compact` - Mobile list with enhanced height constraint (60vh)
+- `faseeh-command-palette__mobile-command` - Mobile command container with flex layout
+- `faseeh-command-palette__mobile-group` - Mobile command group with no padding (p-0)
+- `faseeh-command-palette__mobile-item` - Mobile command item with ultra-compact spacing (py-0.5, px-2)
+- `faseeh-command-palette__mobile-content` - Mobile command content with no gap
+- `faseeh-command-palette__mobile-title` - Mobile command title with extra small font (text-xs)
+- `faseeh-command-palette__mobile-description` - Mobile command description with extra small font
+- `faseeh-command-palette__mobile-input` - Mobile search input with compact height (h-8, py-1.5, px-2)
+- `faseeh-command-palette__mobile-header` - Mobile drawer header with minimal padding (p-2, pb-1)
+- `faseeh-command-palette__mobile-header-title` - Mobile drawer title with small font (text-sm)
+- `faseeh-command-palette__mobile-header-description` - Mobile drawer description with reduced margin
+- `faseeh-command-palette__mobile-footer-compact` - Ultra-compact mobile footer (pt-0.5, pb-1)
+- `faseeh-command-palette__mobile-close-button` - Compact close button (h-7, text-xs, px-3)
+- `faseeh-command-palette__mobile-empty` - Ultra-compact empty state text (text-xs, py-1)
+- `faseeh-command-palette__mobile-separator` - No spacing separator (my-0)
+
 ### Grid Layouts (`layouts/grids.css`)
 
 - `faseeh-media-grid` - Base masonry grid layout

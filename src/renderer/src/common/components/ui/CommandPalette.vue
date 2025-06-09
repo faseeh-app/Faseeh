@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useMagicKeys } from '@vueuse/core'
+import { createReusableTemplate, useMediaQuery, useMagicKeys } from '@vueuse/core'
 import {
+  Command,
   CommandDialog,
   CommandInput,
   CommandList,
@@ -10,6 +11,16 @@ import {
   CommandItem,
   CommandSeparator
 } from '@renderer/common/components/ui/command'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from '@renderer/common/components/ui/drawer'
+import { Button } from '@renderer/common/components/ui/button'
 
 interface CommandAction {
   id: string
@@ -33,7 +44,11 @@ const emit = defineEmits<{
   close: []
 }>()
 
-// Convert isOpen prop to local reactive state for CommandDialog
+const [UseCommandTemplate, CommandContent] = createReusableTemplate()
+
+// Responsive breakpoint - matches Tailwind's md breakpoint
+const isDesktop = useMediaQuery('(min-width: 768px)')
+
 const open = ref(false)
 
 // Keyboard shortcut support
@@ -43,7 +58,8 @@ const CtrlJ = keys['Ctrl+J']
 
 // Watch for keyboard shortcuts
 watch([CmdJ, CtrlJ], ([cmdJ, ctrlJ]) => {
-  if (cmdJ || ctrlJ) {
+  if ((cmdJ || ctrlJ) && !open.value) {
+    // Only open when currently closed to prevent immediate reopening
     handleOpenChange()
   }
 })
@@ -126,6 +142,13 @@ function handleOpenChange() {
   }
 }
 
+function handleClose(newValue: boolean) {
+  open.value = newValue
+  if (!newValue) {
+    emit('close')
+  }
+}
+
 function handleCommandSelect(event: any) {
   const commandId = event.detail?.value || event
   const command = commands.find((cmd) => cmd.id === commandId)
@@ -144,7 +167,7 @@ watch(
 </script>
 
 <template>
-  <CommandDialog :open="open" @update:open="handleOpenChange">
+  <UseCommandTemplate>
     <div class="faseeh-command-palette__container">
       <CommandInput :placeholder="placeholder" />
       <CommandList class="faseeh-command-palette__list">
@@ -176,8 +199,8 @@ watch(
           />
         </template>
       </CommandList>
-      <!-- Fixed footer with navigation shortcuts -->
-      <div class="faseeh-command-palette__footer">
+
+      <div v-if="isDesktop" class="faseeh-command-palette__footer">
         <div class="faseeh-command-palette__footer-content">
           <div class="faseeh-command-palette__shortcuts-group--main">
             <div class="faseeh-command-palette__shortcut-item">
@@ -200,5 +223,68 @@ watch(
         </div>
       </div>
     </div>
+  </UseCommandTemplate>
+  <!-- Desktop Dialog -->
+  <CommandDialog v-if="isDesktop" :open="open" @update:open="handleClose">
+    <CommandContent />
   </CommandDialog>
+  <!-- Mobile Drawer -->
+  <Drawer v-else :open="open" @update:open="handleClose">
+    <DrawerContent class="faseeh-command-palette__container">
+      <DrawerHeader class="faseeh-command-palette__mobile-header">
+        <DrawerTitle class="faseeh-command-palette__mobile-header-title"
+          >Search Commands</DrawerTitle
+        >
+        <DrawerDescription class="faseeh-command-palette__mobile-header-description">
+          Type a command or search through available actions.
+        </DrawerDescription>
+      </DrawerHeader>
+
+      <Command class="faseeh-command-palette__mobile-command">
+        <CommandList class="faseeh-command-palette__mobile-list-compact">
+          <CommandEmpty class="faseeh-command-palette__mobile-empty"
+            >No commands found.</CommandEmpty
+          >
+          <template v-for="(categoryCommands, category) in groupedCommands" :key="category">
+            <CommandGroup :heading="category" class="faseeh-command-palette__mobile-group">
+              <CommandItem
+                v-for="command in categoryCommands"
+                :key="command.id"
+                :value="command.id"
+                @select="handleCommandSelect"
+                class="faseeh-command-palette__mobile-item"
+              >
+                <div class="faseeh-command-palette__mobile-content">
+                  <span class="faseeh-command-palette__mobile-title">{{ command.title }}</span>
+                  <span
+                    v-if="command.description"
+                    class="faseeh-command-palette__mobile-description"
+                  >
+                    {{ command.description }}
+                  </span>
+                </div>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator
+              v-if="
+                Object.keys(groupedCommands).indexOf(category) <
+                Object.keys(groupedCommands).length - 1
+              "
+              class="faseeh-command-palette__mobile-separator"
+            />
+          </template>
+        </CommandList>
+
+        <CommandInput :placeholder="placeholder" class="faseeh-command-palette__mobile-input" />
+      </Command>
+
+      <DrawerFooter class="faseeh-command-palette__mobile-footer-compact">
+        <DrawerClose as-child>
+          <Button variant="outline" size="sm" class="faseeh-command-palette__mobile-close-button">
+            Close
+          </Button>
+        </DrawerClose>
+      </DrawerFooter>
+    </DrawerContent>
+  </Drawer>
 </template>
