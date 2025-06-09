@@ -19,7 +19,8 @@ src/renderer/src/common/assets/styles/
 │   ├── titlebar.css        # TitleBar component utilities
 │   ├── sidebar.css         # Sidebar component utilities
 │   ├── media-cards.css     # Media card utilities
-│   └── filter-menu.css     # Filter menu utilities
+│   ├── filter-menu.css     # Filter menu utilities
+│   └── command-palette.css # Command palette utilities
 ├── layouts/                # Layout-related utilities
 │   ├── grids.css          # Grid and masonry layout utilities
 │   └── flex-grid.css      # Flexbox and grid layout utilities
@@ -106,6 +107,21 @@ src/renderer/src/common/assets/styles/
 - `faseeh-filter-menu__content` - Filter menu content area
 - `faseeh-filter-menu__clear-button` - Clear filter button
 - `faseeh-filter-menu__clear-icon` - Clear filter icon
+
+### Command Palette (`components/command-palette.css`)
+
+- `faseeh-command-palette__container` - Main command palette container with flex layout
+- `faseeh-command-palette__list` - Scrollable command list area
+- `faseeh-command-palette__footer` - Fixed footer with navigation shortcuts
+- `faseeh-command-palette__footer-content` - Footer content layout
+- `faseeh-command-palette__shortcuts-group--main` - Main navigation shortcuts group
+- `faseeh-command-palette__shortcuts-group--toggle` - Toggle shortcut group
+- `faseeh-command-palette__shortcut-item` - Individual shortcut item
+- `faseeh-command-palette__kbd` - Keyboard shortcut badge styling
+- `faseeh-command-palette__shortcut-label` - Shortcut description label
+- `faseeh-command-palette__command-content` - Command item content container
+- `faseeh-command-palette__command-title` - Command title text
+- `faseeh-command-palette__command-description` - Command description text
 
 ### Grid Layouts (`layouts/grids.css`)
 

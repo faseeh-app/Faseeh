@@ -13,6 +13,7 @@
 @import './components/sidebar.css';
 @import './components/media-cards.css';
 @import './components/filter-menu.css';
+@import './components/command-palette.css';
 
 /* Import layout stylesheets */
 @import './layouts/grids.css';

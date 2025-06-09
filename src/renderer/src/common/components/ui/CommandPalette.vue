@@ -8,8 +8,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-  CommandSeparator,
-  CommandShortcut
+  CommandSeparator
 } from '@renderer/common/components/ui/command'
 
 interface CommandAction {
@@ -146,10 +145,11 @@ watch(
 
 <template>
   <CommandDialog :open="open" @update:open="handleOpenChange">
-    <div class="flex flex-col h-full max-h-[600px]">
+    <div class="faseeh-command-palette__container">
       <CommandInput :placeholder="placeholder" />
-      <CommandList class="flex-1 overflow-y-auto">
-        <CommandEmpty>No commands found.</CommandEmpty>        <template v-for="(categoryCommands, category) in groupedCommands" :key="category">
+      <CommandList class="faseeh-command-palette__list">
+        <CommandEmpty>No commands found.</CommandEmpty>
+        <template v-for="(categoryCommands, category) in groupedCommands" :key="category">
           <CommandGroup :heading="category">
             <CommandItem
               v-for="command in categoryCommands"
@@ -157,9 +157,12 @@ watch(
               :value="command.id"
               @select="handleCommandSelect"
             >
-              <div class="flex flex-col">
-                <span class="font-medium">{{ command.title }}</span>
-                <span v-if="command.description" class="text-base text-muted-foreground">
+              <div class="faseeh-command-palette__command-content">
+                <span class="faseeh-command-palette__command-title">{{ command.title }}</span>
+                <span
+                  v-if="command.description"
+                  class="faseeh-command-palette__command-description"
+                >
                   {{ command.description }}
                 </span>
               </div>
@@ -167,39 +170,32 @@ watch(
           </CommandGroup>
           <CommandSeparator
             v-if="
-              Object.keys(groupedCommands).indexOf(category) < Object.keys(groupedCommands).length - 1
+              Object.keys(groupedCommands).indexOf(category) <
+              Object.keys(groupedCommands).length - 1
             "
-          />        </template>
+          />
+        </template>
       </CommandList>
-      
       <!-- Fixed footer with navigation shortcuts -->
-      <div class="border-t border-border bg-muted/30 px-6 py-6 flex-shrink-0">
-        <div class="flex items-center justify-between text-sm text-muted-foreground">
-          <div class="flex items-center gap-6">
-            <div class="flex items-center gap-2">
-              <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
-                ↑↓
-              </kbd>
-              <span>navigate</span>
+      <div class="faseeh-command-palette__footer">
+        <div class="faseeh-command-palette__footer-content">
+          <div class="faseeh-command-palette__shortcuts-group--main">
+            <div class="faseeh-command-palette__shortcut-item">
+              <kbd class="faseeh-command-palette__kbd"> ↑↓ </kbd>
+              <span class="faseeh-command-palette__shortcut-label">navigate</span>
             </div>
-            <div class="flex items-center gap-2">
-              <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
-                ↵
-              </kbd>
-              <span>select</span>
+            <div class="faseeh-command-palette__shortcut-item">
+              <kbd class="faseeh-command-palette__kbd"> ↵ </kbd>
+              <span class="faseeh-command-palette__shortcut-label">select</span>
             </div>
-            <div class="flex items-center gap-2">
-              <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
-                esc
-              </kbd>
-              <span>close</span>
+            <div class="faseeh-command-palette__shortcut-item">
+              <kbd class="faseeh-command-palette__kbd"> esc </kbd>
+              <span class="faseeh-command-palette__shortcut-label">close</span>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
-              ⌘J
-            </kbd>
-            <span>toggle</span>
+          <div class="faseeh-command-palette__shortcuts-group--toggle">
+            <kbd class="faseeh-command-palette__kbd"> ⌘J </kbd>
+            <span class="faseeh-command-palette__shortcut-label">toggle</span>
           </div>
         </div>
       </div>

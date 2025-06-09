@@ -1,0 +1,64 @@
+/* -------------------------------------------------------------------------- */
+/*                              Command Palette                               */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-command-palette__container {
+  @apply flex flex-col h-full;
+  max-height: 600px;
+}
+
+@utility faseeh-command-palette__list {
+  @apply flex-1 overflow-y-auto;
+}
+
+@utility faseeh-command-palette__footer {
+  @apply border-t border-border bg-muted/30;
+  @apply px-6 py-6 flex-shrink-0;
+}
+
+@utility faseeh-command-palette__footer-content {
+  @apply flex items-center justify-between;
+  @apply text-sm text-muted-foreground;
+}
+
+@utility faseeh-command-palette__shortcuts-group {
+  @apply flex items-center;
+  gap: 1.5rem; /* 24px */
+}
+
+@utility faseeh-command-palette__shortcuts-group--main {
+  @apply flex items-center;
+  gap: 1.5rem; /* 24px */
+}
+
+@utility faseeh-command-palette__shortcuts-group--toggle {
+  @apply flex items-center;
+  gap: 0.5rem; /* 8px */
+}
+
+@utility faseeh-command-palette__shortcut-item {
+  @apply flex items-center;
+  gap: 0.5rem; /* 8px */
+}
+
+@utility faseeh-command-palette__kbd {
+  @apply pointer-events-none inline-flex select-none items-center;
+  @apply h-6 gap-1 rounded border bg-muted px-2;
+  @apply font-mono text-xs font-medium text-muted-foreground opacity-100;
+}
+
+@utility faseeh-command-palette__shortcut-label {
+  @apply text-sm text-muted-foreground;
+}
+
+@utility faseeh-command-palette__command-content {
+  @apply flex flex-col;
+}
+
+@utility faseeh-command-palette__command-title {
+  @apply font-medium;
+}
+
+@utility faseeh-command-palette__command-description {
+  @apply text-base text-muted-foreground;
+}
