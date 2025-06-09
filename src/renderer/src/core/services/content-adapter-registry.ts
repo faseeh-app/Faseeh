@@ -3,17 +3,12 @@ import {
   ContentAdapterInfo,
   ContentAdapterResult,
   ContentAdapterFunction
-} from './../../../../shared/types/content-adapter-types.d'
+} from '@root/src//shared/types/content-adapter-types.d'
 import { ContentAdapterSource } from '@root/src/shared/types/content-adapter-types'
-import { FaseehApp } from '../plugins/plugin-types'
+import { FaseehApp } from '@renderer/core/plugins/plugin-types'
 import { extname } from 'path'
 import { fileTypeFromBuffer } from 'file-type'
-import {
-
-  NewLibraryItem,
-  NewEmbeddedAsset,
-  NewSupplementaryFile
-} from '@root/src/main/db/types'
+import { NewLibraryItem, NewEmbeddedAsset, NewSupplementaryFile } from '@root/src/main/db/types'
 export interface ContentAdapterFindCriteria {
   source: ContentAdapterSource
   mimeType?: string
@@ -94,7 +89,10 @@ export class ContentAdapterRegistry {
   }
   private async sourceToCriteria(
     source: ContentAdapterSource,
-    context?: { originalPath?: string; sourceUrl?: string }
+    context?: {
+      originalPath?: string
+      sourceUrl?: string
+    }
   ): Promise<ContentAdapterFindCriteria> {
     const criteria: ContentAdapterFindCriteria = { source }
 
@@ -133,7 +131,10 @@ export class ContentAdapterRegistry {
     criteria.fileExtension = extname(file.name).slice(1).toLowerCase()
   }
 
-  private async handleBufferSource(buffer: Buffer, criteria: ContentAdapterFindCriteria): Promise<void> {
+  private async handleBufferSource(
+    buffer: Buffer,
+    criteria: ContentAdapterFindCriteria
+  ): Promise<void> {
     try {
       const result = await fileTypeFromBuffer(buffer)
       if (result) {
@@ -160,6 +161,7 @@ export class ContentAdapterRegistry {
       criteria.sourceUrl = context.sourceUrl
     }
   }
+
   private async invokeAdapterMethod(
     registration: ContentAdapterRegistration,
     source: ContentAdapterSource,
