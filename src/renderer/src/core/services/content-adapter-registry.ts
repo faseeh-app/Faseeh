@@ -8,12 +8,7 @@ import { ContentAdapterSource } from '@root/src/shared/types/content-adapter-typ
 import { FaseehApp } from '../plugins/plugin-types'
 import { extname } from 'path'
 import { fileTypeFromBuffer } from 'file-type'
-import {
-
-  NewLibraryItem,
-  NewEmbeddedAsset,
-  NewSupplementaryFile
-} from '@root/src/main/db/types'
+import { NewLibraryItem, NewEmbeddedAsset, NewSupplementaryFile } from '@root/src/main/db/types'
 export interface ContentAdapterFindCriteria {
   source: ContentAdapterSource
   mimeType?: string
@@ -63,6 +58,7 @@ export class ContentAdapterRegistry {
         ) {
           score += 3
         }
+
         if (
           criteria.sourceUrl &&
           adapterInfo.urlPatterns?.some((pattern) =>
@@ -71,18 +67,30 @@ export class ContentAdapterRegistry {
         ) {
           score += 2
         }
+
         if (criteria.isPastedText && adapterInfo.canHandlePastedText) {
           score += 2
         }
 
-        score += adapterInfo.priority ?? 0
-
-        return { registration, score }
+        return { registration, baseScore: score, priority: adapterInfo.priority ?? 0 }
       })
-      .filter((entry) => entry.score > 0)
-      .sort((a, b) => b.score - a.score)
+      .filter((entry) => entry.baseScore > 0)
 
-    return scoredAdapters[0]?.registration ?? null
+    if (scoredAdapters.length === 0) return null
+
+    scoredAdapters.sort((a, b) => b.baseScore - a.baseScore)
+
+    const highestScore = scoredAdapters[0].baseScore
+
+    const topScorers = scoredAdapters.filter((entry) => entry.baseScore === highestScore)
+
+    if (topScorers.length === 1) {
+      return topScorers[0].registration
+    }
+
+    topScorers.sort((a, b) => b.priority - a.priority)
+
+    return topScorers[0].registration
   }
 
   getAdapterById(id: string): ContentAdapterRegistration | null {
@@ -133,7 +141,10 @@ export class ContentAdapterRegistry {
     criteria.fileExtension = extname(file.name).slice(1).toLowerCase()
   }
 
-  private async handleBufferSource(buffer: Buffer, criteria: ContentAdapterFindCriteria): Promise<void> {
+  private async handleBufferSource(
+    buffer: Buffer,
+    criteria: ContentAdapterFindCriteria
+  ): Promise<void> {
     try {
       const result = await fileTypeFromBuffer(buffer)
       if (result) {
