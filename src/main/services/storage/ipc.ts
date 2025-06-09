@@ -13,7 +13,7 @@ import * as supplementaryFileHandlers from './supplementary'
 
 export function setupStorageServiceIPC(db: Kysely<Database>): void {
   // Helper for handlers that require the db instance
-  const handle = <TArgs extends unknown[], TResult>(
+  const dbHandle = <TArgs extends unknown[], TResult>(
     channel: string,
     handler: (dbInstance: Kysely<Database>, ...args: TArgs) => Promise<TResult>
   ): void => {
@@ -28,7 +28,7 @@ export function setupStorageServiceIPC(db: Kysely<Database>): void {
   }
 
   // Helper for handlers that do NOT require the db instance
-  const handlePath = <TArgs extends unknown[], TResult>(
+  const fsHandlePath = <TArgs extends unknown[], TResult>(
     channel: string,
     handler: (...args: TArgs) => Promise<TResult>
   ): void => {
@@ -43,97 +43,98 @@ export function setupStorageServiceIPC(db: Kysely<Database>): void {
   }
 
   // == Path Management ==
-  handlePath('storage:getFaseehFolderPath', pathHandlers.getFaseehFolderPath)
-  handlePath('storage:getLibraryItemDirectoryPath', pathHandlers.getLibraryItemDirectoryPath)
-  handle('storage:getEmbeddedAssetAbsolutePath', pathHandlers.getEmbeddedAssetAbsolutePathFromId)
-  handle(
+  fsHandlePath('storage:getFaseehFolderPath', pathHandlers.getFaseehFolderPath)
+  fsHandlePath('storage:getLibraryItemDirectoryPath', pathHandlers.getLibraryItemDirectoryPath)
+  dbHandle('storage:getEmbeddedAssetAbsolutePath', pathHandlers.getEmbeddedAssetAbsolutePathFromId)
+  dbHandle(
     'storage:getSupplementaryFileAbsolutePath',
     pathHandlers.getSupplementaryFileAbsolutePathFromId
   )
-  handlePath('storage:getPluginDirectoryPath', pathHandlers.getPluginDirectoryPath)
-  handlePath('storage:listPluginDirectories', pathHandlers.listPluginDirectories)
-  handlePath('storage:getConfigDirectoryPath', pathHandlers.getConfigDirectoryPath)
+  fsHandlePath('storage:getPluginDirectoryPath', pathHandlers.getPluginDirectoryPath)
+  fsHandlePath('storage:listPluginDirectories', pathHandlers.listPluginDirectories)
+  fsHandlePath('storage:getConfigDirectoryPath', pathHandlers.getConfigDirectoryPath)
 
   // == LibraryItems & Document.json ==
-  handle('storage:getLibraryItems', libraryFileHandlers.getLibraryItems)
-  handle('storage:getLibraryItemById', libraryFileHandlers.getLibraryItemById)
-  handle('storage:createLibraryItem', libraryFileHandlers.createLibraryItem)
-  handle('storage:updateLibraryItem', libraryFileHandlers.updateLibraryItem)
-  handle('storage:deleteLibraryItem', libraryFileHandlers.deleteLibraryItem)
-  handle('storage:getDocumentJson', libraryFileHandlers.getDocumentJson) // Takes db as first arg in library.ts
-  handlePath('storage:saveDocumentJson', libraryFileHandlers.saveDocumentJson) // Does not take db as first arg in library.ts
+  dbHandle('storage:getLibraryItems', libraryFileHandlers.getLibraryItems)
+  dbHandle('storage:getLibraryItemById', libraryFileHandlers.getLibraryItemById)
+  dbHandle('storage:createLibraryItem', libraryFileHandlers.createLibraryItem)
+  dbHandle('storage:updateLibraryItem', libraryFileHandlers.updateLibraryItem)
+  dbHandle('storage:deleteLibraryItem', libraryFileHandlers.deleteLibraryItem)
+  dbHandle('storage:getDocumentJson', libraryFileHandlers.getDocumentJson) // Takes db as first arg in library.ts
+  fsHandlePath('storage:saveDocumentJson', libraryFileHandlers.saveDocumentJson) // Does not take db as first arg in library.ts
 
   // == PluginData (Database) ==
-  handle('storage:getPluginDataEntries', pluginHandlers.getPluginDataEntries)
-  handle('storage:getPluginDataEntryById', pluginHandlers.getPluginDataEntryById)
-  handle('storage:createPluginDataEntry', pluginHandlers.createPluginDataEntry)
-  handle('storage:updatePluginDataEntry', pluginHandlers.updatePluginDataEntry)
-  handle('storage:deletePluginDataEntry', pluginHandlers.deletePluginDataEntry)
-  handle('storage:deletePluginDataEntriesByKey', pluginHandlers.deletePluginDataEntriesByKey)
+  dbHandle('storage:getPluginDataEntries', pluginHandlers.getPluginDataEntries)
+  dbHandle('storage:getPluginDataEntryById', pluginHandlers.getPluginDataEntryById)
+  dbHandle('storage:createPluginDataEntry', pluginHandlers.createPluginDataEntry)
+  dbHandle('storage:updatePluginDataEntry', pluginHandlers.updatePluginDataEntry)
+  dbHandle('storage:deletePluginDataEntry', pluginHandlers.deletePluginDataEntry)
+  dbHandle('storage:deletePluginDataEntriesByKey', pluginHandlers.deletePluginDataEntriesByKey)
 
   // == Plugin File Data (Filesystem) ==
-  handlePath('storage:readPluginDataFile', pluginHandlers.readPluginDataFile)
-  handlePath('storage:writePluginDataFile', pluginHandlers.writePluginDataFile)
-  handlePath('storage:deletePluginDataFile', pluginHandlers.deletePluginDataFile)
-  handlePath('storage:listPluginDataFiles', pluginHandlers.listPluginDataFiles)
+  fsHandlePath('storage:readPluginManifest', pluginHandlers.readPluginManifest)
+  fsHandlePath('storage:readPluginDataFile', pluginHandlers.readPluginDataFile)
+  fsHandlePath('storage:writePluginDataFile', pluginHandlers.writePluginDataFile)
+  fsHandlePath('storage:deletePluginDataFile', pluginHandlers.deletePluginDataFile)
+  fsHandlePath('storage:listPluginDataFiles', pluginHandlers.listPluginDataFiles)
 
   // == AppSettings (Database) ==
-  handle('storage:getAppSetting', settingsHandlers.getAppSetting)
-  handle('storage:getAllAppSettings', settingsHandlers.getAllAppSettings)
-  handle('storage:setAppSetting', settingsHandlers.setAppSetting)
-  handle('storage:deleteAppSetting', settingsHandlers.deleteAppSetting)
+  dbHandle('storage:getAppSetting', settingsHandlers.getAppSetting)
+  dbHandle('storage:getAllAppSettings', settingsHandlers.getAllAppSettings)
+  dbHandle('storage:setAppSetting', settingsHandlers.setAppSetting)
+  dbHandle('storage:deleteAppSetting', settingsHandlers.deleteAppSetting)
 
   // == Specific Config Files (Filesystem) ==
-  handlePath('storage:getEnabledPluginIds', settingsHandlers.getEnabledPluginIds)
-  handlePath('storage:setEnabledPluginIds', settingsHandlers.setEnabledPluginIds)
+  fsHandlePath('storage:getEnabledPluginIds', settingsHandlers.getEnabledPluginIds)
+  fsHandlePath('storage:setEnabledPluginIds', settingsHandlers.setEnabledPluginIds)
 
   // == ContentGroups ==
-  handle('storage:getContentGroups', groupHandlers.getContentGroups)
-  handle('storage:getContentGroupById', groupHandlers.getContentGroupById)
-  handle('storage:createContentGroup', groupHandlers.createContentGroup)
-  handle('storage:updateContentGroup', groupHandlers.updateContentGroup)
-  handle('storage:deleteContentGroup', groupHandlers.deleteContentGroup)
+  dbHandle('storage:getContentGroups', groupHandlers.getContentGroups)
+  dbHandle('storage:getContentGroupById', groupHandlers.getContentGroupById)
+  dbHandle('storage:createContentGroup', groupHandlers.createContentGroup)
+  dbHandle('storage:updateContentGroup', groupHandlers.updateContentGroup)
+  dbHandle('storage:deleteContentGroup', groupHandlers.deleteContentGroup)
 
   // == Collections ==
-  handle('storage:getCollections', collectionHandlers.getCollections)
-  handle('storage:getCollectionById', collectionHandlers.getCollectionById)
-  handle('storage:createCollection', collectionHandlers.createCollection)
-  handle('storage:updateCollection', collectionHandlers.updateCollection)
-  handle('storage:deleteCollection', collectionHandlers.deleteCollection)
+  dbHandle('storage:getCollections', collectionHandlers.getCollections)
+  dbHandle('storage:getCollectionById', collectionHandlers.getCollectionById)
+  dbHandle('storage:createCollection', collectionHandlers.createCollection)
+  dbHandle('storage:updateCollection', collectionHandlers.updateCollection)
+  dbHandle('storage:deleteCollection', collectionHandlers.deleteCollection)
 
   // == CollectionMembers ==
-  handle('storage:getCollectionMembers', collectionHandlers.getCollectionMembers)
-  handle('storage:getCollectionsForMember', collectionHandlers.getCollectionsForMember)
-  handle('storage:addCollectionMember', collectionHandlers.addCollectionMember)
-  handle('storage:updateCollectionMemberOrder', collectionHandlers.updateCollectionMemberOrder)
-  handle('storage:removeCollectionMember', collectionHandlers.removeCollectionMember)
+  dbHandle('storage:getCollectionMembers', collectionHandlers.getCollectionMembers)
+  dbHandle('storage:getCollectionsForMember', collectionHandlers.getCollectionsForMember)
+  dbHandle('storage:addCollectionMember', collectionHandlers.addCollectionMember)
+  dbHandle('storage:updateCollectionMemberOrder', collectionHandlers.updateCollectionMemberOrder)
+  dbHandle('storage:removeCollectionMember', collectionHandlers.removeCollectionMember)
 
   // == VocabularyRegistry ==
-  handle('storage:getVocabularyEntries', vocabularyHandlers.getVocabularyEntries)
-  handle('storage:getVocabularyEntryById', vocabularyHandlers.getVocabularyEntryById)
-  handle('storage:findOrCreateVocabularyEntry', vocabularyHandlers.findOrCreateVocabularyEntry)
-  handle('storage:updateVocabularyEntry', vocabularyHandlers.updateVocabularyEntry)
-  handle('storage:deleteVocabularyEntry', vocabularyHandlers.deleteVocabularyEntry)
+  dbHandle('storage:getVocabularyEntries', vocabularyHandlers.getVocabularyEntries)
+  dbHandle('storage:getVocabularyEntryById', vocabularyHandlers.getVocabularyEntryById)
+  dbHandle('storage:findOrCreateVocabularyEntry', vocabularyHandlers.findOrCreateVocabularyEntry)
+  dbHandle('storage:updateVocabularyEntry', vocabularyHandlers.updateVocabularyEntry)
+  dbHandle('storage:deleteVocabularyEntry', vocabularyHandlers.deleteVocabularyEntry)
 
   // == VocabularySources ==
-  handle('storage:getVocabularySources', vocabularyHandlers.getVocabularySources)
-  handle('storage:addVocabularySource', vocabularyHandlers.addVocabularySource)
-  handle('storage:deleteVocabularySources', vocabularyHandlers.deleteVocabularySources)
+  dbHandle('storage:getVocabularySources', vocabularyHandlers.getVocabularySources)
+  dbHandle('storage:addVocabularySource', vocabularyHandlers.addVocabularySource)
+  dbHandle('storage:deleteVocabularySources', vocabularyHandlers.deleteVocabularySources)
 
   // == EmbeddedAssets ==
-  handle('storage:getEmbeddedAssetsByLibraryItem', assetHandlers.getEmbeddedAssetsByLibraryItem)
-  handle('storage:getEmbeddedAssetById', assetHandlers.getEmbeddedAssetById)
-  handle('storage:createEmbeddedAsset', assetHandlers.createEmbeddedAsset)
-  handle('storage:updateEmbeddedAsset', assetHandlers.updateEmbeddedAsset)
-  handle('storage:deleteEmbeddedAsset', assetHandlers.deleteEmbeddedAsset)
+  dbHandle('storage:getEmbeddedAssetsByLibraryItem', assetHandlers.getEmbeddedAssetsByLibraryItem)
+  dbHandle('storage:getEmbeddedAssetById', assetHandlers.getEmbeddedAssetById)
+  dbHandle('storage:createEmbeddedAsset', assetHandlers.createEmbeddedAsset)
+  dbHandle('storage:updateEmbeddedAsset', assetHandlers.updateEmbeddedAsset)
+  dbHandle('storage:deleteEmbeddedAsset', assetHandlers.deleteEmbeddedAsset)
 
   // == SupplementaryFiles ==
-  handle(
+  dbHandle(
     'storage:getSupplementaryFilesByLibraryItem',
     supplementaryFileHandlers.getSupplementaryFilesByLibraryItem
   )
-  handle('storage:getSupplementaryFileById', supplementaryFileHandlers.getSupplementaryFileById)
-  handle('storage:createSupplementaryFile', supplementaryFileHandlers.createSupplementaryFile)
-  handle('storage:updateSupplementaryFile', supplementaryFileHandlers.updateSupplementaryFile)
-  handle('storage:deleteSupplementaryFile', supplementaryFileHandlers.deleteSupplementaryFile)
+  dbHandle('storage:getSupplementaryFileById', supplementaryFileHandlers.getSupplementaryFileById)
+  dbHandle('storage:createSupplementaryFile', supplementaryFileHandlers.createSupplementaryFile)
+  dbHandle('storage:updateSupplementaryFile', supplementaryFileHandlers.updateSupplementaryFile)
+  dbHandle('storage:deleteSupplementaryFile', supplementaryFileHandlers.deleteSupplementaryFile)
 }

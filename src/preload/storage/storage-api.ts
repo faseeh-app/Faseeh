@@ -39,6 +39,7 @@ export const storageApi: IStorageAPI = {
     ipcRenderer.invoke('storage:deletePluginDataEntriesByKey', pluginId, key, libraryItemId),
 
   // == Plugin File Data (Filesystem) ==
+  readPluginManifest: (pluginId) => ipcRenderer.invoke('storage:readPluginManifest', pluginId),
   readPluginDataFile: (pluginId, relativePath) =>
     ipcRenderer.invoke('storage:readPluginDataFile', pluginId, relativePath),
   writePluginDataFile: (pluginId, relativePath, content) =>

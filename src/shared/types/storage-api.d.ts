@@ -31,6 +31,7 @@ import type {
   SupplementaryFileUpdate
 } from '@main/db/types'
 import type { ContentDocument } from './content-document'
+import { PluginManifest } from '@root/src/renderer/src/core/plugins/plugin-types'
 
 export interface IStorageAPI {
   // == Path Management ==
@@ -74,6 +75,7 @@ export interface IStorageAPI {
   ) => Promise<number>
 
   // == Plugin File Data (Filesystem) ==
+  readPluginManifest: (pluginId: string) => Promise<PluginManifest | undefined>
   readPluginDataFile: (pluginId: string, relativePath: string) => Promise<string | undefined>
   writePluginDataFile: (pluginId: string, relativePath: string, content: string) => Promise<boolean>
   deletePluginDataFile: (pluginId: string, relativePath: string) => Promise<boolean>

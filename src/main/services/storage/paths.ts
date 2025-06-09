@@ -18,8 +18,10 @@ export const DOCUMENT_JSON_FILE_NAME = 'document.json'
 export const EMBEDDED_ASSETS_DIR_NAME = 'assets'
 export const SUPPLEMENTARY_FILES_DIR_NAME = 'supplementary'
 export const PLUGIN_DATA_SUBDIR_NAME = 'data'
+export const PLUGIN_MANIFEST_FILE_NAME = 'manifest.json'
 
 export const ENABLED_PLUGINS_FILE_NAME = 'enabled_plugins.json'
+export const APP_SETTINGS_FILE_NAME = 'settings.json'
 
 // --- Helper Functions ---
 export async function ensureDirExists(dirPath: string): Promise<void> {
@@ -113,7 +115,7 @@ export async function listPluginDirectories(): Promise<string[]> {
     const entries = await fs.readdir(pluginsPath, { withFileTypes: true })
     return entries
       .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name)
+      .map((entry) => path.join(pluginsPath, entry.name))
   } catch (error) {
     console.error('Failed to list plugin directories:', error)
     return []
