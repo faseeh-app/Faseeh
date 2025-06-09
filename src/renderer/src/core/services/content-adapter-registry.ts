@@ -43,54 +43,55 @@ export class ContentAdapterRegistry {
   }
 
   findBestAdapter(criteria: ContentAdapterFindCriteria): ContentAdapterRegistration | null {
-    const scoredAdapters = Array.from(this.adapters.values())
-      .map((registration) => {
-        const adapterInfo: ContentAdapterInfo = registration
-        let score = 0
+    let bestAdapter: ContentAdapterRegistration | null = null
+    let highestScore = 0
+    let highestPriority = -Infinity
 
-        if (criteria.mimeType && adapterInfo.supportedMimeTypes.includes(criteria.mimeType)) {
-          score += 3
+    for (const registration of this.adapters.values()) {
+      const adapterInfo: ContentAdapterInfo = registration
+      let score = 0
+
+      if (criteria.mimeType && adapterInfo.supportedMimeTypes.includes(criteria.mimeType)) {
+        score += 3
+      }
+
+      if (
+        criteria.fileExtension &&
+        adapterInfo.supportedExtensions.includes(criteria.fileExtension)
+      ) {
+        score += 3
+      }
+
+      if (criteria.sourceUrl && adapterInfo.urlPatterns?.length) {
+        for (const pattern of adapterInfo.urlPatterns) {
+          try {
+            const regex = new RegExp(pattern)
+            if (regex.test(criteria.sourceUrl)) {
+              score += 2
+              break
+            }
+          } catch (e) {
+            continue
+          }
         }
+      }
 
-        if (
-          criteria.fileExtension &&
-          adapterInfo.supportedExtensions.includes(criteria.fileExtension)
-        ) {
-          score += 3
-        }
+      if (criteria.isPastedText && adapterInfo.canHandlePastedText) {
+        score += 2
+      }
 
-        if (
-          criteria.sourceUrl &&
-          adapterInfo.urlPatterns?.some((pattern) =>
-            new RegExp(pattern).test(criteria.sourceUrl ?? '')
-          )
-        ) {
-          score += 2
-        }
+      if (score === 0) continue
 
-        if (criteria.isPastedText && adapterInfo.canHandlePastedText) {
-          score += 2
-        }
+      const priority = adapterInfo.priority ?? 0
 
-        return { registration, baseScore: score, priority: adapterInfo.priority ?? 0 }
-      })
-      .filter((entry) => entry.baseScore > 0)
-
-    if (scoredAdapters.length === 0) return null
-
-    scoredAdapters.sort((a, b) => b.baseScore - a.baseScore)
-
-    const highestScore = scoredAdapters[0].baseScore
-
-    const topScorers = scoredAdapters.filter((entry) => entry.baseScore === highestScore)
-
-    if (topScorers.length === 1) {
-      return topScorers[0].registration
+      if (score > highestScore || (score === highestScore && priority > highestPriority)) {
+        bestAdapter = registration
+        highestScore = score
+        highestPriority = priority
+      }
     }
 
-    topScorers.sort((a, b) => b.priority - a.priority)
-
-    return topScorers[0].registration
+    return bestAdapter
   }
 
   getAdapterById(id: string): ContentAdapterRegistration | null {
