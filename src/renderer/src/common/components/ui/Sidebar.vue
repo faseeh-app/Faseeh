@@ -61,7 +61,8 @@ const navButtons = [
       tabStore.openCommunityTab(forceNew)
       router.push({ name: RouteNames.COMMUNITY })
     }
-  },  {
+  },
+  {
     id: 'search',
     icon: 'icon-[iconamoon--search-bold]',
     activeIcon: 'icon-[iconamoon--search-duotone]',
