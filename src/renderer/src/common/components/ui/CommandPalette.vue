@@ -8,7 +8,8 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-  CommandSeparator
+  CommandSeparator,
+  CommandShortcut
 } from '@renderer/common/components/ui/command'
 
 interface CommandAction {
@@ -145,32 +146,63 @@ watch(
 
 <template>
   <CommandDialog :open="open" @update:open="handleOpenChange">
-    <CommandInput :placeholder="placeholder" />
-    <CommandList>
-      <CommandEmpty>No commands found.</CommandEmpty>
-
-      <template v-for="(categoryCommands, category) in groupedCommands" :key="category">
-        <CommandGroup :heading="category">
-          <CommandItem
-            v-for="command in categoryCommands"
-            :key="command.id"
-            :value="command.id"
-            @select="handleCommandSelect"
-          >
-            <div class="flex flex-col">
-              <span class="font-medium">{{ command.title }}</span>
-              <span v-if="command.description" class="text-base text-muted-foreground">
-                {{ command.description }}
-              </span>
+    <div class="flex flex-col h-full max-h-[600px]">
+      <CommandInput :placeholder="placeholder" />
+      <CommandList class="flex-1 overflow-y-auto">
+        <CommandEmpty>No commands found.</CommandEmpty>        <template v-for="(categoryCommands, category) in groupedCommands" :key="category">
+          <CommandGroup :heading="category">
+            <CommandItem
+              v-for="command in categoryCommands"
+              :key="command.id"
+              :value="command.id"
+              @select="handleCommandSelect"
+            >
+              <div class="flex flex-col">
+                <span class="font-medium">{{ command.title }}</span>
+                <span v-if="command.description" class="text-base text-muted-foreground">
+                  {{ command.description }}
+                </span>
+              </div>
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator
+            v-if="
+              Object.keys(groupedCommands).indexOf(category) < Object.keys(groupedCommands).length - 1
+            "
+          />        </template>
+      </CommandList>
+      
+      <!-- Fixed footer with navigation shortcuts -->
+      <div class="border-t border-border bg-muted/30 px-6 py-6 flex-shrink-0">
+        <div class="flex items-center justify-between text-sm text-muted-foreground">
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+              <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
+                ↑↓
+              </kbd>
+              <span>navigate</span>
             </div>
-          </CommandItem>
-        </CommandGroup>
-        <CommandSeparator
-          v-if="
-            Object.keys(groupedCommands).indexOf(category) < Object.keys(groupedCommands).length - 1
-          "
-        />
-      </template>
-    </CommandList>
+            <div class="flex items-center gap-2">
+              <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
+                ↵
+              </kbd>
+              <span>select</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
+                esc
+              </kbd>
+              <span>close</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <kbd class="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium text-muted-foreground opacity-100">
+              ⌘J
+            </kbd>
+            <span>toggle</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </CommandDialog>
 </template>
