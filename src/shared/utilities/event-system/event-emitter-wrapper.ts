@@ -1,73 +1,30 @@
 import { EventType, Handler } from '@shared/types/event-types'
-import { IEventsBridge } from '@shared/types/events-bridge'
-
-declare global {
-  interface Window {
-    eventsBridge?: IEventsBridge
-  }
-}
+import { useEventBus } from '@vueuse/core'
 
 export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
   private readonly namespace: string
-  private readonly localHandlers: Map<string, Set<Handler<any>>> = new Map()
-  private cleanupFunctions: Array<() => void> = []
+  private readonly eventBusMap: Map<string, any> = new Map()
 
   /**
    * @param namespace A unique namespace to prevent collisions with other events
    */
   constructor(namespace: string) {
     this.namespace = namespace
-    this.setupListeners()
   }
 
-  public setupListeners(): void {
-    const channelPrefix = `event:${this.namespace}:`
+  private getEventKey<Key extends keyof Events>(eventName: Key): string {
+    return `${this.namespace}:${String(eventName)}`
+  }
 
-    // Renderer process
-    if (this.isRenderer() && typeof window !== 'undefined' && window.eventsBridge) {
-      const cleanup = window.eventsBridge.on((channel, payload) => {
-        if (channel.startsWith(channelPrefix)) {
-          const eventName = channel.slice(channelPrefix.length)
-          const handlers = this.localHandlers.get(eventName)
-          if (handlers) {
-            handlers.forEach((handler) => handler(payload))
-          }
-        }
-      })
+  private getEventBus<Key extends keyof Events>(eventName: Key) {
+    const eventKey = this.getEventKey(eventName)
 
-      this.cleanupFunctions.push(cleanup)
-    } else {
-      try {
-        // In main process
-        const { ipcMain, webContents } = require('electron')
-        ipcMain.on('ipc-event', (event, channel, payload) => {
-          if (channel.startsWith(channelPrefix)) {
-            // Send to all other renderer processes
-            const webContentsInstance = event.sender
-            const allWebContentsInstances = webContents.getAllWebContents()
-
-            allWebContentsInstances.forEach((contents) => {
-              if (contents !== webContentsInstance && !contents.isDestroyed()) {
-                contents.send('ipc-event', channel, payload)
-              }
-            })
-
-            // Trigger local handlers
-            const eventName = channel.slice(channelPrefix.length)
-            const handlers = this.localHandlers.get(eventName)
-            if (handlers) {
-              handlers.forEach((handler) => handler(payload))
-            }
-          }
-        })
-      } catch (err) {
-        console.error('Failed to setup main process listeners:', err)
-      }
+    if (!this.eventBusMap.has(eventKey)) {
+      const bus = useEventBus<Events[Key]>(eventKey)
+      this.eventBusMap.set(eventKey, bus)
     }
-  }
 
-  private isRenderer(): boolean {
-    return typeof window !== 'undefined' && window.document !== undefined
+    return this.eventBusMap.get(eventKey)
   }
 
   /**
@@ -78,67 +35,53 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
    * @returns A function that when called, removes the registered event handler.
    */
   public on<Key extends keyof Events>(eventName: Key, handler: Handler<Events[Key]>): () => void {
-    const eventNameStr = String(eventName)
-    if (!this.localHandlers.has(eventNameStr)) {
-      this.localHandlers.set(eventNameStr, new Set())
-    }
-    this.localHandlers.get(eventNameStr)!.add(handler)
-
-    // Return a disposer function that removes this specific handler
-    return () => {
-      this.off(eventName, handler)
-    }
+    const bus = this.getEventBus(eventName)
+    return bus.on(handler)
   }
 
+  /**
+   * Removes a specific event handler.
+   *
+   * @param eventName The name of the event to stop listening to.
+   * @param handler The specific handler function to remove.
+   */
   public off<Key extends keyof Events>(eventName: Key, handler: Handler<Events[Key]>): void {
-    const eventNameStr = String(eventName)
-    const handlers = this.localHandlers.get(eventNameStr)
-    if (handlers) {
-      handlers.delete(handler)
-      if (handlers.size === 0) {
-        this.localHandlers.delete(eventNameStr)
-      }
-    }
+    const bus = this.getEventBus(eventName)
+    bus.off(handler)
   }
 
+  /**
+   * Emits an event with the provided payload.
+   *
+   * @param eventName The name of the event to emit.
+   * @param payload The data to send with the event.
+   */
   public emit<Key extends keyof Events>(eventName: Key, payload: Events[Key]): void {
-    const channel = `event:${this.namespace}:${String(eventName)}`
-
-    // Emit locally first
-    const handlers = this.localHandlers.get(String(eventName))
-    if (handlers) {
-      handlers.forEach((handler) => handler(payload))
-    }
-
-    // Send through IPC
-    if (this.isRenderer()) {
-      // Renderer process
-      if (typeof window !== 'undefined' && window.eventsBridge) {
-        window.eventsBridge.send(channel, payload)
-      }
-    } else {
-      // Main process
-      try {
-        const { webContents } = require('electron')
-        webContents.getAllWebContents().forEach((contents) => {
-          if (!contents.isDestroyed()) {
-            contents.send('ipc-event', channel, payload)
-          }
-        })
-      } catch (err) {
-        console.error('Failed to broadcast event:', err)
-      }
-    }
+    const bus = this.getEventBus(eventName)
+    bus.emit(payload)
   }
 
+  /**
+   * Clears all handlers for a specific event or all events.
+   *
+   * @param eventName Optional. If provided, only clears handlers for this event.
+   *                  If not provided, clears all handlers for all events.
+   */
   public clearAllHandlers(eventName?: keyof Events): void {
     if (eventName !== undefined) {
-      this.localHandlers.delete(String(eventName))
-    } else {
-      this.localHandlers.clear()
-    }
+      const eventKey = this.getEventKey(eventName)
+      const bus = this.eventBusMap.get(eventKey)
 
-    this.cleanupFunctions.forEach((cleanup) => cleanup())
-    this.cleanupFunctions = []
+      if (bus) {
+        bus.reset()
+        this.eventBusMap.delete(eventKey)
+      }
+    } else {
+      // Clear all event buses
+      this.eventBusMap.forEach((bus) => {
+        bus.reset()
+      })
+      this.eventBusMap.clear()
+    }
   }
 }
