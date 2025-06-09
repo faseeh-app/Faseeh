@@ -71,6 +71,7 @@ export class ContentAdapterRegistry {
               break
             }
           } catch (e) {
+            console.error(`Invalid regex pattern "${pattern}" in adapter ${adapterInfo.id}:`, e)
             continue
           }
         }
