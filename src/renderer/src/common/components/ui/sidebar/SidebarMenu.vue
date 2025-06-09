@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
 import { cn } from '@renderer/common/lib/utils'
 
@@ -8,7 +8,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div data-slot="drawer-footer" :class="cn('mt-auto flex flex-col gap-2 p-4', props.class)">
+  <ul
+    data-slot="sidebar-menu"
+    data-sidebar="menu"
+    :class="cn('flex w-full min-w-0 flex-col gap-1', props.class)"
+  >
     <slot />
-  </div>
+  </ul>
 </template>

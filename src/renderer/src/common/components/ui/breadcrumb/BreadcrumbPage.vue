@@ -8,7 +8,13 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div data-slot="drawer-footer" :class="cn('mt-auto flex flex-col gap-2 p-4', props.class)">
+  <span
+    data-slot="breadcrumb-page"
+    role="link"
+    aria-disabled="true"
+    aria-current="page"
+    :class="cn('text-foreground font-normal', props.class)"
+  >
     <slot />
-  </div>
+  </span>
 </template>
