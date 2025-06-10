@@ -5,7 +5,7 @@ import icon from '@root/resources/icon.png?asset'
 import { db, migrateToLatest } from '@main/db/database'
 import { initializeFaseehDirectory, setupStorageServiceIPC } from '@main/services/storage-service'
 import { setupWindowControls } from '@main/utilities/window-controls'
-import { vaultEvents } from '@shared/constants/event-emitters'
+import { vaultEvents, workspaceEvents } from '@shared/constants/event-emitters'
 
 class AppLifecycle {
   private mainWindow: BrowserWindow | null = null
@@ -75,15 +75,20 @@ class AppLifecycle {
       this.mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
   }
-
   test(): void {
     if (is.dev) {
       console.log('User data path:', app.getPath('userData'))
       console.log('App path:', app.getAppPath())
 
-      // Test IPC
+      // Wait for renderer to be ready before emitting test events
       if (this.mainWindow) {
-        this.mainWindow.webContents.once('did-finish-load', () => {})
+        this.mainWindow.webContents.once('did-finish-load', () => {
+          // Give renderer a moment to set up event listeners
+          setTimeout(() => {
+            console.log('Main process emitting test event...')
+            workspaceEvents.emit('media:opened', { mediaId: '12345', source: 'local' })
+          }, 100)
+        })
       }
     }
   }

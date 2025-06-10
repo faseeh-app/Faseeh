@@ -23,10 +23,9 @@ class RendererLifecycle {
     this.app = createApp(App)
     this.app.use(pinia)
     this.app.use(this.router)
-
-    workspaceEvents.on('media:opened', (event) =>
-      console.log('Media opened:', event.mediaId, 'from', event.source)
-    )
+    workspaceEvents.on('media:opened', (event) => {
+      console.log('Renderer received event - Media opened:', event.mediaId, 'from', event.source)
+    })
 
     window.addEventListener('beforeunload', () => this.close())
   }
@@ -37,11 +36,11 @@ class RendererLifecycle {
     }
     this.app.mount('#app')
   }
-
   test(): void {
     if (import.meta.env.DEV) {
       // Test event system
-      workspaceEvents.emit('media:opened', { mediaId: '12345', source: 'local' })
+      console.log('Renderer emitting test event...')
+      workspaceEvents.emit('media:opened', { mediaId: '67890', source: 'local' })
 
       // Test storage API
       this.testStorage()
