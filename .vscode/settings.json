@@ -20,20 +20,7 @@
     "**/.classpath": true,
     "**/.project": true,
     "**/.settings": true,
-    "**/.factorypath": true,
-    "node_modules": true,
-    ".prettierignore": true,
-    ".editorconfig": true,
-    "dev-app-update.yml": true,
-    "package-lock.json": true,
-    "electron-builder.yml": true,
-    "build": true,
-    "out": true,
-    "eslint.config.mjs": true,
-    "desktop.ini": true,
-    ".prettierrc.yaml": true,
-    "LICENSE": true,
-    ".vscode": true
+    "**/.factorypath": true
   },
   "hide-files.files": [
     "node_modules",
