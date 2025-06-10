@@ -1,5 +1,5 @@
 import { Kysely, sql } from 'kysely'
-import { Database } from '../types' // Assuming types.ts uses camelCase
+import { Database } from '@root/src/shared/types' // Assuming types.ts uses camelCase
 
 export async function up(db: Kysely<Database>): Promise<void> {
   // Enable foreign keys - crucial for SQLite

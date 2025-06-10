@@ -3,7 +3,7 @@ import {
   NewSupplementaryFile,
   SupplementaryFile,
   SupplementaryFileUpdate
-} from '@main/db/types'
+} from '@root/src/shared/types'
 import { Kysely } from 'kysely'
 import path from 'path'
 import {
@@ -105,5 +105,3 @@ export async function deleteSupplementaryFile(db: Kysely<Database>, id: string):
   }
   return result.numDeletedRows > 0
 }
-
-

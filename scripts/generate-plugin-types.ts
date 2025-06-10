@@ -35,6 +35,7 @@ class TypeExtractor {
     this.project.addSourceFilesAtPaths([
       'src/shared/types/**/*.d.ts',
       'src/main/db/types.d.ts',
+      'src/shared/faseeh.d.ts',
       'src/renderer/src/core/services/plugins/base-plugin.ts',
       'src/shared/utilities/event-system/event-emitter-wrapper.ts',
       'src/shared/constants/event-emitters.ts'
@@ -660,7 +661,7 @@ export type {
   PluginInfo,
   FaseehApp,
   BasePlugin as IBasePlugin
-} from '@shared/types/plugin-types'
+} from '@shared/faseeh'
 
 export type {
   EventType,
@@ -669,9 +670,9 @@ export type {
   StorageEvents,
   WorkspaceEvents,
   PluginEvents
-} from '@shared/types/event-types'
+} from '@shared/faseeh'
 
-export type { IStorageAPI } from '@shared/types/storage-api'
+export type { IStorageAPI } from '@shared/faseeh'
 
 // Content Document Types
 export type {
@@ -686,7 +687,7 @@ export type {
   ContainerBlock,
   ContentBlock,
   ContentDocument
-} from '@shared/types/content-document'
+} from '@shared/faseeh'
 
 // Database Entity Types
 export type {
@@ -725,7 +726,7 @@ export type {
 // Import required dependencies for createFaseehApp
 import { storage } from '@renderer/core/services/storage/storage-service'
 import { workspaceEvents, storageEvents, pluginEvents } from '@shared/constants/event-emitters'
-import type { FaseehApp } from '@shared/types/plugin-types'
+import type { FaseehApp } from '@shared/faseeh'
 
 /**
  * Creates the FaseehApp object that plugins receive

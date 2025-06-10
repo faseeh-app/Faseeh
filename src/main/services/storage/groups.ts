@@ -1,5 +1,5 @@
 import { Kysely } from 'kysely'
-import { ContentGroup, NewContentGroup, ContentGroupUpdate, Database } from '../../db/types'
+import { ContentGroup, NewContentGroup, ContentGroupUpdate, Database } from '@root/src/shared/types'
 
 // == ContentGroups ==
 export async function getContentGroups(db: Kysely<Database>): Promise<ContentGroup[]> {

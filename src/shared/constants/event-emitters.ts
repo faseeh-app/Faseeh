@@ -1,5 +1,5 @@
 import { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
-import { WorkspaceEvents, StorageEvents, PluginEvents } from '@shared/types/event-types'
+import { WorkspaceEvents, StorageEvents, PluginEvents } from '@root/src/shared/types'
 
 export const workspaceEvents = new EventEmitterWrapper<WorkspaceEvents>('workspace')
 export const storageEvents = new EventEmitterWrapper<StorageEvents>('storage')

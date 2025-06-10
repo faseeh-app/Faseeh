@@ -1,5 +1,5 @@
 import { Kysely } from 'kysely'
-import { PluginData, NewPluginData, PluginDataUpdate, Database } from '../../db/types'
+import { PluginData, NewPluginData, PluginDataUpdate, Database } from '@root/src/shared/types'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import {
@@ -177,5 +177,3 @@ export async function listPluginDataFiles(
     throw error
   }
 }
-
-

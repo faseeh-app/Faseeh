@@ -1,6 +1,6 @@
-import { EventType, Handler, WildcardHandler } from '@shared/types/event-types'
+import { EventType, Handler, WildcardHandler } from '@root/src/shared/types'
 import { useEventBus } from '@vueuse/core'
-
+import { WebContents } from 'electron'
 const electron = require('electron')
 let ipcRenderer: any = electron.ipcRenderer
 let ipcMain: any = electron.ipcMain
@@ -115,7 +115,7 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
       } else if (ipcMain) {
         // In main process, send to all renderer processes
         const { webContents } = require('electron')
-        webContents.getAllWebContents().forEach((contents) => {
+        webContents.getAllWebContents().forEach((contents: WebContents) => {
           contents.send(eventKey, payload)
         })
       }
@@ -228,7 +228,6 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
     return cleanup
   }
 
-
   /**
    * Gets all event names that have registered handlers.
    *
@@ -244,5 +243,4 @@ export class EventEmitterWrapper<Events extends Record<EventType, unknown>> {
 
     return eventNames
   }
-
 }

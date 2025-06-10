@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import type { Kysely } from 'kysely'
-import type { Database } from '../../db/types'
+import type { Database } from '@root/src/shared/types'
 import * as pathHandlers from './paths'
 import * as libraryFileHandlers from './library'
 import * as pluginHandlers from './plugins'

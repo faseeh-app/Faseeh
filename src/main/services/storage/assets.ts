@@ -1,5 +1,10 @@
 import { Kysely } from 'kysely'
-import { Database, EmbeddedAsset, EmbeddedAssetUpdate, NewEmbeddedAsset } from '@main/db/types'
+import {
+  Database,
+  EmbeddedAsset,
+  EmbeddedAssetUpdate,
+  NewEmbeddedAsset
+} from '@root/src/shared/types'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import {
@@ -96,5 +101,3 @@ export async function deleteEmbeddedAsset(db: Kysely<Database>, id: string): Pro
   }
   return result.numDeletedRows > 0
 }
-
-

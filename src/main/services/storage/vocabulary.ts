@@ -6,7 +6,7 @@ import {
   VocabularyRegistryUpdate,
   VocabularySource,
   NewVocabularySource
-} from '@main/db/types'
+} from '@root/src/shared/types'
 
 // == VocabularyRegistry ==
 export async function getVocabularyEntries(

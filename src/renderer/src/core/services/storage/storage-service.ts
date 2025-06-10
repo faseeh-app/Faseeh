@@ -1,4 +1,4 @@
-import type { IStorageAPI as IStorageService } from '@shared/types/storage-api'
+import type { IStorageAPI as IStorageService } from '@root/src/shared/types'
 
 const { ipcRenderer } = require('electron')
 

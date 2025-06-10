@@ -3,7 +3,7 @@
  *
  * This barrel file exports all the runtime code that plugins need access to.
  * Generated automatically from source code.
- * 
+ *
  * @generated 2025-06-10T13:52:11.799Z
  */
 
@@ -23,7 +23,7 @@ export type {
   PluginInfo,
   FaseehApp,
   BasePlugin as IBasePlugin
-} from '@shared/types/plugin-types'
+} from '@root/src/shared/types'
 
 export type {
   EventType,
@@ -32,9 +32,9 @@ export type {
   StorageEvents,
   WorkspaceEvents,
   PluginEvents
-} from '@shared/types/event-types'
+} from '@root/src/shared/types'
 
-export type { IStorageAPI } from '@shared/types/storage-api'
+export type { IStorageAPI } from '@root/src/shared/types'
 
 // Content Document Types
 export type {
@@ -49,7 +49,7 @@ export type {
   ContainerBlock,
   ContentBlock,
   ContentDocument
-} from '@shared/types/content-document'
+} from '@root/src/shared/types'
 
 // Database Entity Types
 export type {
@@ -83,12 +83,12 @@ export type {
   VocabularySourceUpdate,
   EmbeddedAssetUpdate,
   SupplementaryFileUpdate
-} from '@main/db/types'
+} from '@shared/types'
 
 // Import required dependencies for createFaseehApp
 import { storage } from '@renderer/core/services/storage/storage-service'
 import { workspaceEvents, storageEvents, pluginEvents } from '@shared/constants/event-emitters'
-import type { FaseehApp } from '@shared/types/plugin-types'
+import type { FaseehApp } from '@root/src/shared/types'
 
 /**
  * Creates the FaseehApp object that plugins receive

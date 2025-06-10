@@ -1,8 +1,4 @@
-import {
-  BasePlugin as IBasePlugin,
-  FaseehApp,
-  PluginManifest
-} from '../../../../../shared/types/plugin-types'
+import { BasePlugin as IBasePlugin, FaseehApp, PluginManifest } from '@root/src/shared/types'
 
 export abstract class BasePlugin implements IBasePlugin {
   public readonly app: FaseehApp

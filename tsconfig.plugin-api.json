@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./temp/plugin-api",
+    "rootDir": "./src",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "target": "ES2020",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@root/*": ["*"],
+      "@renderer/*": ["src/renderer/src/*"],
+      "@main/*": ["src/main/*"],
+      "@shared/*": ["src/shared/*"]
+    }
+  },
+  "include": [
+    "src/shared/types/**/*",
+    "src/shared/interfaces/**/*",
+    "src/shared/plugin-api-entry.ts"
+  ],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "src/shared/utilities/**/*", "node_modules"]
+}
