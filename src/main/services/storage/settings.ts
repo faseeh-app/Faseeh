@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { AppSettings, NewAppSettings, AppSettingsUpdate, Database } from '@root/src/shared/types'
+import { AppSettings, NewAppSettings, AppSettingsUpdate, Database } from '@shared/db'
 import { FASEEH_BASE_PATH, CONFIG_DIR_NAME, ENABLED_PLUGINS_FILE_NAME } from './paths'
 import { Kysely } from 'kysely'
 import fs from 'node:fs/promises'

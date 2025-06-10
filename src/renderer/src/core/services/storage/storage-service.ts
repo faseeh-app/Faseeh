@@ -1,4 +1,4 @@
-import type { IStorage } from '@shared/domain-storage'
+import type { IStorage } from '@root/src/shared/domain-storage'
 
 const { ipcRenderer } = require('electron')
 

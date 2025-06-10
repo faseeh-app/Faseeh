@@ -3,7 +3,7 @@ import {
   NewSupplementaryFile,
   SupplementaryFile,
   SupplementaryFileUpdate
-} from '@root/src/shared/types'
+} from '@shared/db'
 import { Kysely } from 'kysely'
 import path from 'path'
 import {

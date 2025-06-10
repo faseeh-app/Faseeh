@@ -1,4 +1,4 @@
-import { EventType, Handler, WildcardHandler } from '@root/src/shared/types'
+import { EventType, Handler, WildcardHandler } from '@shared/types'
 import { useEventBus } from '@vueuse/core'
 import { WebContents } from 'electron'
 const electron = require('electron')

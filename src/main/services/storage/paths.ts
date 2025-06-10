@@ -2,7 +2,7 @@ import { app } from 'electron'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { Kysely } from 'kysely'
-import { Database } from '@root/src/shared/types'
+import { Database } from '@shared/db'
 
 // --- Path Constants ---
 export const USER_DATA_PATH = app.getPath('userData')

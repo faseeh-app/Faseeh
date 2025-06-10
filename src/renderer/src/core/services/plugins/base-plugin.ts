@@ -1,4 +1,4 @@
-import { IPlugin, FaseehApp, PluginManifest } from '@root/src/shared/types'
+import { IPlugin, FaseehApp, PluginManifest } from '@shared/types'
 /**
  * @internal
  */

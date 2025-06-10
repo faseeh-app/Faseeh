@@ -1,10 +1,5 @@
 import { Kysely } from 'kysely'
-import {
-  Database,
-  EmbeddedAsset,
-  EmbeddedAssetUpdate,
-  NewEmbeddedAsset
-} from '@root/src/shared/types'
+import { Database, EmbeddedAsset, EmbeddedAssetUpdate, NewEmbeddedAsset } from '@root/src/shared/db'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import {

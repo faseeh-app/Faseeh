@@ -6,7 +6,7 @@ import {
   CollectionUpdate,
   CollectionMember,
   NewCollectionMember
-} from '@root/src/shared/types'
+} from '@shared/db'
 
 // == Collections ==
 export async function getCollections(db: Kysely<Database>): Promise<Collection[]> {

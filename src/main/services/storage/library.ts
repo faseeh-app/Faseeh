@@ -1,6 +1,6 @@
 import type { Kysely } from 'kysely'
 import type { Database, LibraryItem, NewLibraryItem, LibraryItemUpdate } from '@root/src/shared/db'
-import type { ContentDocument } from '@root/src/shared/types'
+import type { ContentDocument } from '@shared/types'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {
@@ -87,7 +87,7 @@ export async function deleteLibraryItem(db: Kysely<Database>, id: string): Promi
 }
 
 export async function getDocumentJson(
-  db: Kysely<Database>, // db might not be needed if path is solely derived
+  _db: Kysely<Database>, // db might not be needed if path is solely derived
   libraryItemId: string
 ): Promise<ContentDocument | undefined> {
   const docPath = path.join(

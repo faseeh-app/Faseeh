@@ -14,7 +14,7 @@ export interface LibraryItem {
   sourceUri?: string
   storagePath?: string
   contentDocumentPath?: string
-  document?: ContentDocument,
+  document?: ContentDocument
   contentGroupId?: string
   groupOrder?: number
   dynamicMetadata: Record<string, any>
@@ -130,7 +130,7 @@ export interface PluginData {
   id: number
   pluginId: string
   key: string
-  jsonData: any
+  jsonData: string
   libraryItemId?: string
   createdAt: Date
   updatedAt: Date
@@ -311,14 +311,14 @@ export interface UpdateSupplementaryFileDTO {
  */
 export interface CreateAppSettingDTO {
   key: string
-  value: any
+  value: string
 }
 
 /**
  * @public
  */
 export interface UpdateAppSettingDTO {
-  value: any
+  value: string
 }
 
 /**
@@ -327,7 +327,7 @@ export interface UpdateAppSettingDTO {
 export interface CreatePluginDataDTO {
   pluginId: string
   key: string
-  jsonData: any
+  jsonData: string
   libraryItemId?: string
 }
 
@@ -336,7 +336,7 @@ export interface CreatePluginDataDTO {
  */
 export interface UpdatePluginDataDTO {
   key?: string
-  jsonData?: any
+  jsonData?: string
   libraryItemId?: string
 }
 

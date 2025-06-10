@@ -1,5 +1,5 @@
 import type { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
-import { IStorage } from '@shared/domain-storage'
+import { IStorage } from '@root/src/shared/domain-storage'
 
 /* -------------------------------------------------------------------------- */
 /*                                 Model Types                                */
