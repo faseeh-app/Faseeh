@@ -55,12 +55,12 @@ class RendererLifecycle {
     try {
       console.log(await storage.listPluginDirectories())
 
-      // await window.storageAPI.setAppSetting({
+      // await storage.setAppSetting({
       //   key: 'testKey',
       //   value: JSON.stringify([1, 2, 3, 4, 5])
       // })
 
-      // const setting = await window.storageAPI.getAppSetting('testKey')
+      // const setting = await storage.getAppSetting('testKey')
       // if (setting) {
       //   console.log('Value from storage:', JSON.parse(setting.value))
       // } else {

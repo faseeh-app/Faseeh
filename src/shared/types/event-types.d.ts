@@ -8,11 +8,10 @@ export type WildcardHandler<Events extends Record<EventType, unknown>> = (
   event: Events[keyof Events]
 ) => void
 
-
-export type VaultEvents = {
+export type StorageEvents = {
   'media:saved': { mediaId: string; path?: string }
   'media:deleted': { mediaId: string }
-  // ... other vault events
+  // ... other storage events
 }
 
 export type WorkspaceEvents = {

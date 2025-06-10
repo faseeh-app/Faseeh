@@ -4,7 +4,7 @@ import {
   EventType,
   Handler,
   PluginEvents,
-  VaultEvents,
+  StorageEvents,
   WorkspaceEvents
 } from '@shared/types/event-types'
 import { IStorageAPI } from '@shared/types/storage-api'
@@ -68,7 +68,7 @@ export interface FaseehApp {
 
   // Shared event emitters
   workspaceEvents: EventEmitterWrapper<WorkspaceEvents>
-  vaultEvents: EventEmitterWrapper<VaultEvents>
+  storageEvents: EventEmitterWrapper<StorageEvents>
   pluginEvents: EventEmitterWrapper<PluginEvents>
 }
 

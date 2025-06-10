@@ -5,7 +5,7 @@ import icon from '@root/resources/icon.png?asset'
 import { db, migrateToLatest } from '@main/db/database'
 import { initializeFaseehDirectory, setupStorageServiceIPC } from '@main/services/storage-service'
 import { setupWindowControls } from '@main/utilities/window-controls'
-import { vaultEvents, workspaceEvents } from '@shared/constants/event-emitters'
+import { storageEvents, workspaceEvents } from '@shared/constants/event-emitters'
 
 class AppLifecycle {
   private mainWindow: BrowserWindow | null = null
@@ -94,7 +94,7 @@ class AppLifecycle {
   }
 
   close(): void {
-    vaultEvents.clearAllHandlers()
+    storageEvents.clearAllHandlers()
 
     db.destroy()
 
