@@ -1,4 +1,4 @@
-import { PluginInfo } from '@renderer/core/services/plugin-manager'
+import { PluginInfo } from '@root/src/renderer/src/core/services/plugins/plugin-manager'
 import { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
 
 export type EventType = string | symbol | number

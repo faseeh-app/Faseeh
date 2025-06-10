@@ -31,7 +31,7 @@ import type {
   SupplementaryFileUpdate
 } from '@main/db/types'
 import type { ContentDocument } from './content-document'
-import { PluginManifest } from '@root/src/renderer/src/core/plugins/plugin-types'
+import { PluginManifest } from '@root/src/shared/types/plugin-types'
 
 export interface IStorageAPI {
   // == Path Management ==

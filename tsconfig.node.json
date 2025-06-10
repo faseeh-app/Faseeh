@@ -7,7 +7,7 @@
     "src/main/db/migrations",
     "src/shared/**/*",
     "src/renderer/src/common/services/storage",
-    "src/renderer/src/core/services/storage-service.ts"
+    "src/renderer/src/core/services/storage/storage-service.ts"
   ],
   "compilerOptions": {
     "composite": true,

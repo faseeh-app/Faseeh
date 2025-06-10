@@ -1,4 +1,8 @@
-import { BasePlugin as IBasePlugin, FaseehApp, PluginManifest } from './plugin-types'
+import {
+  BasePlugin as IBasePlugin,
+  FaseehApp,
+  PluginManifest
+} from '../../../../../shared/types/plugin-types'
 
 export abstract class BasePlugin implements IBasePlugin {
   public readonly app: FaseehApp
@@ -19,7 +23,7 @@ export abstract class BasePlugin implements IBasePlugin {
 
   // TODO: Reconsider the access modifiers for these methods. still not sure if they should be public or protected.
   // --- Database Storage Methods ---
-  
+
   // Note: Let's consider these two methods are meant for general plugin data, most used ones.
   public async loadData(): Promise<any> {
     return this.loadDataWithContext(null)
