@@ -6,6 +6,8 @@
     "src/preload/**/*",
     "src/main/db/migrations",
     "src/shared/**/*",
+    "src/renderer/src/common/services/storage",
+    "src/renderer/src/core/services/storage-service.ts"
   ],
   "compilerOptions": {
     "composite": true,
@@ -17,8 +19,7 @@
       "@root/*": ["*"],
       "@renderer/*": ["src/renderer/src/*"],
       "@main/*": ["src/main/*"],
-      "@shared/*": ["src/shared/*"],
-      "@preload/*": ["src/preload/*"]
+      "@shared/*": ["src/shared/*"]
     }
   }
 }

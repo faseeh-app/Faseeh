@@ -52,9 +52,8 @@ class AppLifecycle {
       frame: false,
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {
-        preload: join(__dirname, '../preload/index.js'),
         nodeIntegration: true,
-        contextIsolation: true,
+        contextIsolation: false,
         sandbox: false
       }
     })

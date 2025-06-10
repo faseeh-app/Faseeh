@@ -7,15 +7,16 @@ import TooltipContent from './tooltip/TooltipContent.vue'
 import Tooltip from './tooltip/Tooltip.vue'
 import { Button } from '@renderer/common/components/ui/button'
 
-// Track window maximized state
+const { ipcRenderer } = require('electron')
+
 const isMaximized = ref(false)
 
 function setupWindowStateListener(): void {
-  window.electron.ipcRenderer.on('window:maximized-state', (_, state) => {
+  ipcRenderer.on('window:maximized-state', (_, state) => {
     isMaximized.value = state
   })
 
-  window.electron.ipcRenderer.send('window:get-maximized-state')
+  ipcRenderer.send('window:get-maximized-state')
 }
 
 onMounted(() => {
@@ -23,19 +24,19 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.electron.ipcRenderer.removeAllListeners('window:maximized-state')
+  ipcRenderer.removeAllListeners('window:maximized-state')
 })
 
 function minimizeWindow(): void {
-  window.electron.ipcRenderer.send('window:minimize')
+  ipcRenderer.send('window:minimize')
 }
 
 function maximizeWindow(): void {
-  window.electron.ipcRenderer.send('window:maximize')
+  ipcRenderer.send('window:maximize')
 }
 
 function closeWindow(): void {
-  window.electron.ipcRenderer.send('window:close')
+  ipcRenderer.send('window:close')
 }
 
 const windowControls = [

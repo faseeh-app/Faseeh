@@ -2,6 +2,7 @@ import '@renderer/common/assets/styles/main.css'
 import { createApp, App as VueApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, Router } from 'vue-router'
+import { storage } from '@root/src/renderer/src/core/services/storage-service'
 
 import App from './App.vue'
 import { routes } from '@renderer/common/router/routes'
@@ -53,7 +54,7 @@ class RendererLifecycle {
 
   private async testStorage(): Promise<void> {
     try {
-      console.log(await window.storageAPI.listPluginDirectories())
+      console.log(await storage.listPluginDirectories())
 
       // await window.storageAPI.setAppSetting({
       //   key: 'testKey',

@@ -9,8 +9,7 @@
       "@root/*": ["*"],
       "@renderer/*": ["src/renderer/src/*"],
       "@shared/*": ["src/shared/*"],
-      "@main/*": ["src/main/*"],
-      "@preload/*": ["src/preload/*"]
+      "@main/*": ["src/main/*"]
     }
   }
 }
