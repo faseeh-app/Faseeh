@@ -1,6 +1,8 @@
-import { BasePlugin as IBasePlugin, FaseehApp, PluginManifest } from '@root/src/shared/types'
-
-export abstract class BasePlugin implements IBasePlugin {
+import { IPlugin, FaseehApp, PluginManifest } from '@root/src/shared/types'
+/**
+ * @internal
+ */
+export abstract class Plugin implements IPlugin {
   public readonly app: FaseehApp
   public readonly manifest: PluginManifest
   private listenerCleaners: Array<() => void> = []

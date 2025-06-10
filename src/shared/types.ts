@@ -1,5 +1,5 @@
 import { ColumnType, Generated, Insertable, JSONColumnType, Selectable, Updateable } from 'kysely'
-
+import type { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
 /**
  * @public
  */
@@ -425,9 +425,6 @@ export interface ContentDocument {
 /*                             Event System Types                             */
 /* -------------------------------------------------------------------------- */
 
-import type { PluginInfo } from './plugin-types'
-import type { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
-
 /**
  * @public
  */
@@ -483,16 +480,6 @@ export type PluginEvent = Record<EventType, unknown>
 /* -------------------------------------------------------------------------- */
 /*                             Plugin System Types                            */
 /* -------------------------------------------------------------------------- */
-import type { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
-import { EventType, Handler } from '@root/src/shared/types'
-import {
-  EventType,
-  Handler,
-  PluginEvents,
-  StorageEvents,
-  WorkspaceEvents
-} from '@root/src/shared/types'
-import { IStorageAPI } from '@root/src/shared/types'
 
 /**
  * Represents a plugin's manifest.json information
@@ -544,7 +531,7 @@ export interface FaseehApp {
 
   /** Access to other plugins */
   plugins: {
-    getPlugin(id: string): BasePlugin | null
+    getPlugin(id: string): IPlugin | null
   }
 
   // Shared event emitters
@@ -554,10 +541,10 @@ export interface FaseehApp {
 }
 
 /**
- * BasePlugin abstract class interface that all plugins must implement
+ * Plugin abstract class that all plugins must implement
  * @public
  */
-export interface BasePlugin {
+export interface IPlugin {
   app: FaseehApp
   manifest: PluginManifest
 
@@ -771,3 +758,5 @@ export interface IStorageAPI {
   ) => Promise<SupplementaryFile | undefined>
   deleteSupplementaryFile: (id: string) => Promise<boolean>
 }
+export { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
+export { Plugin as BasePlugin } from '@renderer/core/services/plugins/base-plugin'

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "./temp/plugin-api",
+    "outDir": "./dist",
     "rootDir": "./src",
     "moduleResolution": "bundler",
     "module": "ESNext",
@@ -19,10 +19,6 @@
       "@shared/*": ["src/shared/*"]
     }
   },
-  "include": [
-    "src/shared/types/**/*",
-    "src/shared/interfaces/**/*",
-    "src/shared/plugin-api-entry.ts"
-  ],
+  "include": ["src/shared/plugin-api.ts"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts", "src/shared/utilities/**/*", "node_modules"]
 }
