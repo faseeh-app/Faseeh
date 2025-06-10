@@ -1,8 +1,8 @@
-import type { IStorageAPI as IStorageService } from '@root/src/shared/types'
+import type { IStorage } from '@shared/domain-storage'
 
 const { ipcRenderer } = require('electron')
 
-export const storage: IStorageService = {
+export const storage: IStorage = {
   // == Path Management ==
   getFaseehFolderPath: () => ipcRenderer.invoke('storage:getFaseehFolderPath'),
   getLibraryItemDirectoryPath: (libraryItemId) =>

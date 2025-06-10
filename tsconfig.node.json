@@ -5,7 +5,12 @@
     "src/main/**/*",
     "src/preload/**/*",
     "src/main/db/migrations",
+    "src/shared/*",
+    "src/shared/*.ts",
+    "src/shared/*.d.ts",
     "src/shared/**/*",
+    "src/shared/**/*.ts",
+    "src/shared/**/*.d.ts",
     "src/renderer/src/core/services/**/*"
   ],
   "compilerOptions": {
