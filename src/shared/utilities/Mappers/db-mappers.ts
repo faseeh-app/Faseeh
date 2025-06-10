@@ -98,7 +98,7 @@ const stringifyJsonData = (data: any): any => {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                             LibraryItem Converters                        */
+/*                             LibraryItem Mappers                            */
 /* -------------------------------------------------------------------------- */
 
 export const toLibraryItemDomain = (db: DbLibraryItem): LibraryItem => ({
@@ -144,7 +144,7 @@ export const toLibraryItemUpdateDb = (dto: UpdateLibraryItemDTO): DbLibraryItemU
 })
 
 /* -------------------------------------------------------------------------- */
-/*                            ContentGroup Converters                        */
+/*                            ContentGroup Mappers                            */
 /* -------------------------------------------------------------------------- */
 
 export const toContentGroupDomain = (db: DbContentGroup): ContentGroup => ({
@@ -170,7 +170,7 @@ export const toContentGroupUpdateDb = (dto: UpdateContentGroupDTO): DbContentGro
 })
 
 /* -------------------------------------------------------------------------- */
-/*                              Collection Converters                        */
+/*                              Collection Mappers                            */
 /* -------------------------------------------------------------------------- */
 
 export const toCollectionDomain = (db: DbCollection): Collection => ({
@@ -193,7 +193,7 @@ export const toCollectionUpdateDb = (dto: UpdateCollectionDTO): DbCollectionUpda
 })
 
 /* -------------------------------------------------------------------------- */
-/*                           CollectionMember Converters                     */
+/*                           CollectionMember Mappers                         */
 /* -------------------------------------------------------------------------- */
 
 export const toCollectionMemberDomain = (db: DbCollectionMember): CollectionMember => ({
@@ -217,7 +217,7 @@ export const toCollectionMemberUpdateDb = (
 })
 
 /* -------------------------------------------------------------------------- */
-/*                            Vocabulary Converters                          */
+/*                            Vocabulary Mappers                              */
 /* -------------------------------------------------------------------------- */
 
 export const toVocabularyEntryDomain = (db: DbVocabularyRegistry): VocabularyEntry => ({
@@ -259,7 +259,7 @@ export const toVocabularySourceDb = (dto: CreateVocabularySourceDTO): DbNewVocab
 })
 
 /* -------------------------------------------------------------------------- */
-/*                             Asset Converters                              */
+/*                             Asset Mappers                                  */
 /* -------------------------------------------------------------------------- */
 
 export const toEmbeddedAssetDomain = (db: DbEmbeddedAsset): EmbeddedAsset => ({
@@ -298,7 +298,7 @@ export const toEmbeddedAssetUpdateDb = (dto: UpdateEmbeddedAssetDTO): DbEmbedded
 })
 
 /* -------------------------------------------------------------------------- */
-/*                          SupplementaryFile Converters                     */
+/*                          SupplementaryFile Mappers                         */
 /* -------------------------------------------------------------------------- */
 
 export const toSupplementaryFileDomain = (db: DbSupplementaryFile): SupplementaryFile => ({
@@ -339,7 +339,7 @@ export const toSupplementaryFileUpdateDb = (
 })
 
 /* -------------------------------------------------------------------------- */
-/*                             Plugin Data Converters                        */
+/*                             Plugin Data Mappers                            */
 /* -------------------------------------------------------------------------- */
 
 export const toPluginDataDomainSingle = (db: DbPluginData): PluginData => ({
@@ -366,7 +366,7 @@ export const toPluginDataUpdateDb = (dto: UpdatePluginDataDTO): DbPluginDataUpda
 })
 
 /* -------------------------------------------------------------------------- */
-/*                             App Settings Converters                       */
+/*                             App Settings Mappers                           */
 /* -------------------------------------------------------------------------- */
 
 export const toAppSettingDomain = (db: DbAppSettings): AppSetting => ({
@@ -386,7 +386,7 @@ export const toAppSettingUpdateDb = (dto: UpdateAppSettingDTO): DbAppSettingsUpd
 })
 
 /* -------------------------------------------------------------------------- */
-/*                              Array Converters                             */
+/*                              Array Mappers                                 */
 /* -------------------------------------------------------------------------- */
 
 export const toLibraryItemsDomain = (items: DbLibraryItem[]) =>

@@ -68,7 +68,7 @@ export abstract class Plugin implements IPlugin {
           pluginId: this.manifest.id,
           key: 'data.json',
           jsonData: jsonValue,
-          libraryItemId
+          libraryItemId: libraryItemId ?? undefined
         })
       }
     } catch (error) {

@@ -79,7 +79,7 @@ async function getMigrator(): Promise<Migrator> {
   })
 }
 
-export async function migrateToLatest(db: Kysely<DBInterface>): Promise<void> {
+export async function migrateToLatest(_db: Kysely<DBInterface>): Promise<void> {
   const migrator = await getMigrator()
   const { error, results } = await migrator.migrateToLatest()
 

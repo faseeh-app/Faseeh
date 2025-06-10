@@ -3,7 +3,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { join } from 'path'
 import icon from '@root/resources/icon.png?asset'
 import { db, migrateToLatest } from '@main/db/database'
-import { initializeFaseehDirectory, setupStorageServiceIPC } from '@main/services/storage-service'
+import { StorageService } from '@main/services/storage-service'
 import { setupWindowControls } from '@main/utilities/window-controls'
 import { storageEvents, workspaceEvents } from '@shared/constants/event-emitters'
 
@@ -15,8 +15,8 @@ class AppLifecycle {
     await migrateToLatest(db)
 
     // Initialize & setup main process services
-    await initializeFaseehDirectory()
-    setupStorageServiceIPC(db)
+    const storageService = new StorageService(db)
+    storageService.init()
 
     // Configure app behavior
     electronApp.setAppUserModelId('com.faseeh')
