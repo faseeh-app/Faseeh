@@ -2,14 +2,18 @@ import '@renderer/common/assets/styles/main.css'
 import { createApp, App as VueApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, Router } from 'vue-router'
+import { storage } from '@root/src/renderer/src/core/services/storage/storage-service'
+import { PluginManager } from './core/services/plugins/plugin-manager'
+import { EventBusService } from './core/services/event-bus/event-bus-service'
+import type { PluginEvents } from '@shared/types'
 
 import App from './App.vue'
 import { routes } from '@renderer/common/router/routes'
-import { workspaceEvents } from '@shared/constants/event-emitters'
 
 class RendererLifecycle {
   private app: VueApp | null = null
   private router: Router | null = null
+  private pluginManager: PluginManager | null = null
 
   init(): void {
     const pinia = createPinia()
@@ -21,46 +25,55 @@ class RendererLifecycle {
 
     this.app = createApp(App)
     this.app.use(pinia)
-    this.app.use(this.router)
-
-    workspaceEvents.on('media:opened', (event) =>
-      console.log('Media opened:', event.mediaId, 'from', event.source)
-    )
+    this.app.use(this.router) // Initialize Plugin Manager
+    const eventBus = new EventBusService<PluginEvents>('plugins')
+    this.pluginManager = new PluginManager(storage, eventBus, '1.0.0') // TODO: Get actual app version
 
     window.addEventListener('beforeunload', () => this.close())
   }
-
-  run(): void {
+  async run(): Promise<void> {
     if (!this.app) {
       throw new Error('Application not initialized. Call init() first.')
     }
+
+    // Initialize plugin manager first
+    if (this.pluginManager) {
+      await this.pluginManager.initialize()
+      console.log(this.pluginManager.listPlugins())
+    }
+
     this.app.mount('#app')
   }
-
   test(): void {
     if (import.meta.env.DEV) {
-      // Test event system
-      workspaceEvents.emit('media:opened', { mediaId: '12345', source: 'local' })
+      storage.on('media:saved', (event) => {
+        console.log('Renderer received event - Media saved:', event.mediaId, 'from', event.path)
+      })
+
+      storage.emit('media:saved', { mediaId: '67890', path: 'local' })
 
       // Test storage API
       this.testStorage()
     }
   }
+  async close(): Promise<void> {
+    // Shutdown plugin manager first
+    if (this.pluginManager) {
+      await this.pluginManager.shutdown()
+    }
 
-  close(): void {
-    workspaceEvents.clearAllHandlers()
+    storage.clearAllHandlers()
   }
-
   private async testStorage(): Promise<void> {
     try {
-      console.log(await window.storageAPI.listPluginDirectories())
+      console.log(await storage.listPluginDirectories())
 
-      // await window.storageAPI.setAppSetting({
-      //   key: 'testKey',
-      //   value: JSON.stringify([1, 2, 3, 4, 5])
-      // })
+      await storage.setAppSetting({
+        key: 'testKey',
+        value: JSON.stringify({ test: 'value' })
+      })
 
-      // const setting = await window.storageAPI.getAppSetting('testKey')
+      // const setting = await storage.getAppSetting('testKey')
       // if (setting) {
       //   console.log('Value from storage:', JSON.parse(setting.value))
       // } else {
@@ -74,5 +87,11 @@ class RendererLifecycle {
 
 const renderer = new RendererLifecycle()
 renderer.init()
-renderer.run()
-renderer.test()
+renderer
+  .run()
+  .then(() => {
+    renderer.test()
+  })
+  .catch((error) => {
+    console.error('Failed to start renderer:', error)
+  })
