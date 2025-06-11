@@ -1,4 +1,4 @@
-import { ContentDocument } from '@shared/types'
+import { ContentDocument } from '@shared/types/types'
 /* -------------------------------------------------------------------------- */
 /*                                Domain Models                               */
 /* -------------------------------------------------------------------------- */

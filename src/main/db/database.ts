@@ -3,7 +3,7 @@ import { Kysely, SqliteDialect, Migrator, FileMigrationProvider } from 'kysely'
 import { app } from 'electron'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import type { Database as DBInterface } from '@root/src/shared/db'
+import type { Database as DBInterface } from '@shared/types/db'
 
 // --- Singleton Instance Management ---
 let kyselyInstance: Kysely<DBInterface> | undefined = undefined

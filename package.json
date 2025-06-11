@@ -11,7 +11,7 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "generate:types": "npx dts-bundle-generator -o dist/shared/faseeh.d.ts src/shared/types.ts && npx api-extractor run --config api-extractor.json",
+    "generate:types": "npx dts-bundle-generator -o dist/shared/faseeh.d.ts src/shared/types/types.ts && npx api-extractor run --config api-extractor.json",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "npm run typecheck && electron-vite build",

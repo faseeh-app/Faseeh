@@ -27,8 +27,8 @@ import {
   UpdateVocabularyEntryDTO,
   VocabularyEntry,
   VocabularySource
-} from '@shared/models'
-import { ContentDocument, PluginManifest, EventBus, StorageEvents } from '@shared/types'
+} from '@shared/types/models'
+import { ContentDocument, PluginManifest, EventBus, StorageEvents } from '@shared/types/types'
 
 /* -------------------------------------------------------------------------- */
 /*                         Domain Storage Types                               */

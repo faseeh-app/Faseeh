@@ -1,4 +1,4 @@
-import type { IPlugin, FaseehApp, PluginManifest } from '@shared/types'
+import type { IPlugin, FaseehApp, PluginManifest } from '@shared/types/types'
 /**
  * Plugin abstract class that all plugins must implement
  * @public

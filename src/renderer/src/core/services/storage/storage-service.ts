@@ -1,4 +1,4 @@
-import type { IStorage } from '@root/src/shared/domain-storage'
+import type { IStorage } from '@shared/types/domain-storage'
 import {
   SupplementaryFile,
   CreateSupplementaryFileDTO,
@@ -9,8 +9,8 @@ import {
   UpdateAppSettingDTO,
   UpdatePluginDataDTO,
   VocabularySource
-} from '@root/src/shared/models'
-import { StorageEvents } from '@root/src/shared/types'
+} from '@shared/types/models'
+import { StorageEvents } from '@shared/types/types'
 import { EventBusService } from '@renderer/core/services/event-bus/event-bus-service'
 
 const { ipcRenderer } = require('electron')

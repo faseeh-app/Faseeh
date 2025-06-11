@@ -5,10 +5,10 @@ import type {
   FaseehApp,
   BasePlugin,
   PluginEvents
-} from '@shared/types'
-import type { EventBus } from '@shared/types'
+} from '@shared/types/types'
+import type { EventBus } from '@shared/types/types'
 import { BasePlugin as BasePluginClass } from './plugin'
-import * as Runtime from '@shared/runtime'
+import * as Runtime from '@shared/types/runtime'
 
 /**
  * Plugin Manager Service

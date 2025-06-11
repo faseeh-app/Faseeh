@@ -1,4 +1,4 @@
-import type { IStorage } from '@shared/domain-storage.d'
+import type { IStorage } from '@shared/types/domain-storage'
 export type { IStorage }
 
 // Re-export all models that are referenced by the IStorage interface
@@ -31,7 +31,7 @@ export type {
   UpdatePluginDataDTO,
   CreateAppSettingDTO,
   UpdateAppSettingDTO
-} from '@shared/models'
+} from '@shared/types/models'
 
 /* -------------------------------------------------------------------------- */
 /*                          Content Document Types                            */
@@ -207,6 +207,11 @@ export type StorageEvents = {
 export type WorkspaceEvents = {
   'media:opened': { mediaId: string; source: string }
   'layout:changed': { newLayout: string }
+  'tab:reload': { tabId: string; title: string }
+  'tab:duplicate': { tabId: string; title: string }
+  'tab:close': { tabId: string; title: string }
+  'tab:close-others': { exceptTabId: string; closedCount: number }
+  'tab:close-all': { closedCount: number }
   // ... other workspace events
 }
 

@@ -27,8 +27,8 @@ import {
   VocabularyRegistry,
   VocabularyRegistryUpdate,
   VocabularySource
-} from '@shared/db'
-import { ContentDocument, EventBus, PluginManifest, StorageEvents } from '@shared/types'
+} from '@shared/types/db'
+import { ContentDocument, EventBus, PluginManifest, StorageEvents } from '@shared/types/types'
 
 /* -------------------------------------------------------------------------- */
 /*                          Database Storage Types                            */

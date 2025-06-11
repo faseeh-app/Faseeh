@@ -4,11 +4,11 @@ import {
   ContentAdapterResult,
   ContentAdapterFunction
 } from '@root/src//shared/types/content-adapter-types.d'
-import { ContentAdapterSource } from '@root/src/shared/types/content-adapter-types'
-import { FaseehApp } from '@renderer/core/plugins/plugin-types'
+import { ContentAdapterSource } from '@shared/types/content-adapter-types'
+import { FaseehApp } from '@shared/types/types'
 import { extname } from 'path'
 import { fileTypeFromBuffer } from 'file-type'
-import { NewLibraryItem, NewEmbeddedAsset, NewSupplementaryFile } from '@root/src/main/db/types'
+import { NewLibraryItem, NewEmbeddedAsset, NewSupplementaryFile } from '@shared/types/db'
 export interface ContentAdapterFindCriteria {
   source: ContentAdapterSource
   mimeType?: string
