@@ -1,3 +1,4 @@
+import { LanguageDetector } from '@root/src/renderer/src/core/services/language-detection/language-detector'
 import type { IStorage } from '@shared/types/domain-storage'
 export type { IStorage }
 
@@ -343,10 +344,15 @@ export interface FaseehApp {
 
   /** Storage API facade for accessing the main process storage service */
   storage: IStorage
+
   plugins: {
     getPlugin: (pluginId: string) => unknown
     enabledPlugins: () => Set<string>
   }
+
+  // Language Detector
+  languageDetector: LanguageDetector
+
 }
 
 /**
