@@ -5,7 +5,13 @@
     "src/main/**/*",
     "src/preload/**/*",
     "src/main/db/migrations",
+    "src/shared/*",
+    "src/shared/*.ts",
+    "src/shared/*.d.ts",
     "src/shared/**/*",
+    "src/shared/**/*.ts",
+    "src/shared/**/*.d.ts",
+    "src/renderer/src/core/services/**/*"
   ],
   "compilerOptions": {
     "composite": true,
@@ -17,8 +23,7 @@
       "@root/*": ["*"],
       "@renderer/*": ["src/renderer/src/*"],
       "@main/*": ["src/main/*"],
-      "@shared/*": ["src/shared/*"],
-      "@preload/*": ["src/preload/*"]
+      "@shared/*": ["src/shared/*"]
     }
   }
 }

@@ -1,6 +1,9 @@
-import { BasePlugin as IBasePlugin, FaseehApp, PluginManifest } from './plugin-types'
-
-export abstract class BasePlugin implements IBasePlugin {
+import type { IPlugin, FaseehApp, PluginManifest } from '@shared/types'
+/**
+ * Plugin abstract class that all plugins must implement
+ * @public
+ */
+export abstract class BasePlugin implements IPlugin {
   public readonly app: FaseehApp
   public readonly manifest: PluginManifest
   private listenerCleaners: Array<() => void> = []
@@ -19,7 +22,7 @@ export abstract class BasePlugin implements IBasePlugin {
 
   // TODO: Reconsider the access modifiers for these methods. still not sure if they should be public or protected.
   // --- Database Storage Methods ---
-  
+
   // Note: Let's consider these two methods are meant for general plugin data, most used ones.
   public async loadData(): Promise<any> {
     return this.loadDataWithContext(null)
@@ -66,7 +69,7 @@ export abstract class BasePlugin implements IBasePlugin {
           pluginId: this.manifest.id,
           key: 'data.json',
           jsonData: jsonValue,
-          libraryItemId
+          libraryItemId: libraryItemId ?? undefined
         })
       }
     } catch (error) {

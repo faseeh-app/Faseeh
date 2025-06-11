@@ -31,19 +31,6 @@ export default defineConfig({
       alias: {
         '@root': resolve('.'),
         '@renderer': resolve('src/renderer/src'),
-        '@preload': resolve('src/preload/'),
-        '@shared': resolve('src/shared/'),
-        '@main': resolve('src/main/')
-      }
-    }
-  },
-  preload: {
-    plugins: [externalizeDepsPlugin()],
-    resolve: {
-      alias: {
-        '@root': resolve('.'),
-        '@renderer': resolve('src/renderer/src'),
-        '@preload': resolve('src/preload/'),
         '@shared': resolve('src/shared/'),
         '@main': resolve('src/main/')
       }
@@ -54,7 +41,6 @@ export default defineConfig({
       alias: {
         '@root': resolve('.'),
         '@renderer': resolve('src/renderer/src'),
-        '@preload': resolve('src/preload/'),
         '@shared': resolve('src/shared/'),
         '@main': resolve('src/main/')
       }
