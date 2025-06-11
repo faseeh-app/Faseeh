@@ -1,0 +1,39 @@
+/* -------------------------------------------------------------------------- */
+/*                                 Dropdowns                                  */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-dropdown-content {
+  @apply bg-popover text-popover-foreground;
+  @apply data-[state=open]:animate-in data-[state=closed]:animate-out;
+  @apply data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0;
+  @apply data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95;
+  @apply data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2;
+  @apply data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2;
+  @apply z-50 max-h-(--reka-dropdown-menu-content-available-height);
+  @apply min-w-[8rem] origin-(--reka-dropdown-menu-content-transform-origin);
+  @apply overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md border-accent;
+}
+
+@utility faseeh-dropdown-item {
+  @apply focus:bg-accent focus:text-accent-foreground;
+  @apply data-[variant=destructive]:text-destructive-foreground;
+  @apply data-[variant=destructive]:focus:bg-destructive/10;
+  @apply dark:data-[variant=destructive]:focus:bg-destructive/40;
+  @apply data-[variant=destructive]:focus:text-destructive-foreground;
+  @apply data-[variant=destructive]:*:[svg]:!text-destructive-foreground;
+  @apply [&_svg:not([class*='text-'])]:text-muted-foreground;
+  @apply relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm;
+  @apply outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+  @apply data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0;
+  @apply [&_svg:not([class*='size-'])]:size-4;
+}
+
+@utility faseeh-dropdown-item--radio {
+  @apply faseeh-dropdown-item;
+  @apply justify-between;
+}
+
+@utility faseeh-dropdown-item--checkbox {
+  @apply faseeh-dropdown-item;
+  @apply pr-2 pl-8;
+}

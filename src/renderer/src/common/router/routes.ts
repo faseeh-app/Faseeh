@@ -1,7 +1,8 @@
 const RouteNames = {
   LIBRARY: 'library',
   COMMUNITY: 'community',
-  MEDIA_PLAYER: 'mediaplayer'
+  MEDIA_PLAYER: 'mediaplayer',
+  SETTINGS: 'settings'
 }
 
 const routes = [

@@ -1,8 +1,7 @@
-import { ContentAdapterRegistration } from './content-adapter-types.d'
-import { FaseehApp } from '@renderer/core/plugins/plugin-types.d'
+import { FaseehApp } from '@shared/types/types'
 export type ContentAdapterSource = string | Buffer | File
-import { LibraryItem } from '@root/src/main/db/types'
-import { ContentDocument } from './content-document'
+import { LibraryItem } from '@shared/types/models'
+import { ContentDocument } from '@shared/types/types'
 import { ContentAdapter } from '@renderer/core/services/content-adapter'
 export interface AssetDetail {
   format: string

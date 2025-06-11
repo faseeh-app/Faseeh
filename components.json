@@ -12,7 +12,7 @@
   "aliases": {
     "components": "@renderer/common/components",
     "composables": "@renderer/common/composables",
-    "utils": "@renderer/common/lib/utils",
+    "utils": "@renderer/common/lib/utils.ts",
     "ui": "@renderer/common/components/ui",
     "lib": "@renderer/common/lib"
   },

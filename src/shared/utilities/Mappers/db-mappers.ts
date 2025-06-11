@@ -28,7 +28,7 @@ import type {
   AppSettings as DbAppSettings,
   NewAppSettings as DbNewAppSettings,
   AppSettingsUpdate as DbAppSettingsUpdate
-} from '@root/src/shared/db'
+} from '@shared/types/db'
 
 import type {
   LibraryItem,
@@ -60,7 +60,7 @@ import type {
   AppSetting,
   CreateAppSettingDTO,
   UpdateAppSettingDTO
-} from '@root/src/shared/models'
+} from '@shared/types/models'
 
 /* -------------------------------------------------------------------------- */
 /*                               Generic Utils                               */

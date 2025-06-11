@@ -4,11 +4,15 @@ import {
   ContentAdapterResult,
   ContentAdapterFunction
 } from '@root/src//shared/types/content-adapter-types.d'
-import { ContentAdapterSource } from '@root/src/shared/types/content-adapter-types'
-import { FaseehApp } from '@renderer/core/plugins/plugin-types'
+import { ContentAdapterSource } from '@shared/types/content-adapter-types'
+import { FaseehApp } from '@shared/types/types'
 import { extname } from 'path'
 import { fileTypeFromBuffer } from 'file-type'
-import { NewLibraryItem, NewEmbeddedAsset, NewSupplementaryFile } from '@root/src/main/db/types'
+import {
+  CreateLibraryItemDTO,
+  CreateEmbeddedAssetDTO,
+  CreateSupplementaryFileDTO
+} from '@shared/types/models'
 export interface ContentAdapterFindCriteria {
   source: ContentAdapterSource
   mimeType?: string
@@ -203,10 +207,10 @@ export class ContentAdapterRegistry {
     const { libraryItemData, contentDocument, documentAssets, associatedFiles } = result
     const libraryItemId = libraryItemData.id || crypto.randomUUID()
 
-    const newItemData: NewLibraryItem = {
+    const newItemData: CreateLibraryItemDTO = {
       id: libraryItemId,
       type: libraryItemData.type || 'unknown',
-      dynamicMetadata: JSON.stringify(libraryItemData.dynamicMetadata || {}),
+      dynamicMetadata: libraryItemData.dynamicMetadata || {},
       name: libraryItemData.name || 'Untitled',
       language: libraryItemData.language,
       sourceUri: libraryItemData.sourceUri,
@@ -224,7 +228,7 @@ export class ContentAdapterRegistry {
 
     if (documentAssets) {
       for (const [assetId, assetDetail] of Object.entries(documentAssets)) {
-        const newAsset: NewEmbeddedAsset = {
+        const newAsset: CreateEmbeddedAssetDTO = {
           id: assetId,
           libraryItemId: libraryItem.id,
           storagePath: assetId,
@@ -245,7 +249,7 @@ export class ContentAdapterRegistry {
       for (const file of associatedFiles) {
         const fileId = `file_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
 
-        const newFile: NewSupplementaryFile = {
+        const newFile: CreateSupplementaryFileDTO = {
           id: fileId,
           libraryItemId: libraryItem.id,
           type: file.type,

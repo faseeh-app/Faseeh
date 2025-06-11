@@ -5,7 +5,7 @@ import { createMemoryHistory, createRouter, Router } from 'vue-router'
 import { storage } from '@root/src/renderer/src/core/services/storage/storage-service'
 import { PluginManager } from './core/services/plugins/plugin-manager'
 import { EventBusService } from './core/services/event-bus/event-bus-service'
-import type { PluginEvents } from '@shared/types'
+import type { PluginEvents } from '@shared/types/types'
 
 import App from './App.vue'
 import { routes } from '@renderer/common/router/routes'

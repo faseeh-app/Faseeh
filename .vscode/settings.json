@@ -21,11 +21,9 @@
     "**/.project": true,
     "**/.settings": true,
     "**/.factorypath": true,
-    "node_modules": true,
     ".prettierignore": true,
     ".editorconfig": true,
     "dev-app-update.yml": true,
-    "package-lock.json": true,
     "electron-builder.yml": true,
     "build": true,
     "eslint.config.mjs": true,
@@ -36,11 +34,9 @@
     ".idea": true
   },
   "hide-files.files": [
-    "node_modules",
     ".prettierignore",
     ".editorconfig",
     "dev-app-update.yml",
-    "package-lock.json",
     "electron-builder.yml",
     "build",
     "eslint.config.mjs",

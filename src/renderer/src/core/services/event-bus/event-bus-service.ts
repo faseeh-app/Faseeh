@@ -1,4 +1,4 @@
-import { EventType, Handler, WildcardHandler, EventBus } from '@shared/types'
+import { EventType, Handler, WildcardHandler, EventBus } from '@shared/types/types'
 import { useEventBus } from '@vueuse/core'
 
 const { ipcRenderer } = require('electron')

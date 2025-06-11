@@ -1,0 +1,43 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Icons                                    */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-icon {
+  @apply h-5 w-5;
+  @apply text-current;
+  @apply pointer-events-none;
+}
+
+@utility faseeh-icon--sm {
+  @apply faseeh-icon;
+  @apply h-4 w-4;
+}
+
+@utility faseeh-icon--lg {
+  @apply faseeh-icon;
+  @apply h-6 w-6;
+}
+
+@utility faseeh-icon--xl {
+  @apply faseeh-icon;
+  @apply h-8 w-8;
+}
+
+/* Common icon patterns */
+@utility faseeh-icon-button {
+  @apply flex items-center justify-center;
+  @apply size-8 rounded-md;
+  @apply transition-colors;
+  @apply hover:bg-accent hover:text-accent-foreground;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+}
+
+@utility faseeh-icon-button--sm {
+  @apply faseeh-icon-button;
+  @apply size-6;
+}
+
+@utility faseeh-icon-button--lg {
+  @apply faseeh-icon-button;
+  @apply size-10;
+}
