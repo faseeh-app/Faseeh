@@ -28,7 +28,7 @@ import {
   VocabularyRegistryUpdate,
   VocabularySource
 } from '@shared/db'
-import { ContentDocument, PluginManifest } from '@shared/types'
+import { ContentDocument, EventBus, PluginManifest, StorageEvents } from '@shared/types'
 
 /* -------------------------------------------------------------------------- */
 /*                          Database Storage Types                            */
@@ -39,7 +39,7 @@ import { ContentDocument, PluginManifest } from '@shared/types'
  * in the Faseeh application. This includes database operations and file system management.
  * @internal
  */
-export interface IStorageAPI {
+export interface IStorageAPI extends EventBus<StorageEvents> {
   // == Path Management ==
 
   /**

@@ -1,8 +1,10 @@
-import type { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
-import { IStorage } from '@root/src/shared/domain-storage'
+import type { IStorage } from '@shared/domain-storage.d'
+
+export * from '@shared/models.d'
+export * from '@shared/domain-storage.d'
 
 /* -------------------------------------------------------------------------- */
-/*                                 Model Types                                */
+/*                          Content Document Types                            */
 /* -------------------------------------------------------------------------- */
 
 /**
@@ -194,6 +196,67 @@ export type PluginEvents = {
  */
 export type PluginEvent = Record<EventType, unknown>
 
+/**
+ * An event bus for managing events across the application, both in the main process and renderer processes.
+ * @public
+ */
+export interface EventBus<Events extends Record<EventType, unknown>> {
+  /**
+   * Registers an event handler
+   * @param eventName The name of the event to listen to
+   * @param handler The function to call when the event is emitted
+   * @returns A function that when called, removes the registered event handler
+   */
+  on<Key extends keyof Events>(eventName: Key, handler: Handler<Events[Key]>): () => void
+
+  /**
+   * Removes a specific event handler
+   * @param eventName The name of the event to stop listening to
+   * @param handler The specific handler function to remove
+   */
+  off<Key extends keyof Events>(eventName: Key, handler: Handler<Events[Key]>): void
+
+  /**
+   * Emits an event with the provided payload
+   * @param eventName The name of the event to emit
+   * @param payload The data to send with the event
+   */
+  emit<Key extends keyof Events>(eventName: Key, payload: Events[Key]): void
+
+  /**
+   * Registers a wildcard handler that listens to all events
+   * @param handler The function to call when any event is emitted
+   * @returns A function that when called, removes the wildcard handler
+   */
+  onAny(handler: WildcardHandler<Events>): () => void
+
+  /**
+   * Removes a wildcard handler
+   * @param handler The wildcard handler function to remove
+   */
+  offAny(handler: WildcardHandler<Events>): void
+
+  /**
+   * Registers an event handler that will only be called once
+   * @param eventName The name of the event to listen to
+   * @param handler The function to call when the event is emitted
+   * @returns A function that when called, removes the registered event handler
+   */
+  once<Key extends keyof Events>(eventName: Key, handler: Handler<Events[Key]>): () => void
+
+  /**
+   * Clears all handlers for a specific event or all events
+   * @param eventName Optional event name to clear handlers for. If not provided, clears all handlers
+   */
+  clearAllHandlers(eventName?: keyof Events): void
+
+  /**
+   * Gets all event names that have registered handlers
+   * @returns An array of event names that have active handlers
+   */
+  eventNames(): Array<keyof Events>
+}
+
 /* -------------------------------------------------------------------------- */
 /*                             Plugin System Types                            */
 /* -------------------------------------------------------------------------- */
@@ -245,16 +308,6 @@ export interface FaseehApp {
 
   /** Storage API facade for accessing the main process storage service */
   storage: IStorage
-
-  /** Access to other plugins */
-  plugins: {
-    getPlugin(id: string): IPlugin | null
-  }
-
-  // Shared event emitters
-  workspaceEvents: EventEmitterWrapper<WorkspaceEvents>
-  storageEvents: EventEmitterWrapper<StorageEvents>
-  pluginEvents: EventEmitterWrapper<PluginEvents>
 }
 
 /**
@@ -327,6 +380,3 @@ export interface IPlugin {
   /**@internalal method to clean up all registered listeners */
   _cleanupListeners(): void
 }
-
-export { EventEmitterWrapper } from '@shared/utilities/event-system/event-emitter-wrapper'
-export { Plugin as BasePlugin } from '@renderer/core/services/plugins/base-plugin'

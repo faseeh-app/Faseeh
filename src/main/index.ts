@@ -3,20 +3,23 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { join } from 'path'
 import icon from '@root/resources/icon.png?asset'
 import { db, migrateToLatest } from '@main/db/database'
-import { StorageService } from '@main/services/storage-service'
+import { storage } from '@main/services/storage-service'
 import { setupWindowControls } from '@main/utilities/window-controls'
-import { storageEvents, workspaceEvents } from '@shared/constants/event-emitters'
 
 class AppLifecycle {
   private mainWindow: BrowserWindow | null = null
-
   async init(): Promise<void> {
     // Initialize database
     await migrateToLatest(db)
 
-    // Initialize & setup main process services
-    const storageService = new StorageService(db)
-    storageService.init()
+    storage.on('media:saved', (event) => {
+      console.log('Main received event - Media saved:', event.mediaId, 'from', event.path)
+
+      // Check if this is the event from renderer process
+      if (event.mediaId === '67890') {
+        console.log('✅ SUCCESS: Renderer-to-Main communication is working!')
+      }
+    })
 
     // Configure app behavior
     electronApp.setAppUserModelId('com.faseeh')
@@ -86,7 +89,7 @@ class AppLifecycle {
           // Give renderer a moment to set up event listeners
           setTimeout(() => {
             console.log('Main process emitting test event...')
-            workspaceEvents.emit('media:opened', { mediaId: '12345', source: 'local' })
+            storage.emit('media:saved', { mediaId: '12345', path: 'main' })
           }, 100)
         })
       }
@@ -94,7 +97,7 @@ class AppLifecycle {
   }
 
   close(): void {
-    storageEvents.clearAllHandlers()
+    storage.clearAllHandlers()
 
     db.destroy()
 

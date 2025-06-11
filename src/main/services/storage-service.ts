@@ -2,10 +2,12 @@ import { ipcMain, app } from 'electron'
 import type { Kysely } from 'kysely'
 import type { Database } from '@shared/db'
 import type { IStorageAPI } from '@shared/db-storage'
-import type { ContentDocument, PluginManifest } from '@shared/types'
+import type { ContentDocument, PluginManifest, StorageEvents } from '@shared/types'
 import * as converters from '@shared/utilities/Mappers/db-mappers'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { EventBusService } from '@main/services/event-bus-service'
+import { db } from '@main/db/database'
 
 // Path Constants
 const USER_DATA_PATH = app.getPath('userData')
@@ -30,14 +32,16 @@ const ENABLED_PLUGINS_FILE_NAME = 'enabled_plugins.json'
  *
  * @implements {IStorageAPI}
  */
-export class StorageService implements IStorageAPI {
+export class StorageService extends EventBusService<StorageEvents> implements IStorageAPI {
   /**
    * Creates a new StorageService instance.
    *
    * @param {Kysely<Database>} db - The database connection instance for data operations
    */
   constructor(private db: Kysely<Database>) {
+    super('storage')
     this.db = db
+    this.init()
   }
 
   // Helper method for ensuring directories exist
@@ -78,7 +82,7 @@ export class StorageService implements IStorageAPI {
    *
    * Must be called once during application startup to enable storage functionality.
    */
-  public init(): void {
+  private init(): void {
     // Helper for methods that need error handling and conversion
     const handle = <TArgs extends unknown[], TResult>(
       channel: string,
@@ -1173,3 +1177,5 @@ export class StorageService implements IStorageAPI {
     return result.numDeletedRows > 0
   }
 }
+
+export const storage = new StorageService(db)

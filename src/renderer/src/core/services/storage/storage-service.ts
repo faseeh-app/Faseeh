@@ -1,129 +1,342 @@
 import type { IStorage } from '@root/src/shared/domain-storage'
+import {
+  SupplementaryFile,
+  CreateSupplementaryFileDTO,
+  UpdateSupplementaryFileDTO,
+  AppSetting,
+  CreateAppSettingDTO,
+  PluginData,
+  UpdateAppSettingDTO,
+  UpdatePluginDataDTO,
+  VocabularySource
+} from '@root/src/shared/models'
+import { StorageEvents } from '@root/src/shared/types'
+import { EventBusService } from '@renderer/core/services/event-bus/event-bus-service'
 
 const { ipcRenderer } = require('electron')
 
-export const storage: IStorage = {
+export class StorageService extends EventBusService<StorageEvents> implements IStorage {
+  constructor() {
+    super('storage')
+  }
+
   // == Path Management ==
-  getFaseehFolderPath: () => ipcRenderer.invoke('storage:getFaseehFolderPath'),
-  getLibraryItemDirectoryPath: (libraryItemId) =>
-    ipcRenderer.invoke('storage:getLibraryItemDirectoryPath', libraryItemId),
-  getEmbeddedAssetAbsolutePath: (assetId) =>
-    ipcRenderer.invoke('storage:getEmbeddedAssetAbsolutePath', assetId),
-  getSupplementaryFileAbsolutePath: (fileId) =>
-    ipcRenderer.invoke('storage:getSupplementaryFileAbsolutePath', fileId),
-  getPluginDirectoryPath: (pluginId) =>
-    ipcRenderer.invoke('storage:getPluginDirectoryPath', pluginId),
-  listPluginDirectories: () => ipcRenderer.invoke('storage:listPluginDirectories'),
-  getConfigDirectoryPath: () => ipcRenderer.invoke('storage:getConfigDirectoryPath'),
+  async getFaseehFolderPath(): Promise<string> {
+    return ipcRenderer.invoke('storage:getFaseehFolderPath')
+  }
+
+  async getLibraryItemDirectoryPath(libraryItemId: string): Promise<string> {
+    return ipcRenderer.invoke('storage:getLibraryItemDirectoryPath', libraryItemId)
+  }
+
+  async getEmbeddedAssetAbsolutePath(assetId: string): Promise<string> {
+    return ipcRenderer.invoke('storage:getEmbeddedAssetAbsolutePath', assetId)
+  }
+
+  async getSupplementaryFileAbsolutePath(fileId: string): Promise<string> {
+    return ipcRenderer.invoke('storage:getSupplementaryFileAbsolutePath', fileId)
+  }
+
+  async getPluginDirectoryPath(pluginId: string): Promise<string> {
+    return ipcRenderer.invoke('storage:getPluginDirectoryPath', pluginId)
+  }
+
+  async listPluginDirectories(): Promise<string[]> {
+    return ipcRenderer.invoke('storage:listPluginDirectories')
+  }
+
+  async getConfigDirectoryPath(): Promise<string> {
+    return ipcRenderer.invoke('storage:getConfigDirectoryPath')
+  }
 
   // == LibraryItems & Document.json ==
-  getLibraryItems: (criteria?) => ipcRenderer.invoke('storage:getLibraryItems', criteria),
-  getLibraryItemById: (id) => ipcRenderer.invoke('storage:getLibraryItemById', id),
-  createLibraryItem: (item, documentContent?) =>
-    ipcRenderer.invoke('storage:createLibraryItem', item, documentContent),
-  updateLibraryItem: (id, itemUpdate) =>
-    ipcRenderer.invoke('storage:updateLibraryItem', id, itemUpdate),
-  deleteLibraryItem: (id) => ipcRenderer.invoke('storage:deleteLibraryItem', id),
-  getDocumentJson: (libraryItemId) => ipcRenderer.invoke('storage:getDocumentJson', libraryItemId),
-  saveDocumentJson: (libraryItemId, content) =>
-    ipcRenderer.invoke('storage:saveDocumentJson', libraryItemId, content),
+  async getLibraryItems(criteria?: any): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getLibraryItems', criteria)
+  }
+
+  async getLibraryItemById(id: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getLibraryItemById', id)
+  }
+
+  async createLibraryItem(item: any, documentContent?: any): Promise<any> {
+    return ipcRenderer.invoke('storage:createLibraryItem', item, documentContent)
+  }
+
+  async updateLibraryItem(id: string, itemUpdate: any): Promise<any> {
+    return ipcRenderer.invoke('storage:updateLibraryItem', id, itemUpdate)
+  }
+
+  async deleteLibraryItem(id: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteLibraryItem', id)
+  }
+
+  async getDocumentJson(libraryItemId: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getDocumentJson', libraryItemId)
+  }
+
+  async saveDocumentJson(libraryItemId: string, content: any): Promise<boolean> {
+    return ipcRenderer.invoke('storage:saveDocumentJson', libraryItemId, content)
+  }
 
   // == PluginData (Database) ==
-  getPluginDataEntries: (pluginId, key?, libraryItemId?) =>
-    ipcRenderer.invoke('storage:getPluginDataEntries', pluginId, key, libraryItemId),
-  getPluginDataEntryById: (id) => ipcRenderer.invoke('storage:getPluginDataEntryById', id),
-  createPluginDataEntry: (data) => ipcRenderer.invoke('storage:createPluginDataEntry', data),
-  updatePluginDataEntry: (id, dataUpdate) =>
-    ipcRenderer.invoke('storage:updatePluginDataEntry', id, dataUpdate),
-  deletePluginDataEntry: (id) => ipcRenderer.invoke('storage:deletePluginDataEntry', id),
-  deletePluginDataEntriesByKey: (pluginId, key, libraryItemId?) =>
-    ipcRenderer.invoke('storage:deletePluginDataEntriesByKey', pluginId, key, libraryItemId),
+  async getPluginDataEntries(
+    pluginId: string,
+    key?: string,
+    libraryItemId?: string | null
+  ): Promise<PluginData[]> {
+    return ipcRenderer.invoke('storage:getPluginDataEntries', pluginId, key, libraryItemId)
+  }
+
+  async getPluginDataEntryById(id: number): Promise<PluginData | undefined> {
+    return ipcRenderer.invoke('storage:getPluginDataEntryById', id)
+  }
+
+  async createPluginDataEntry(data: any): Promise<any> {
+    return ipcRenderer.invoke('storage:createPluginDataEntry', data)
+  }
+
+  async updatePluginDataEntry(
+    id: number,
+    dataUpdate: UpdatePluginDataDTO
+  ): Promise<PluginData | undefined> {
+    return ipcRenderer.invoke('storage:updatePluginDataEntry', id, dataUpdate)
+  }
+
+  async deletePluginDataEntry(id: number): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deletePluginDataEntry', id)
+  }
+
+  async deletePluginDataEntriesByKey(
+    pluginId: string,
+    key: string,
+    libraryItemId?: string | null
+  ): Promise<number> {
+    return ipcRenderer.invoke('storage:deletePluginDataEntriesByKey', pluginId, key, libraryItemId)
+  }
 
   // == Plugin File Data (Filesystem) ==
-  readPluginManifest: (pluginId) => ipcRenderer.invoke('storage:readPluginManifest', pluginId),
-  readPluginDataFile: (pluginId, relativePath) =>
-    ipcRenderer.invoke('storage:readPluginDataFile', pluginId, relativePath),
-  writePluginDataFile: (pluginId, relativePath, content) =>
-    ipcRenderer.invoke('storage:writePluginDataFile', pluginId, relativePath, content),
-  deletePluginDataFile: (pluginId, relativePath) =>
-    ipcRenderer.invoke('storage:deletePluginDataFile', pluginId, relativePath),
-  listPluginDataFiles: (pluginId, subDirectory?) =>
-    ipcRenderer.invoke('storage:listPluginDataFiles', pluginId, subDirectory),
+  async readPluginManifest(pluginId: string): Promise<any> {
+    return ipcRenderer.invoke('storage:readPluginManifest', pluginId)
+  }
+
+  async readPluginDataFile(pluginId: string, relativePath: string): Promise<string> {
+    return ipcRenderer.invoke('storage:readPluginDataFile', pluginId, relativePath)
+  }
+
+  async writePluginDataFile(
+    pluginId: string,
+    relativePath: string,
+    content: string
+  ): Promise<boolean> {
+    return ipcRenderer.invoke('storage:writePluginDataFile', pluginId, relativePath, content)
+  }
+
+  async deletePluginDataFile(pluginId: string, relativePath: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deletePluginDataFile', pluginId, relativePath)
+  }
+
+  async listPluginDataFiles(pluginId: string, subDirectory?: string): Promise<string[]> {
+    return ipcRenderer.invoke('storage:listPluginDataFiles', pluginId, subDirectory)
+  }
 
   // == AppSettings (Database - for settings.json like data) ==
-  getAppSetting: (key) => ipcRenderer.invoke('storage:getAppSetting', key),
-  getAllAppSettings: () => ipcRenderer.invoke('storage:getAllAppSettings'),
-  setAppSetting: (setting) => ipcRenderer.invoke('storage:setAppSetting', setting),
-  deleteAppSetting: (key) => ipcRenderer.invoke('storage:deleteAppSetting', key),
+  async getAppSetting(key: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getAppSetting', key)
+  }
+
+  async getAllAppSettings(): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getAllAppSettings')
+  }
+
+  async setAppSetting(
+    setting: CreateAppSettingDTO | UpdateAppSettingDTO
+  ): Promise<AppSetting | undefined> {
+    return ipcRenderer.invoke('storage:setAppSetting', setting)
+  }
+
+  async deleteAppSetting(key: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteAppSetting', key)
+  }
 
   // == Specific Config Files (Filesystem) ==
-  getEnabledPluginIds: () => ipcRenderer.invoke('storage:getEnabledPluginIds'),
-  setEnabledPluginIds: (pluginIds) => ipcRenderer.invoke('storage:setEnabledPluginIds', pluginIds),
+  async getEnabledPluginIds(): Promise<string[]> {
+    return ipcRenderer.invoke('storage:getEnabledPluginIds')
+  }
+
+  async setEnabledPluginIds(pluginIds: string[]): Promise<boolean> {
+    return ipcRenderer.invoke('storage:setEnabledPluginIds', pluginIds)
+  }
 
   // == ContentGroups ==
-  getContentGroups: () => ipcRenderer.invoke('storage:getContentGroups'),
-  getContentGroupById: (id) => ipcRenderer.invoke('storage:getContentGroupById', id),
-  createContentGroup: (group) => ipcRenderer.invoke('storage:createContentGroup', group),
-  updateContentGroup: (id, groupUpdate) =>
-    ipcRenderer.invoke('storage:updateContentGroup', id, groupUpdate),
-  deleteContentGroup: (id) => ipcRenderer.invoke('storage:deleteContentGroup', id),
+  async getContentGroups(): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getContentGroups')
+  }
+
+  async getContentGroupById(id: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getContentGroupById', id)
+  }
+
+  async createContentGroup(group: any): Promise<any> {
+    return ipcRenderer.invoke('storage:createContentGroup', group)
+  }
+
+  async updateContentGroup(id: string, groupUpdate: any): Promise<any> {
+    return ipcRenderer.invoke('storage:updateContentGroup', id, groupUpdate)
+  }
+
+  async deleteContentGroup(id: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteContentGroup', id)
+  }
 
   // == Collections ==
-  getCollections: () => ipcRenderer.invoke('storage:getCollections'),
-  getCollectionById: (id) => ipcRenderer.invoke('storage:getCollectionById', id),
-  createCollection: (collection) => ipcRenderer.invoke('storage:createCollection', collection),
-  updateCollection: (id, collectionUpdate) =>
-    ipcRenderer.invoke('storage:updateCollection', id, collectionUpdate),
-  deleteCollection: (id) => ipcRenderer.invoke('storage:deleteCollection', id),
+  async getCollections(): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getCollections')
+  }
+
+  async getCollectionById(id: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getCollectionById', id)
+  }
+
+  async createCollection(collection: any): Promise<any> {
+    return ipcRenderer.invoke('storage:createCollection', collection)
+  }
+
+  async updateCollection(id: string, collectionUpdate: any): Promise<any> {
+    return ipcRenderer.invoke('storage:updateCollection', id, collectionUpdate)
+  }
+
+  async deleteCollection(id: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteCollection', id)
+  }
 
   // == CollectionMembers ==
-  getCollectionMembers: (collectionId) =>
-    ipcRenderer.invoke('storage:getCollectionMembers', collectionId),
-  getCollectionsForMember: (itemId, itemType) =>
-    ipcRenderer.invoke('storage:getCollectionsForMember', itemId, itemType),
-  addCollectionMember: (member) => ipcRenderer.invoke('storage:addCollectionMember', member),
-  updateCollectionMemberOrder: (collectionId, itemId, itemType, newOrder) =>
-    ipcRenderer.invoke(
+  async getCollectionMembers(collectionId: string): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getCollectionMembers', collectionId)
+  }
+
+  async getCollectionsForMember(itemId: string, itemType: string): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getCollectionsForMember', itemId, itemType)
+  }
+
+  async addCollectionMember(member: any): Promise<any> {
+    return ipcRenderer.invoke('storage:addCollectionMember', member)
+  }
+
+  async updateCollectionMemberOrder(
+    collectionId: string,
+    itemId: string,
+    itemType: string,
+    newOrder: number
+  ): Promise<boolean> {
+    return ipcRenderer.invoke(
       'storage:updateCollectionMemberOrder',
       collectionId,
       itemId,
       itemType,
       newOrder
-    ),
-  removeCollectionMember: (collectionId, itemId, itemType) =>
-    ipcRenderer.invoke('storage:removeCollectionMember', collectionId, itemId, itemType),
+    )
+  }
+
+  async removeCollectionMember(
+    collectionId: string,
+    itemId: string,
+    itemType: string
+  ): Promise<boolean> {
+    return ipcRenderer.invoke('storage:removeCollectionMember', collectionId, itemId, itemType)
+  }
 
   // == VocabularyRegistry ==
-  getVocabularyEntries: (language?, text?) =>
-    ipcRenderer.invoke('storage:getVocabularyEntries', language, text),
-  getVocabularyEntryById: (id) => ipcRenderer.invoke('storage:getVocabularyEntryById', id),
-  findOrCreateVocabularyEntry: (entry) =>
-    ipcRenderer.invoke('storage:findOrCreateVocabularyEntry', entry),
-  updateVocabularyEntry: (id, entryUpdate) =>
-    ipcRenderer.invoke('storage:updateVocabularyEntry', id, entryUpdate),
-  deleteVocabularyEntry: (id) => ipcRenderer.invoke('storage:deleteVocabularyEntry', id),
+  async getVocabularyEntries(language?: string, text?: string): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getVocabularyEntries', language, text)
+  }
+
+  async getVocabularyEntryById(id: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getVocabularyEntryById', id)
+  }
+
+  async findOrCreateVocabularyEntry(entry: any): Promise<any> {
+    return ipcRenderer.invoke('storage:findOrCreateVocabularyEntry', entry)
+  }
+
+  async updateVocabularyEntry(id: string, entryUpdate: any): Promise<any> {
+    return ipcRenderer.invoke('storage:updateVocabularyEntry', id, entryUpdate)
+  }
+
+  async deleteVocabularyEntry(id: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteVocabularyEntry', id)
+  }
 
   // == VocabularySources ==
-  getVocabularySources: (filters) => ipcRenderer.invoke('storage:getVocabularySources', filters),
-  addVocabularySource: (source) => ipcRenderer.invoke('storage:addVocabularySource', source),
-  deleteVocabularySources: (criteria) =>
-    ipcRenderer.invoke('storage:deleteVocabularySources', criteria),
+  async getVocabularySources(filters: any): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getVocabularySources', filters)
+  }
+
+  async addVocabularySource(source: any): Promise<any> {
+    return ipcRenderer.invoke('storage:addVocabularySource', source)
+  }
+
+  async deleteVocabularySources(
+    criteria: Partial<Pick<VocabularySource, 'vocabularyId' | 'libraryItemId'>>
+  ): Promise<number> {
+    return ipcRenderer.invoke('storage:deleteVocabularySources', criteria)
+  }
 
   // == EmbeddedAssets ==
-  getEmbeddedAssetsByLibraryItem: (libraryItemId) =>
-    ipcRenderer.invoke('storage:getEmbeddedAssetsByLibraryItem', libraryItemId),
-  getEmbeddedAssetById: (id) => ipcRenderer.invoke('storage:getEmbeddedAssetById', id),
-  createEmbeddedAsset: (asset) => ipcRenderer.invoke('storage:createEmbeddedAsset', asset),
-  updateEmbeddedAsset: (id, assetUpdate) =>
-    ipcRenderer.invoke('storage:updateEmbeddedAsset', id, assetUpdate),
-  deleteEmbeddedAsset: (id) => ipcRenderer.invoke('storage:deleteEmbeddedAsset', id),
+  async getEmbeddedAssetsByLibraryItem(libraryItemId: string): Promise<any[]> {
+    return ipcRenderer.invoke('storage:getEmbeddedAssetsByLibraryItem', libraryItemId)
+  }
+
+  async getEmbeddedAssetById(id: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getEmbeddedAssetById', id)
+  }
+
+  async createEmbeddedAsset(asset: any): Promise<any> {
+    return ipcRenderer.invoke('storage:createEmbeddedAsset', asset)
+  }
+
+  async updateEmbeddedAsset(id: string, assetUpdate: any): Promise<any> {
+    return ipcRenderer.invoke('storage:updateEmbeddedAsset', id, assetUpdate)
+  }
+
+  async deleteEmbeddedAsset(id: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteEmbeddedAsset', id)
+  }
 
   // == SupplementaryFiles ==
-  getSupplementaryFilesByLibraryItem: (libraryItemId, type?, language?) =>
-    ipcRenderer.invoke('storage:getSupplementaryFilesByLibraryItem', libraryItemId, type, language),
-  getSupplementaryFileById: (id) => ipcRenderer.invoke('storage:getSupplementaryFileById', id),
-  createSupplementaryFile: (file) => ipcRenderer.invoke('storage:createSupplementaryFile', file),
-  updateSupplementaryFile: (id, fileUpdate) =>
-    ipcRenderer.invoke('storage:updateSupplementaryFile', id, fileUpdate),
-  deleteSupplementaryFile: (id) => ipcRenderer.invoke('storage:deleteSupplementaryFile', id)
+  async getSupplementaryFilesByLibraryItem(
+    libraryItemId: string,
+    type?: string,
+    language?: string
+  ): Promise<SupplementaryFile[]> {
+    return ipcRenderer.invoke(
+      'storage:getSupplementaryFilesByLibraryItem',
+      libraryItemId,
+      type,
+      language
+    )
+  }
+
+  async getSupplementaryFileById(id: string): Promise<SupplementaryFile | undefined> {
+    return ipcRenderer.invoke('storage:getSupplementaryFileById', id)
+  }
+
+  async createSupplementaryFile(
+    file: CreateSupplementaryFileDTO
+  ): Promise<SupplementaryFile | undefined> {
+    return ipcRenderer.invoke('storage:createSupplementaryFile', file)
+  }
+
+  async updateSupplementaryFile(
+    id: string,
+    fileUpdate: UpdateSupplementaryFileDTO
+  ): Promise<SupplementaryFile | undefined> {
+    return ipcRenderer.invoke('storage:updateSupplementaryFile', id, fileUpdate)
+  }
+
+  async deleteSupplementaryFile(id: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteSupplementaryFile', id)
+  }
 }
+
+// Export singleton instance
+export const storage = new StorageService()

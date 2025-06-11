@@ -28,7 +28,7 @@ import {
   VocabularyEntry,
   VocabularySource
 } from '@shared/models'
-import { ContentDocument, PluginManifest } from '@shared/types'
+import { ContentDocument, PluginManifest, EventBus, StorageEvents } from '@shared/types'
 
 /* -------------------------------------------------------------------------- */
 /*                         Domain Storage Types                               */
@@ -39,7 +39,7 @@ import { ContentDocument, PluginManifest } from '@shared/types'
  * in the Faseeh application. This includes database operations and file system management.
  * @public
  */
-export interface IStorage {
+export interface IStorage extends EventBus<StorageEvents> {
   // == Path Management ==
 
   /**
