@@ -1,48 +1,92 @@
-# Faseeh: Learn Languages Through What You Love
+# Whisper Subtitle Engine (Minimal Mode)
 
-Faseeh lets you turn your favorite content—books, podcasts, videos, social media—into personalized learning material. No rigid courses, no boring drills. Just real-life content, smart tools, and full control over how you learn.
+This repository provides a **minimal, production-ready** implementation of Faseeh’s subtitle engine that uses OpenAI Whisper. Only four TypeScript source files are required:
 
-**Why Faseeh?**  
-✨ **Learn Anywhere, with Anything**: Use any digital material—learn from what already interests you.  
-✨ **Expand with Plugins**: Build or install plugins for specific languages, skills, or styles.  
-✨ **Collaborate & Share**: Join a global community to co-create resources, strategies, and plugins.  
-✨ **All-in-One Toolkit**: Access Subtitles generation, dictionaries, pronunciation tools, and more in one place—no app-hopping.
+| File                        | Purpose                                                             |
+| --------------------------- | ------------------------------------------------------------------- |
+| `engine.types.ts`           | Shared type definitions (`SubtitleOptions`, `SubtitleResult`, etc.) |
+| `SubtitleEngine.ts`         | Abstract base class for all subtitle engines                        |
+| `SubtitleEngineRegistry.ts` | Registers engines and orchestrates subtitle generation              |
+| `OpenAIDirectEngine.ts`     | Concrete engine that calls Whisper API via HTTP                     |
 
-> **Vision:** Faseeh operates on the principle that language acquisition thrives when aligned with personal interests and real-world contexts. Bridges the gap between education and daily life by transforming passive scrolling or reading into active learning, making mastery a natural result of exploring what fascinates you.
+All other TS files have been removed for minimal compliance.
 
-## ✅ Recommended IDE Setup
+---
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+## 🚀 Quick Start
 
-## 🚀 Getting Started
-
-1. Clone the repo and install dependencies:
+### 1. Clone & Install
 
 ```bash
-git clone https://github.com/FaseehApp/Faseeh.git
+git clone <this-repo>
 cd Faseeh
 npm install
 ```
 
-2. Start the app in development mode (hot‑reload enabled):
+### 2. Environment Variables
 
-```bash
-$ npm run dev
+Create a `.env` file at the project root:
+
+```env
+WHISPER_API_KEY=your_whisper_key_here
 ```
 
-## 🛠️ Build
+`.gitignore` already prevents `.env` from being committed.
+
+### 3. Run the Demo
 
 ```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
+# Compile TypeScript then run demo
+npx tsc
+node dist/test.js  # or tsx test.ts for ts-node/tsx
 ```
 
-## 📜 License
+Expected output:
 
-This project is licensed under the MIT License. See LICENSE for details.
+```bash
+Starting subtitle engine test...
+Attempting to generate subtitles for: /absolute/path/to/test.mp3
+--- ✅ Subtitles Generated Successfully ---
+1
+00:00:00,000 --> 00:00:01,000
+Hello, welcome to the show.
+
+2
+00:00:01,000 --> 00:00:03,000
+Today we’re discussing Whisper models.
+...
+```
+
+> **Note**: Place a short MP3 file named `test.mp3` in the repo root before running the demo.
+
+---
+
+## 📜 API Usage Example
+
+```ts
+import { SubtitleEngineRegistry } from './SubtitleEngineRegistry.js'
+import { OpenAIDirectEngine } from './OpenAIDirectEngine.js'
+
+const registry = new SubtitleEngineRegistry()
+registry.register(new OpenAIDirectEngine({ id: 'openai', name: 'Whisper', type: 'direct' }))
+
+const result = await registry.generateSubtitles({
+  engineId: 'openai',
+  audioData: new Blob([myAudioBuffer]),
+  language: 'en',
+  responseFormat: 'srt'
+})
+console.log(result.text)
+```
+
+---
+
+## 🧪 Tests
+
+Minimal demo in `test.ts` doubles as an integration test. Run it with `npm run test` after adding a script in `package.json` if desired.
+
+---
+
+## License
+
+MIT

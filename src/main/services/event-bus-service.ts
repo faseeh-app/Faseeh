@@ -1,9 +1,4 @@
-import {
-  EventType,
-  Handler,
-  WildcardHandler,
-  EventBus
-} from '@shared/types'
+import { EventType, Handler, WildcardHandler, EventBus } from '@shared/types'
 import { EventEmitter } from 'events'
 import { WebContents } from 'electron'
 
