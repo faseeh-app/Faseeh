@@ -1,7 +1,37 @@
 import type { IStorage } from '@shared/domain-storage.d'
+export type { IStorage }
 
-export * from '@shared/models.d'
-export * from '@shared/domain-storage.d'
+// Re-export all models that are referenced by the IStorage interface
+export type {
+  LibraryItem,
+  ContentGroup,
+  Collection,
+  CollectionMember,
+  VocabularyEntry,
+  VocabularySource,
+  EmbeddedAsset,
+  SupplementaryFile,
+  AppSetting,
+  PluginData,
+  CreateLibraryItemDTO,
+  UpdateLibraryItemDTO,
+  CreateContentGroupDTO,
+  UpdateContentGroupDTO,
+  CreateCollectionDTO,
+  UpdateCollectionDTO,
+  CreateCollectionMemberDTO,
+  CreateVocabularyEntryDTO,
+  UpdateVocabularyEntryDTO,
+  CreateVocabularySourceDTO,
+  CreateEmbeddedAssetDTO,
+  UpdateEmbeddedAssetDTO,
+  CreateSupplementaryFileDTO,
+  UpdateSupplementaryFileDTO,
+  CreatePluginDataDTO,
+  UpdatePluginDataDTO,
+  CreateAppSettingDTO,
+  UpdateAppSettingDTO
+} from '@shared/models'
 
 /* -------------------------------------------------------------------------- */
 /*                          Content Document Types                            */
@@ -375,8 +405,8 @@ export interface IPlugin {
    */
   listDataFiles(subDirectory?: string): Promise<string[]>
 
-  // ---@internalal Methods ---
-
-  /**@internalal method to clean up all registered listeners */
+  /** method to clean up all registered listeners */
   _cleanupListeners(): void
 }
+
+export type { BasePlugin } from '@root/src/renderer/src/core/services/plugins/plugin'

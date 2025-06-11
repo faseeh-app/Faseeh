@@ -2,10 +2,7 @@ import {
   EventType,
   Handler,
   WildcardHandler,
-  EventBus,
-  PluginEvents,
-  StorageEvents,
-  WorkspaceEvents
+  EventBus
 } from '@shared/types'
 import { EventEmitter } from 'events'
 import { WebContents } from 'electron'

@@ -1,9 +1,10 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
-  "mainEntryPointFilePath": "<projectFolder>/src/shared/types.d.ts",
+  "mainEntryPointFilePath": "<projectFolder>/dist/shared/faseeh.d.ts",
   "bundledPackages": [],
   "compiler": {
-    "tsconfigFilePath": "<projectFolder>/tsconfig.plugin-api.json"
+    "tsconfigFilePath": "<projectFolder>/tsconfig.api.json",
+    "skipLibCheck": true
   },
   "apiReport": {
     "enabled": false
@@ -13,8 +14,8 @@
   },
   "dtsRollup": {
     "enabled": true,
-    "untrimmedFilePath": "<projectFolder>/packages/faseeh/faseeh.d.ts",
-    "publicTrimmedFilePath": "<projectFolder>/packages/faseeh/faseeh.d.ts"
+    "publicTrimmedFilePath": "<projectFolder>/packages/faseeh/faseeh.d.ts",
+    "omitTrimmingComments": true
   },
   "tsdocMetadata": {
     "enabled": false
@@ -33,6 +34,9 @@
         "logLevel": "none"
       },
       "ae-internal-missing-underscore": {
+        "logLevel": "none"
+      },
+      "ae-unresolved-link": {
         "logLevel": "none"
       }
     },

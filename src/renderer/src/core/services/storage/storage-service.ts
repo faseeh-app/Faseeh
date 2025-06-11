@@ -15,7 +15,15 @@ import { EventBusService } from '@renderer/core/services/event-bus/event-bus-ser
 
 const { ipcRenderer } = require('electron')
 
-export class StorageService extends EventBusService<StorageEvents> implements IStorage {
+/**
+ * Renderer storage service that provides access to all data persistence operations.
+ *
+ * This service acts as a bridge between the renderer process and the main process storage layer,
+ * using Electron IPC to communicate with the underlying database and file system operations.
+ * It extends EventBusService to emit storage-related events.
+ * @public
+ */
+class StorageService extends EventBusService<StorageEvents> implements IStorage {
   constructor() {
     super('storage')
   }
@@ -338,5 +346,31 @@ export class StorageService extends EventBusService<StorageEvents> implements IS
   }
 }
 
-// Export singleton instance
+/**
+ * Singleton instance of the storage service for the renderer process.
+ *
+ * This is the primary interface for all data persistence operations in the renderer.
+ * Use this instance throughout the application to access database and file system.
+ *
+ * @example
+ * ```typescript
+ * import { storage } from '@renderer/core/services/storage/storage-service'
+ *
+ * // Get library items
+ * const items = await storage.getLibraryItems()
+ *
+ * // Create a new library item
+ * const newItem = await storage.createLibraryItem({
+ *   title: 'My Document',
+ *   type: 'text'
+ * })
+ *
+ * // Listen for storage events
+ * storage.on('library-item-created', (item) => {
+ *   console.log('New item created:', item)
+ * })
+ * ```
+ *
+ * @public
+ */
 export const storage = new StorageService()

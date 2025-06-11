@@ -27,12 +27,16 @@ const PLUGIN_DATA_SUBDIR_NAME = 'data'
 const ENABLED_PLUGINS_FILE_NAME = 'enabled_plugins.json'
 
 /**
- * StorageService implements the IStorageAPI interface for managing all data storage operations
- * in the Faseeh application.
+ * Main process storage service that handles all data persistence operations for the application.
+ *
+ * This service implements the complete storage layer, managing both database operations via Kysely
+ * and file system operations for documents, assets, and plugin data. It extends EventBusService
+ * to emit storage-related events and automatically registers IPC handlers for communication
+ * with the renderer process.
  *
  * @implements {IStorageAPI}
  */
-export class StorageService extends EventBusService<StorageEvents> implements IStorageAPI {
+class StorageService extends EventBusService<StorageEvents> implements IStorageAPI {
   /**
    * Creates a new StorageService instance.
    *
@@ -1178,4 +1182,23 @@ export class StorageService extends EventBusService<StorageEvents> implements IS
   }
 }
 
+/**
+ * Singleton instance of the main process storage service.
+ *
+ * This is the primary storage service instance for the main process, initialized with
+ * the application database connection. All IPC handlers for storage operations are
+ * automatically registered when this instance is created.
+ *
+ * @example
+ * ```typescript
+ * const items = await storage.getLibraryItems()
+ *
+ * // Listen for storage events
+ * storage.on('library-item-created', (item) => {
+ *   console.log('Library item created:', item)
+ * })
+ * ```
+ *
+ * @internal
+ */
 export const storage = new StorageService(db)
