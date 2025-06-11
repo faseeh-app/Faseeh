@@ -25,6 +25,7 @@ const SUPPLEMENTARY_FILES_DIR_NAME = 'supplementary'
 const PLUGIN_DATA_SUBDIR_NAME = 'data'
 
 const ENABLED_PLUGINS_FILE_NAME = 'enabled_plugins.json'
+const MANIFEST_FILE_NAME = 'manifest.json'
 
 /**
  * Main process storage service that handles all data persistence operations for the application.
@@ -596,7 +597,7 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
   async readPluginManifest(pluginId: string): Promise<PluginManifest | undefined> {
     const manifestPath = path.join(
       (await this.getPluginDirectoryPath(pluginId)) || '',
-      'manifest.json'
+      MANIFEST_FILE_NAME
     )
     try {
       const content = await fs.readFile(manifestPath, 'utf-8')
