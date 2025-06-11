@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { RouteNames } from '@renderer/common/router/routes'
-import { workspaceEvents } from '@shared/constants/event-emitters'
+import { workspaceService} from '@renderer/core/services/workspace/workspace-service'
 
 export interface Tab {
   id: string
@@ -58,7 +58,7 @@ export const useTabStore = defineStore('tabs', () => {
     // Prevent closing the last tab
     if (tabs.value.length <= 1) return
 
-    workspaceEvents.emit('tab:close', {
+    workspaceService.emit('tab:close', {
       tabId: tabToRemove.id,
       title: tabToRemove.title
     })
@@ -96,7 +96,7 @@ export const useTabStore = defineStore('tabs', () => {
     const closedCount = tabsToClose.length
 
     if (closedCount > 0) {
-      workspaceEvents.emit('tab:close-all', { closedCount })
+      workspaceService.emit('tab:close-all', { closedCount })
       const tabsToCloseIds = tabsToClose.map((tab) => tab.id)
       tabsToCloseIds.forEach((tabId) => removeTab(tabId))
     }
@@ -107,7 +107,7 @@ export const useTabStore = defineStore('tabs', () => {
     const closedCount = tabsToClose.length
 
     if (closedCount > 0) {
-      workspaceEvents.emit('tab:close-others', { exceptTabId, closedCount })
+      workspaceService.emit('tab:close-others', { exceptTabId, closedCount })
       const tabsToCloseIds = tabsToClose.map((tab) => tab.id)
       tabsToCloseIds.forEach((tabId) => removeTab(tabId))
     }
@@ -116,7 +116,7 @@ export const useTabStore = defineStore('tabs', () => {
     const tab = tabs.value.find((t) => t.id === tabId)
     if (!tab) return
 
-    workspaceEvents.emit('tab:reload', {
+    workspaceService.emit('tab:reload', {
       tabId: tab.id,
       title: tab.title
     })
@@ -179,7 +179,7 @@ export const useTabStore = defineStore('tabs', () => {
       state: tab.state ? { ...tab.state } : undefined
     })
 
-    workspaceEvents.emit('tab:duplicate', {
+    workspaceService.emit('tab:duplicate', {
       tabId: tab.id,
       title: tab.title
     })
