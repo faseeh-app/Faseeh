@@ -343,6 +343,10 @@ export interface FaseehApp {
 
   /** Storage API facade for accessing the main process storage service */
   storage: IStorage
+  plugins: {
+    getPlugin: (pluginId: string) => unknown
+    enabledPlugins: () => Set<string>
+  }
 }
 
 /**

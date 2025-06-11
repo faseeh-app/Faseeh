@@ -394,11 +394,11 @@ export class PluginManager {
           process.platform === 'win32' ? 'win' : process.platform === 'darwin' ? 'mac' : 'linux'
       },
       storage: this.storage,
-      // Add plugins API to allow inter-plugin access
       plugins: {
-        getPlugin: (pluginId: string) => this.getPluginInstance(pluginId)
+        getPlugin: (pluginId: string) => this.getPluginInstance(pluginId),
+        enabledPlugins: () => this.enabledPlugins
       }
-    } as FaseehApp & { plugins: { getPlugin: (pluginId: string) => BasePlugin | null } }
+    }
   }
 
   /**
