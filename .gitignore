@@ -1,6 +1,7 @@
 node_modules
 dist
 out
+temp
 .DS_Store
 .eslintcache
 *.log*
@@ -8,6 +9,5 @@ desktop.ini
 .env
 faseeh-specs/
 .idea/
-plugins/
-packages/
-docs/
+/plugins
+/packages

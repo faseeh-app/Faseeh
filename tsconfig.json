@@ -3,14 +3,17 @@
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }],
   "compilerOptions": {
     "types": ["vite/client"],
+    "target": "ES2020", // <-- Use a modern target for better compatibility.
     "baseUrl": ".",
     "strict": true,
+    "declaration": true, // <-- This is CRUCIAL. It creates the raw .d.ts files.
+    "outDir": "dist", // <-- Good practice to put compiled output in a 'dist' folder.
+    "declarationDir": "dist", // <-- Put the raw .d.ts files in the same folder.
     "paths": {
       "@root/*": ["*"],
       "@renderer/*": ["src/renderer/src/*"],
       "@shared/*": ["src/shared/*"],
-      "@main/*": ["src/main/*"],
-      "@preload/*": ["src/preload/*"]
+      "@main/*": ["src/main/*"]
     }
   }
 }

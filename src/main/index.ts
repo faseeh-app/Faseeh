@@ -3,20 +3,23 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { join } from 'path'
 import icon from '@root/resources/icon.png?asset'
 import { db, migrateToLatest } from '@main/db/database'
-import { initializeFaseehDirectory, setupStorageServiceIPC } from '@main/services/storage-service'
+import { storage } from '@main/services/storage-service'
 import { setupWindowControls } from '@main/utilities/window-controls'
-import { vaultEvents } from '@shared/constants/event-emitters'
 
 class AppLifecycle {
   private mainWindow: BrowserWindow | null = null
-
   async init(): Promise<void> {
     // Initialize database
     await migrateToLatest(db)
 
-    // Initialize & setup main process services
-    await initializeFaseehDirectory()
-    setupStorageServiceIPC(db)
+    storage.on('media:saved', (event) => {
+      console.log('Main received event - Media saved:', event.mediaId, 'from', event.path)
+
+      // Check if this is the event from renderer process
+      if (event.mediaId === '67890') {
+        console.log('✅ SUCCESS: Renderer-to-Main communication is working!')
+      }
+    })
 
     // Configure app behavior
     electronApp.setAppUserModelId('com.faseeh')
@@ -52,9 +55,8 @@ class AppLifecycle {
       frame: false,
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {
-        preload: join(__dirname, '../preload/index.js'),
         nodeIntegration: true,
-        contextIsolation: true,
+        contextIsolation: false,
         sandbox: false
       }
     })
@@ -76,21 +78,26 @@ class AppLifecycle {
       this.mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
   }
-
   test(): void {
     if (is.dev) {
       console.log('User data path:', app.getPath('userData'))
       console.log('App path:', app.getAppPath())
 
-      // Test IPC
+      // Wait for renderer to be ready before emitting test events
       if (this.mainWindow) {
-        this.mainWindow.webContents.once('did-finish-load', () => {})
+        this.mainWindow.webContents.once('did-finish-load', () => {
+          // Give renderer a moment to set up event listeners
+          setTimeout(() => {
+            console.log('Main process emitting test event...')
+            storage.emit('media:saved', { mediaId: '12345', path: 'main' })
+          }, 100)
+        })
       }
     }
   }
 
   close(): void {
-    vaultEvents.clearAllHandlers()
+    storage.clearAllHandlers()
 
     db.destroy()
 
