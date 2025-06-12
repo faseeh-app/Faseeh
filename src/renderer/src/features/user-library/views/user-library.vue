@@ -8,12 +8,15 @@ import ScrollArea from '@renderer/common/components/ui/scroll-area/ScrollArea.vu
 import MediaCard from '@renderer/common/components/ui/MediaCard.vue'
 import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
+import ImportDialog from '../components/import/ImportDialog.vue'
 import { ref, useTemplateRef } from 'vue'
 import { useScrollPosition } from '@renderer/common/composables/useScrollPosition'
 import videoThumbnail from '@renderer/common/assets/images/yt_video_thumbnail_1.webp'
 import playlistThumbnail from '@renderer/common/assets/images/yt_playlist_thumbnail_1.webp'
 import bookCover1 from '@renderer/common/assets/images/book_cover_1.webp'
 import bookCover2 from '@renderer/common/assets/images/book_cover_2.webp'
+
+import { LibraryItem } from '@shared/types/models'
 
 interface MediaItem {
   id: string
@@ -25,9 +28,33 @@ interface MediaItem {
   thumbnail?: string
 }
 
+interface LibraryItemForm {
+  name: string
+  type: 'video' | 'audio' | 'document' | 'book' | 'article' | 'webpage'
+  language: string
+  sourceUri: string
+  dynamicMetadata: {
+    description?: string
+    author?: string
+    genre?: string
+    tags?: string[]
+  }
+  thumbnail?: File | string
+}
+
 const scrollAreaRef = useTemplateRef<HTMLElement>('scrollAreaRef')
 
 useScrollPosition(scrollAreaRef)
+const open = ref(true)
+
+// Handle import from dialog
+const handleImport = (data: { source: FileList | string; metadata: LibraryItemForm }) => {
+  // TODO: Implement actual import logic using manual import service
+  console.log('Importing:', data)
+
+  // Close dialog
+  open.value = false
+}
 
 // Sample media items data
 const mediaItems = ref<MediaItem[]>([
@@ -69,30 +96,34 @@ const mediaItems = ref<MediaItem[]>([
   }
 ])
 </script>
+
 <template>
-  <div class="flex flex-col">
+  <div class="faseeh-user-library">
     <!-- Search & Import Controls -->
-    <div class="flex items-center py-3 px-6 space-x-1.5">
+    <div class="faseeh-user-library__header">
       <SearchBar />
       <SortMenu />
       <VDivider />
-      <Button>
-        <span class="icon-[solar--import-bold-duotone] size-7" />
+      <Button @click="open = true">
+        <span class="icon-[solar--import-bold-duotone] faseeh-user-library__import-button-icon" />
         Import
       </Button>
     </div>
 
     <!-- Filters -->
-    <div class="flex p-4 space-x-1.5">
+    <div class="faseeh-user-library__filters">
       <LanguageFilter />
       <TypeFilter />
     </div>
     <HDivider />
+
     <!-- Content Area -->
-    <ScrollArea ref="scrollAreaRef" class="flex-grow h-1">
+    <ScrollArea ref="scrollAreaRef" class="faseeh-user-library__content">
       <div class="faseeh-media-grid">
         <MediaCard v-for="item in mediaItems" :key="item.id" :item="item" />
       </div>
     </ScrollArea>
+    <!-- Import Dialog -->
+    <ImportDialog v-model:open="open" @import="handleImport" />
   </div>
 </template>

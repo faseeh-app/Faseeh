@@ -1,0 +1,27 @@
+/* -------------------------------------------------------------------------- */
+/*                              User Library                                  */
+/* -------------------------------------------------------------------------- */
+
+/* Main Layout */
+.faseeh-user-library {
+  @apply flex flex-col;
+}
+
+/* Header Controls */
+.faseeh-user-library__header {
+  @apply flex items-center py-3 px-6 space-x-1.5;
+}
+
+.faseeh-user-library__import-button-icon {
+  @apply size-7;
+}
+
+/* Filters */
+.faseeh-user-library__filters {
+  @apply flex p-4 space-x-1.5;
+}
+
+/* Content Area */
+.faseeh-user-library__content {
+  @apply flex-grow h-1;
+}

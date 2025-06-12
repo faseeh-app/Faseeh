@@ -1,0 +1,295 @@
+/* -------------------------------------------------------------------------- */
+/*                              Import Dialog                                 */
+/* -------------------------------------------------------------------------- */
+
+/* Import Dialog Base */
+.faseeh-import-dialog {
+  @apply border-input min-w-fit max-w-2xl;
+}
+
+/* faseeh-import-dialog__header {
+ 
+} */
+
+.faseeh-import-dialog__title {
+  @apply text-xl;
+}
+
+.faseeh-import-dialog__content {
+  @apply space-y-6;
+}
+
+.faseeh-import-dialog__footer {
+  @apply flex gap-2 justify-end;
+}
+
+.faseeh-import-dialog__footer-actions {
+  @apply flex gap-2;
+}
+
+/* Media Selection Step */
+.faseeh-media-selection {
+  @apply space-y-6;
+}
+
+.faseeh-media-selection__divider {
+  @apply flex items-center gap-4;
+}
+
+.faseeh-media-selection__divider-line {
+  @apply flex-1 h-px bg-border;
+}
+
+.faseeh-media-selection__divider-text {
+  @apply text-sm text-muted-foreground;
+}
+
+/* URL Input */
+.faseeh-url-input {
+  @apply space-y-2;
+}
+
+.faseeh-url-input__label {
+  @apply text-sm font-medium flex items-center gap-2;
+}
+
+.faseeh-url-input__icon {
+  @apply size-4;
+}
+
+.faseeh-url-input__field {
+  @apply w-full;
+}
+
+/* File Dropzone */
+.faseeh-file-dropzone {
+  @apply space-y-4;
+}
+
+.faseeh-file-dropzone__label {
+  @apply text-sm font-medium flex items-center gap-2;
+}
+
+.faseeh-file-dropzone__label-icon {
+  @apply size-4;
+}
+
+.faseeh-file-dropzone__area {
+  @apply border-2 border-dashed rounded-lg p-8 text-center transition-colors;
+}
+
+.faseeh-file-dropzone__area--inactive {
+  @apply border-muted hover:border-primary hover:bg-primary/5;
+}
+
+.faseeh-file-dropzone__area--active {
+  @apply border-primary bg-primary/5;
+}
+
+.faseeh-file-dropzone__upload-icon {
+  @apply size-12 mx-auto mb-4 text-muted-foreground;
+}
+
+.faseeh-file-dropzone__content {
+  @apply space-y-2;
+}
+
+.faseeh-file-dropzone__text {
+  @apply text-lg font-medium;
+}
+
+.faseeh-file-dropzone__browse-button {
+  @apply p-0 h-auto;
+}
+
+.faseeh-file-dropzone__help-text {
+  @apply text-sm text-muted-foreground;
+}
+
+.faseeh-file-dropzone__selected-files {
+  @apply mt-4 space-y-2;
+}
+
+.faseeh-file-dropzone__selected-title {
+  @apply text-sm font-medium;
+}
+
+.faseeh-file-dropzone__file-list {
+  @apply space-y-1;
+}
+
+.faseeh-file-dropzone__file-item {
+  @apply flex items-center gap-2 text-sm p-2 bg-accent rounded;
+}
+
+.faseeh-file-dropzone__file-icon {
+  @apply size-4;
+}
+
+.faseeh-file-dropzone__file-size {
+  @apply text-xs text-muted-foreground;
+}
+
+.faseeh-file-dropzone__hidden-input {
+  @apply hidden;
+}
+
+/* Media Details Step - Two Column Layout */
+.faseeh-media-details {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-8;
+}
+
+.faseeh-media-details__thumbnail-column {
+  @apply flex justify-center items-start;
+}
+
+.faseeh-media-details__form-column {
+  @apply flex flex-col;
+}
+
+.faseeh-media-details__form {
+  @apply flex flex-col gap-3;
+}
+
+.faseeh-media-details__thumbnail-container {
+  @apply w-fit h-fit rounded-lg border-2 border-dashed border-input cursor-pointer transition-all duration-200 overflow-hidden;
+  @apply hover:border-primary hover:bg-accent/20;
+}
+
+.faseeh-media-details__thumbnail-container--loading {
+  @apply cursor-not-allowed;
+}
+
+.faseeh-media-details__thumbnail-container--error {
+  @apply border-destructive/50 bg-destructive/5;
+}
+
+.faseeh-media-details__thumbnail-image {
+  @apply relative w-full h-full;
+}
+
+.faseeh-media-details__thumbnail-image img {
+  @apply w-full h-full object-cover rounded-lg;
+}
+
+.faseeh-media-details__thumbnail-overlay {
+  @apply absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200;
+}
+
+.faseeh-media-details__upload-icon {
+  @apply w-6 h-6;
+}
+
+.faseeh-media-details__thumbnail-overlay span {
+  @apply text-sm font-medium;
+}
+
+.faseeh-media-details__thumbnail-placeholder {
+  @apply w-70 h-70 flex flex-col items-center justify-center bg-muted text-muted-foreground;
+}
+
+.faseeh-media-details__placeholder-icon {
+  @apply w-16 h-16 mb-3;
+}
+
+.faseeh-media-details__thumbnail-placeholder span {
+  @apply text-sm font-medium;
+}
+
+.faseeh-media-details__thumbnail-loading {
+  @apply w-full h-full flex items-center justify-center bg-muted;
+}
+
+.faseeh-media-details__loading-icon {
+  @apply w-8 h-8 animate-spin text-primary;
+}
+
+.faseeh-media-details__field {
+  @apply space-y-2 flex flex-col gap-0;
+}
+
+.faseeh-media-details__label {
+  @apply text-sm font-medium;
+}
+
+.faseeh-media-details__select {
+  @apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  @apply transition-colors duration-200 cursor-pointer;
+}
+
+.faseeh-media-details__textarea {
+  @apply w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm resize-none;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  @apply transition-colors duration-200;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           Mobile Responsive Styles                        */
+/* -------------------------------------------------------------------------- */
+
+/* Mobile Drawer Styles */
+.faseeh-import-dialog--mobile {
+  @apply max-h-[90vh] overflow-hidden;
+}
+
+.faseeh-import-dialog__mobile-header {
+  @apply pb-4 border-b border-border;
+}
+
+.faseeh-import-dialog__mobile-title {
+  @apply text-lg font-semibold;
+}
+
+.faseeh-import-dialog__mobile-description {
+  @apply text-sm text-muted-foreground mt-1;
+}
+
+.faseeh-import-dialog__mobile-content {
+  @apply flex-1 overflow-y-auto px-4 py-2;
+}
+
+/* Mobile Layout Adjustments */
+@media (max-width: 768px) {
+  .faseeh-import-dialog {
+    @apply max-w-full;
+  }
+
+  .faseeh-import-dialog__content {
+    @apply p-0;
+  }
+
+  .faseeh-import-dialog__footer {
+    @apply flex-col gap-3 pt-4 border-t border-border;
+  }
+
+  .faseeh-import-dialog__footer-actions {
+    @apply flex w-full gap-2;
+  }
+
+  .faseeh-import-dialog__footer-actions > * {
+    @apply flex-1;
+  }
+
+  /* Media details mobile adjustments */
+  .faseeh-media-details {
+    @apply grid-cols-1 gap-4 p-0;
+  }
+
+  .faseeh-media-details__thumbnail-container {
+    @apply w-full max-w-xs h-32 mx-auto;
+  }
+}
+
+/* Very small mobile screens */
+@media (max-width: 480px) {
+  .faseeh-import-dialog__step-number {
+    @apply w-6 h-6 text-xs;
+  }
+
+  .faseeh-media-details__thumbnail-container {
+    @apply h-28;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
