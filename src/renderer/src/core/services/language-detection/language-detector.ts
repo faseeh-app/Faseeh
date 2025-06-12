@@ -1,28 +1,29 @@
 import { francAll } from 'franc'
+import { LanguageDetector as ILanguageDetector } from '@shared/types/types';
 
-export class LanguageDetector {
+export class LanguageDetector implements ILanguageDetector {
   async detectLanguage(source: string): Promise<string | null> {
     if (!source || source.trim().length < 10) {
-      return null
+      return null;
     }
 
     try {
-      const results = francAll(source)
+      const results = francAll(source);
 
       if (results.length === 0) {
-        return null
+        return null;
       }
-      const [bestResult] = results
-      const languageCode = bestResult[0]
+      const [bestResult] = results;
+      const languageCode = bestResult[0];
 
       if (languageCode === 'und') {
-        return null
+        return null;
       }
 
-      return languageCode
+      return languageCode;
     } catch (error) {
-      console.error('Language detection failed:', error)
-      return null
+      console.error('Language detection failed:', error);
+      return null;
     }
   }
 }

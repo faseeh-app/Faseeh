@@ -1,4 +1,3 @@
-import { LanguageDetector } from '@root/src/renderer/src/core/services/language-detection/language-detector'
 import type { IStorage } from '@shared/types/domain-storage'
 export type { IStorage }
 
@@ -33,6 +32,8 @@ export type {
   CreateAppSettingDTO,
   UpdateAppSettingDTO
 } from '@shared/types/models'
+
+import type { LibraryItem } from '@shared/types/models'
 
 /* -------------------------------------------------------------------------- */
 /*                          Content Document Types                            */
@@ -165,7 +166,6 @@ export interface ContentDocument {
       originalSrc?: string
       width?: number
       height?: number
-      // Refers to stored asset path implicitly or explicitly via Storage Service lookup
     }
   }
   contentBlocks: ContentBlock[] // Ordered array of content blocks
@@ -332,6 +332,19 @@ export interface PluginInfo {
 }
 
 /**
+ * Language detection interface for plugins and services that need to identify the language of a given text source.
+ * @public
+ */
+export interface LanguageDetector {
+  /**
+   * Detects the language of the provided text source.
+   * @param source The text source to analyze, can be a string or a file path.
+   * @return A promise that resolves to an ISO 639-3 language code (e.g., 'eng' for English) or null if detection fails.
+   */
+  detectLanguage(source: string): Promise<string | null>
+}
+
+/**
  * The FaseehApp object provides plugins with access to application functionality
  * @public
  */
@@ -352,7 +365,6 @@ export interface FaseehApp {
 
   // Language Detector
   languageDetector: LanguageDetector
-
 }
 
 /**
@@ -424,4 +436,510 @@ export interface IPlugin {
   _cleanupListeners(): void
 }
 
-export type { BasePlugin } from '@root/src/renderer/src/core/services/plugins/plugin'
+/* -------------------------------------------------------------------------- */
+/*                               Content Adapter                              */
+/* -------------------------------------------------------------------------- */
+/**
+ * @public
+ */
+export type ContentAdapterSource = string | Buffer | File
+import { ContentAdapter } from '@renderer/core/services/content-adapter/content-adapter'
+/**
+ * @public
+ */
+export interface AssetDetail {
+  format: string
+  content: Buffer | string
+}
+/**
+ * @public
+ */
+export interface DocumentAssets {
+  [assetId: string]: AssetDetail
+}
+/**
+ * @public
+ */
+export interface ContentAdapterResult {
+  libraryItemData: Partial<LibraryItem>
+  contentDocument?: ContentDocument
+
+  documentAssets?: DocumentAssets
+
+  associatedFiles?: {
+    type: string
+    format?: string
+    language?: string
+    filename?: string
+    content: string | Buffer
+  }[]
+}
+
+// _______________ Adapter Definition types _______________
+/**
+ * @public
+ */
+export type ContentAdapterFunction = (
+  source: ContentAdapterSource,
+  context: {
+    app: Pick<FaseehApp, 'storage' | 'plugins'>
+    originalPath?: string
+    libraryItemId?: string | null
+  }
+) => Promise<ContentAdapterResult>
+/**
+ * @public
+ */
+export interface ContentAdapterInfo {
+  id: string
+  name: string
+  supportedMimeTypes: string[]
+
+  supportedExtensions: string[]
+
+  urlPatterns?: string[] | RegExp[]
+  canHandlePastedText?: boolean
+
+  priority?: number
+
+  description?: string
+}
+
+// _______________ Adapter Registration types _______________
+/**
+ * @public
+ */
+export type ContentAdapterClass = new (info: ContentAdapterInfo) => ContentAdapter
+
+/**
+ * @public
+ */
+export type ContentAdapterRegistration = ContentAdapterInfo &
+  (
+    | {
+        adapter: ContentAdapterFunction
+        adapterClass?: undefined
+      }
+    | {
+        adapterClass: ContentAdapterClass
+        adapter?: undefined
+      }
+  )
+
+/**
+ * @public
+ */
+export interface ContentAdapterFindCriteria {
+  source: ContentAdapterSource
+  mimeType?: string
+  fileExtension?: string
+  sourceUrl?: string
+  isPastedText?: boolean
+}
+
+/**
+ * Content Adapter Registry for managing the lifecycle of Faseeh content adapters.
+ * @public
+ */
+export interface IContentAdapterRegistry {
+  /**
+   * Registers a new content adapter.
+   *
+   * @param registration - The registration details of the content adapter.
+   * @throws {Error} If an adapter with the same ID is already registered.
+   */
+  register(registration: ContentAdapterRegistration): void
+
+  /**
+   * Unregisters a content adapter by its unique identifier.
+   *
+   * @param id - The unique identifier of the content adapter to unregister.
+   * @throws {Error} If no adapter with the specified ID is registered.
+   */
+  unregister(id: string): void
+
+  /**
+   * Retrieves a content adapter by its unique identifier.
+   *
+   * @param id - The unique identifier of the content adapter.
+   * @returns The content adapter registration, or `null` if not found.
+   */
+  getAdapterById(id: string): ContentAdapterRegistration | null
+
+  /**
+   * Lists all registered content adapters.
+   *
+   * @returns An array of all registered content adapter registrations.
+   */
+  listRegisteredAdapters(): ContentAdapterRegistration[]
+
+  /**
+   * Processes a content source using the registered adapters.
+   *
+   * @param source - The content source to process.
+   * @param context - Optional context information for processing, including:
+   *   - `originalPath`: The original file path of the source.
+   *   - `sourceUrl`: The URL of the source.
+   * @returns A promise resolving to an object indicating the success of the operation,
+   *          and optionally including a `libraryItemId` or an error message.
+   */
+  processSource(
+    source: ContentAdapterSource,
+    context?: {
+      originalPath?: string
+      sourceUrl?: string
+    }
+  ): Promise<{
+    success: boolean
+    libraryItemId?: string
+    error?: string
+  }>
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Metadata Scraper                              */
+/* -------------------------------------------------------------------------- */
+
+import { MetadataScraper } from '@renderer/core/services/metadata-scraper/metadata-scraper'
+/**
+ * @public
+ */
+export type MetadataScraperClass = new (info: MetadataScraperInfo) => MetadataScraper
+/**
+ * @public
+ */
+export type MetadataScraperSource = string | File
+/**
+ * @public
+ */
+export interface MetadataScraperResult {
+  type?: string
+  name?: string
+  thumbnail?: File
+  language?: string
+  dynamicMetadata: Record<string, any>
+}
+
+// _______________ Scraper Definition types _______________
+/**
+ * @public
+ */
+export type MetadataScraperFunction = (
+  source: MetadataScraperSource,
+  context: {
+    app: Pick<FaseehApp, 'storage' | 'plugins'>
+    originalPath?: string
+    sourceUrl?: string
+  }
+) => Promise<MetadataScraperResult>
+/**
+ * @public
+ */
+export interface MetadataScraperInfo {
+  id: string
+  name: string
+  supportedMimeTypes: string[]
+  supportedExtensions: string[]
+  urlPatterns?: string[] | RegExp[]
+  canHandleLocalFiles?: boolean
+  canHandleUrls?: boolean
+  priority?: number
+  description?: string
+}
+/**
+ * @public
+ */
+export interface MetadataScraperFindCriteria {
+  source: MetadataScraperSource
+  mimeType?: string
+  fileExtension?: string
+  sourceUrl?: string
+  isLocalFile?: boolean
+}
+
+// _______________ Scraper Registration types _______________
+/**
+ * @public
+ */
+export type MetadataScraperRegistration = MetadataScraperInfo &
+  (
+    | {
+        scraper: MetadataScraperFunction
+        scraperClass?: undefined
+      }
+    | {
+        scraperClass: MetadataScraperClass
+        scraper?: undefined
+      }
+  )
+
+/**
+ * Criteria used to find the most suitable metadata scraper for a given source.
+ * This interface is used internally by the registry to match sources with appropriate scrapers.
+ *
+ * @public
+ */
+export interface MetadataScraperFindCriteria {
+  /** The source data to be processed */
+  source: MetadataScraperSource
+
+  /** MIME type of the source (e.g., 'video/mp4', 'application/pdf') */
+  mimeType?: string
+
+  /** File extension without the dot (e.g., 'pdf', 'mp4', 'txt') */
+  fileExtension?: string
+
+  /** Full URL if the source is a web resource */
+  sourceUrl?: string
+
+  /** Whether the source is a local file path or File object */
+  isLocalFile?: boolean
+}
+
+/**
+ * Registry interface for managing metadata scrapers in the Faseeh application.
+ *
+ * The metadata scraper registry provides a centralized system for:
+ * - Registering and managing metadata extraction tools
+ * - Automatically selecting the best scraper for different content sources
+ * - Extracting structured metadata from URLs, files, and other sources
+ *
+ * The registry uses a sophisticated scoring algorithm to match sources with scrapers
+ * based on MIME types, file extensions, URL patterns, and capability flags.
+ *
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const registry = new MetadataScraperRegistry(app)
+ *
+ * // Register a scraper
+ * registry.register({
+ *   id: 'youtube-scraper',
+ *   name: 'YouTube Metadata Scraper',
+ *   supportedMimeTypes: [],
+ *   supportedExtensions: [],
+ *   urlPatterns: ['https://(?:www\.)?youtube\.com/watch'],
+ *   canHandleUrls: true,
+ *   priority: 10,
+ *   scraper: async (source, context) => {
+ *     // Implementation here
+ *     return { type: 'video', name: 'Video Title', language: 'en', dynamicMetadata: {} }
+ *   }
+ * })
+ *
+ * // Extract metadata
+ * const result = await registry.scrapeMetadata('https://youtube.com/watch?v=example')
+ * if (result.success) {
+ *   console.log('Title:', result.metadata.name)
+ *   console.log('Language:', result.metadata.language)
+ *   console.log('Type:', result.metadata.type)
+ * }
+ * ```
+ *
+ * @public
+ */
+export interface IMetadataScraperRegistry {
+  /**
+   * Registers a new metadata scraper with the registry.
+   *
+   * The scraper will be available for automatic selection when processing sources
+   * that match its supported criteria (MIME types, extensions, URL patterns).
+   *
+   * @param registration - Complete scraper registration including metadata and implementation
+   *
+   * @throws {Error} When a scraper with the same ID is already registered
+   *
+   * @example
+   * ```typescript
+   * // Register a functional scraper
+   * registry.register({
+   *   id: 'pdf-scraper',
+   *   name: 'PDF Metadata Scraper',
+   *   supportedMimeTypes: ['application/pdf'],
+   *   supportedExtensions: ['pdf'],
+   *   canHandleLocalFiles: true,
+   *   priority: 8,
+   *   scraper: async (source, context) => {
+   *     // PDF processing logic
+   *     return {
+   *       type: 'document',
+   *       name: 'Extracted PDF Title',
+   *       language: 'en',
+   *       dynamicMetadata: { pageCount: 42, author: 'John Doe' }
+   *     }
+   *   }
+   * })
+   *
+   * // Register a class-based scraper
+   * registry.register({
+   *   id: 'custom-scraper',
+   *   name: 'Custom Scraper',
+   *   supportedMimeTypes: ['text/custom'],
+   *   supportedExtensions: ['custom'],
+   *   canHandleLocalFiles: true,
+   *   priority: 5,
+   *   scraperClass: CustomScraperClass
+   * })
+   * ```
+   */
+  register(registration: MetadataScraperRegistration): void
+
+  /**
+   * Removes a registered metadata scraper from the registry.
+   *
+   * After unregistration, the scraper will no longer be considered
+   * for automatic selection when processing sources.
+   *
+   * @param id - Unique identifier of the scraper to remove
+   *
+   * @throws {Error} When no scraper with the specified ID is found
+   *
+   * @example
+   * ```typescript
+   * // Unregister a scraper (useful for plugin cleanup)
+   * registry.unregister('youtube-scraper')
+   * ```
+   */
+  unregister(id: string): void
+
+  /**
+   * Finds the most suitable scraper for the given criteria using a scoring algorithm.
+   *
+   * The scoring system evaluates scrapers based on:
+   * - MIME type match: +3 points
+   * - File extension match: +3 points
+   * - URL pattern match: +2 points
+   * - Local file capability: +2 points
+   * - URL handling capability: +2 points
+   *
+   * When multiple scrapers have the same score, priority values are used as tiebreakers.
+   *
+   * @param criteria - Source characteristics and requirements for scraper matching
+   * @returns The best matching scraper registration, or null if no suitable scraper found
+   *
+   * @example
+   * ```typescript
+   * const criteria: MetadataScraperFindCriteria = {
+   *   source: 'https://youtube.com/watch?v=example',
+   *   sourceUrl: 'https://youtube.com/watch?v=example',
+   *   fileExtension: undefined,
+   *   mimeType: undefined,
+   *   isLocalFile: false
+   * }
+   *
+   * const scraper = registry.findBestScraper(criteria)
+   * if (scraper) {
+   *   console.log(`Selected scraper: ${scraper.name}`)
+   * }
+   * ```
+   */
+  findBestScraper(criteria: MetadataScraperFindCriteria): MetadataScraperRegistration | null
+
+  /**
+   * Retrieves a specific registered scraper by its unique identifier.
+   *
+   * @param id - Unique identifier of the scraper to retrieve
+   * @returns The scraper registration if found, null otherwise
+   *
+   * @example
+   * ```typescript
+   * const scraper = registry.getScraperById('youtube-scraper')
+   * if (scraper) {
+   *   console.log(`Found scraper: ${scraper.name}`)
+   *   console.log(`Priority: ${scraper.priority}`)
+   *   console.log(`Supported extensions: ${scraper.supportedExtensions.join(', ')}`)
+   * }
+   * ```
+   */
+  getScraperById(id: string): MetadataScraperRegistration | null
+
+  /**
+   * Returns an array of all currently registered scrapers.
+   *
+   * Useful for debugging, administration interfaces, or displaying
+   * available capabilities to users.
+   *
+   * @returns Array containing all registered scraper registrations
+   *
+   * @example
+   * ```typescript
+   * const scrapers = registry.listRegisteredScrapers()
+   * console.log(`Total scrapers: ${scrapers.length}`)
+   *
+   * scrapers.forEach(scraper => {
+   *   console.log(`- ${scraper.name} (ID: ${scraper.id})`)
+   *   console.log(`  Extensions: ${scraper.supportedExtensions.join(', ')}`)
+   *   console.log(`  MIME types: ${scraper.supportedMimeTypes.join(', ')}`)
+   *   console.log(`  Priority: ${scraper.priority || 0}`)
+   * })
+   * ```
+   */
+  listRegisteredScrapers(): MetadataScraperRegistration[]
+
+  /**
+   * Extracts metadata from a source using the most appropriate registered scraper.
+   *
+   * This is the main entry point for metadata extraction. The method:
+   * 1. Analyzes the source to determine its characteristics
+   * 2. Finds the best matching scraper using the scoring algorithm
+   * 3. Invokes the scraper to extract metadata
+   * 4. Returns the results in a standardized format
+   *
+   * The extracted metadata includes:
+   * - Content type (video, document, image, etc.)
+   * - Human-readable name/title
+   * - Detected language
+   * - Optional thumbnail image
+   * - Source-specific additional metadata
+   *
+   * @param source - The source to extract metadata from (URL string, file path string, or File object)
+   * @param context - Optional context information to assist with processing
+   * @param context.originalPath - Original file path when source is processed or transformed
+   * @param context.sourceUrl - Explicit source URL when source is ambiguous
+   *
+   * @returns Promise resolving to extraction results with success flag and metadata or error
+   *
+   * @example
+   * ```typescript
+   * // Extract from YouTube URL
+   * const result = await registry.scrapeMetadata('https://youtube.com/watch?v=dQw4w9WgXcQ')
+   * if (result.success) {
+   *   console.log('Video title:', result.metadata.name)
+   *   console.log('Language:', result.metadata.language)
+   *   console.log('Additional info:', result.metadata.dynamicMetadata)
+   * }
+   *
+   * // Extract from local file
+   * const fileResult = await registry.scrapeMetadata('/path/to/document.pdf', {
+   *   originalPath: '/path/to/document.pdf'
+   * })
+   *
+   * // Extract from File object
+   * const file = new File(['content'], 'document.txt', { type: 'text/plain' })
+   * const fileObjResult = await registry.scrapeMetadata(file)
+   *
+   * // Handle extraction errors
+   * if (!result.success) {
+   *   console.error('Extraction failed:', result.error)
+   *   // Fallback logic here
+   * }
+   * ```
+   */
+  scrapeMetadata(
+    source: MetadataScraperSource,
+    context?: {
+      originalPath?: string
+      sourceUrl?: string
+    }
+  ): Promise<{
+    success: boolean
+    metadata?: MetadataScraperResult
+    error?: string
+  }>
+}
+
+//===============================================================================
+
+export type { BasePlugin } from '@renderer/core/services/plugins/plugin'
+export type { ContentAdapter } from '@renderer/core/services/content-adapter/content-adapter'
+export type { MetadataScraper } from '@renderer/core/services/metadata-scraper/metadata-scraper'

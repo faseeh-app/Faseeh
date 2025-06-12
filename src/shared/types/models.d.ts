@@ -11,6 +11,7 @@ export interface LibraryItem {
   id: string
   type: string
   name?: string
+  thumbnail?: File
   language?: string
   sourceUri?: string
   storagePath?: string

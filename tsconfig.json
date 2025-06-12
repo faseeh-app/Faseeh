@@ -2,7 +2,7 @@
   "files": [],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }],
   "compilerOptions": {
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "target": "ES2020", // <-- Use a modern target for better compatibility.
     "baseUrl": ".",
     "strict": true,
@@ -16,6 +16,8 @@
       "@main/*": ["src/main/*"],
       "reka-ui": ["node_modules/reka-ui"]
     },
-    "moduleResolution": "bundler",
-  }
+
+    "moduleResolution": "bundler"
+  },
+  "include": ["src/**/*.vue"]
 }

@@ -1,1 +1,1 @@
-export * from '../common/lib/utils'
+export * from '@renderer/common/lib/utils'
