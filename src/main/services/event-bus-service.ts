@@ -1,14 +1,15 @@
 import { EventType, Handler, WildcardHandler, EventBus } from '@shared/types/types'
-import { EventEmitter } from 'events'
+
 import { WebContents } from 'electron'
 
 const { ipcMain, webContents } = require('electron')
+const { EventEmitter } = require('events')
 
 export class EventBusService<Events extends Record<EventType, unknown>>
   implements EventBus<Events>
 {
   private readonly namespace: string
-  private readonly localEmitter: EventEmitter = new EventEmitter()
+  private readonly localEmitter: typeof EventEmitter = new EventEmitter()
   private readonly ipcHandlers: Map<string, (event: any, payload: any) => void> = new Map()
   private readonly wildcardHandlers: Set<WildcardHandler<Events>> = new Set()
 

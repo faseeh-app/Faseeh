@@ -3,17 +3,13 @@ import { createApp, App as VueApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, Router } from 'vue-router'
 import { storage } from '@root/src/renderer/src/core/services/storage/storage-service'
-import { PluginManager } from './core/services/plugins/plugin-manager'
-import { EventBusService } from './core/services/event-bus/event-bus-service'
-import type { PluginEvents } from '@shared/types/types'
-
 import App from './App.vue'
 import { routes } from '@renderer/common/router/routes'
+import { pluginManager } from '@renderer/core/faseeh-app'
 
 class RendererLifecycle {
   private app: VueApp | null = null
   private router: Router | null = null
-  private pluginManager: PluginManager | null = null
 
   init(): void {
     const pinia = createPinia()
@@ -26,8 +22,6 @@ class RendererLifecycle {
     this.app = createApp(App)
     this.app.use(pinia)
     this.app.use(this.router) // Initialize Plugin Manager
-    const eventBus = new EventBusService<PluginEvents>('plugins')
-    this.pluginManager = new PluginManager(storage, eventBus, '1.0.0') // TODO: Get actual app version
 
     window.addEventListener('beforeunload', () => this.close())
   }
@@ -37,9 +31,9 @@ class RendererLifecycle {
     }
 
     // Initialize plugin manager first
-    if (this.pluginManager) {
-      await this.pluginManager.initialize()
-      console.log(this.pluginManager.listPlugins())
+    if (pluginManager) {
+      await pluginManager.initialize()
+      console.log(pluginManager.listPlugins())
     }
 
     this.app.mount('#app')
@@ -58,8 +52,8 @@ class RendererLifecycle {
   }
   async close(): Promise<void> {
     // Shutdown plugin manager first
-    if (this.pluginManager) {
-      await this.pluginManager.shutdown()
+    if (pluginManager) {
+      await pluginManager.shutdown()
     }
 
     storage.clearAllHandlers()

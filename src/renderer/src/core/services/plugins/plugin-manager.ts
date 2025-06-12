@@ -1,34 +1,41 @@
 import type {
-  IStorage,
   PluginManifest,
   PluginInfo,
   FaseehApp,
   BasePlugin,
-  PluginEvents
+  PluginEvents,
+  IPluginManager
 } from '@shared/types/types'
-import type { EventBus } from '@shared/types/types'
 import { BasePlugin as BasePluginClass } from './plugin'
 import * as Runtime from '@shared/types/runtime'
+import { EventBusService } from '@root/src/main/services/event-bus-service'
 
 /**
  * Plugin Manager Service
  * Responsible for the complete lifecycle of community plugins
  */
-export class PluginManager {
-  private storage: IStorage
-  private eventBus: EventBus<PluginEvents>
+export class PluginManager extends EventBusService<PluginEvents> implements IPluginManager {
+  private app: FaseehApp
   private activePlugins = new Map<string, BasePlugin>()
   private discoveredManifests = new Map<string, PluginManifest>()
   private enabledPlugins = new Set<string>()
   private failedPlugins = new Map<string, string>() // pluginId -> error message
   private isInitialized = false
-  private appVersion: string
 
-  constructor(storage: IStorage, eventBus: EventBus<PluginEvents>, appVersion: string) {
-    this.storage = storage
-    this.eventBus = eventBus
-    this.appVersion = appVersion
+  constructor() {
+    super('plugins')
+    this.app = {} as FaseehApp
+    /* FIXME: the whole app context passing needs to be refactored
+     * The setApp method is just a temporary solution
+     * what should be done is to create another context/service/utilty class that will be passed
+     * to FaseehApp and then to the registry, that way we can avoid circular dependencies or at least that's the plan
+     */
   }
+
+  setApp(app: FaseehApp): void {
+    this.app = app
+  }
+
   /**
    * Initialize the plugin manager and load enabled plugins
    */
@@ -100,7 +107,7 @@ export class PluginManager {
    */
   private async loadEnabledPluginsConfig(): Promise<void> {
     try {
-      const enabledPluginIds = await this.storage.getEnabledPluginIds()
+      const enabledPluginIds = await this.app.storage.getEnabledPluginIds()
       this.enabledPlugins = new Set(enabledPluginIds)
       console.log(`📋 Loaded ${enabledPluginIds.length} enabled plugins from config`)
     } catch (error) {
@@ -115,7 +122,7 @@ export class PluginManager {
   private async saveEnabledPluginsConfig(): Promise<void> {
     try {
       const enabledPluginIds = Array.from(this.enabledPlugins)
-      await this.storage.setEnabledPluginIds(enabledPluginIds)
+      await this.app.storage.setEnabledPluginIds(enabledPluginIds)
     } catch (error) {
       console.error('Failed to save enabled plugins config:', error)
     }
@@ -126,7 +133,7 @@ export class PluginManager {
    */
   private async discoverPlugins(): Promise<void> {
     try {
-      const pluginDirs = await this.storage.listPluginDirectories()
+      const pluginDirs = await this.app.storage.listPluginDirectories()
       console.log(`🔍 Discovered ${pluginDirs.length} plugin directories`)
 
       this.discoveredManifests.clear()
@@ -134,7 +141,7 @@ export class PluginManager {
       for (const pluginDir of pluginDirs) {
         try {
           const dirName = pluginDir.split('\\').pop() || pluginDir.split('/').pop() || pluginDir
-          const manifest = await this.storage.readPluginManifest(dirName)
+          const manifest = await this.app.storage.readPluginManifest(dirName)
           // Validate required fields
           if (!this.validateManifest(manifest)) {
             console.warn(`⚠️ Invalid manifest for plugin: ${pluginDir}`)
@@ -143,7 +150,7 @@ export class PluginManager {
           // Check app version compatibility
           if (!this.isVersionCompatible(manifest.minAppVersion)) {
             console.warn(
-              `⚠️ Plugin ${manifest.id} requires app version ${manifest.minAppVersion}, current: ${this.appVersion}`
+              `⚠️ Plugin ${manifest.id} requires app version ${manifest.minAppVersion}, current: ${this.app.appInfo.version}`
             )
             continue
           }
@@ -177,7 +184,7 @@ export class PluginManager {
    */
   private isVersionCompatible(minAppVersion: string): boolean {
     // Simple version comparison - you might want to use a proper semver library
-    const currentParts = this.appVersion.split('.').map(Number)
+    const currentParts = this.app.appInfo.version.split('.').map(Number)
     const requiredParts = minAppVersion.split('.').map(Number)
 
     for (let i = 0; i < Math.max(currentParts.length, requiredParts.length); i++) {
@@ -220,7 +227,7 @@ export class PluginManager {
     }
 
     // Emit plugin list updated event
-    this.eventBus.emit('plugin:listUpdated', this.listPlugins())
+    this.emit('plugin:listUpdated', this.listPlugins())
   }
 
   /**
@@ -318,7 +325,7 @@ export class PluginManager {
       }
 
       console.log(`🔄 Loading plugin: ${manifest.name} (${pluginId})`) // Get plugin directories to find the main file
-      const pluginDirs = await this.storage.listPluginDirectories()
+      const pluginDirs = await this.app.storage.listPluginDirectories()
       let pluginDir = pluginDirs.find((dir) => {
         // Extract just the directory name from absolute path
         const dirName = dir.split('\\').pop() || dir.split('/').pop() || dir
@@ -331,16 +338,24 @@ export class PluginManager {
 
       // Extract just the directory name for the plugin path
       const pluginDirName = pluginDir.split('\\').pop() || pluginDir.split('/').pop() || pluginDir
-
-      // Construct plugin path - this assumes plugins are in a known location
-      // You might need to get the actual plugin path from storage service
       const pluginPath = `${pluginDirName}/${manifest.main}`
       // Load plugin module using require
       let PluginClass
       try {
-        // Try different path strategies
-        const absolutePath = `C:\\Users\\Youssef\\Coding\\Faseeh\\plugins\\${pluginDirName}\\${manifest.main}`
-        PluginClass = (window as any).require(absolutePath).default
+        console.log(`🔄 Loading plugin: ${manifest.name} (${pluginId})`)
+
+        // Use the storage service to get the plugin directory path
+        const pluginDir = await this.app.storage.getPluginDirectoryPath(pluginId)
+
+        if (!pluginDir) {
+          throw new Error(`Could not find directory for plugin: ${pluginId}`)
+        }
+
+        // Construct plugin path using the correct directory
+        const pluginPath = `${pluginDir}/${manifest.main}`
+
+        // Load plugin module using require
+        PluginClass = (window as any).require(pluginPath).default
       } catch (requireError) {
         console.error(`Failed to require plugin at path: ${pluginPath}`, requireError)
         throw new Error(`Failed to load plugin module: ${requireError}`)
@@ -367,7 +382,7 @@ export class PluginManager {
       this.failedPlugins.delete(pluginId)
 
       console.log(`✅ Plugin loaded successfully: ${manifest.name}`)
-      this.eventBus.emit('plugin:loaded', { pluginId })
+      this.emit('plugin:loaded', { pluginId })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       console.error(`❌ Failed to load plugin ${pluginId}:`, errorMessage)
@@ -387,18 +402,7 @@ export class PluginManager {
    * Create FaseehApp instance for plugins
    */
   private createFaseehAppInstance(): FaseehApp {
-    return {
-      appInfo: {
-        version: this.appVersion,
-        platform:
-          process.platform === 'win32' ? 'win' : process.platform === 'darwin' ? 'mac' : 'linux'
-      },
-      storage: this.storage,
-      plugins: {
-        getPlugin: (pluginId: string) => this.getPluginInstance(pluginId),
-        enabledPlugins: () => this.enabledPlugins
-      }
-    }
+    return this.app
   }
 
   /**
@@ -459,7 +463,7 @@ export class PluginManager {
     }
 
     console.log(`✅ Plugin ${pluginId} enabled`)
-    this.eventBus.emit('plugin:listUpdated', this.listPlugins())
+    this.emit('plugin:listUpdated', this.listPlugins())
   }
 
   /**
@@ -491,8 +495,8 @@ export class PluginManager {
     await this.saveEnabledPluginsConfig()
 
     console.log(`✅ Plugin ${pluginId} disabled`)
-    this.eventBus.emit('plugin:disabled', { pluginId })
-    this.eventBus.emit('plugin:listUpdated', this.listPlugins())
+    this.emit('plugin:disabled', { pluginId })
+    this.emit('plugin:listUpdated', this.listPlugins())
   }
 
   /**
@@ -528,7 +532,7 @@ export class PluginManager {
       this.activePlugins.delete(pluginId)
 
       console.log(`✅ Plugin unloaded successfully: ${pluginId}`)
-      this.eventBus.emit('plugin:unloaded', { pluginId })
+      this.emit('plugin:unloaded', { pluginId })
     } catch (error) {
       console.error(`❌ Error unloading plugin ${pluginId}:`, error)
       // Still remove from active plugins to prevent memory leaks
@@ -588,6 +592,6 @@ export class PluginManager {
   async refreshPlugins(): Promise<void> {
     console.log('🔄 Refreshing plugin discovery...')
     await this.discoverPlugins()
-    this.eventBus.emit('plugin:listUpdated', this.listPlugins())
+    this.emit('plugin:listUpdated', this.listPlugins())
   }
 }

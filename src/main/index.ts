@@ -57,7 +57,8 @@ class AppLifecycle {
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
-        sandbox: false
+        sandbox: false,
+        webSecurity: false
       }
     })
 

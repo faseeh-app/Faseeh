@@ -1,5 +1,5 @@
 import { francAll } from 'franc'
-import { LanguageDetector as ILanguageDetector } from '@shared/types/types';
+import { ILanguageDetector } from '@shared/types/types';
 
 export class LanguageDetector implements ILanguageDetector {
   async detectLanguage(source: string): Promise<string | null> {

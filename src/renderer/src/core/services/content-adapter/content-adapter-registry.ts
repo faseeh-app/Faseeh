@@ -12,15 +12,25 @@ import {
   FaseehApp
 } from '@shared/types/types'
 
-import { extname } from 'path'
 import { fileTypeFromBuffer } from 'file-type'
+
+const { extname } = require('path')
 
 export class ContentAdapterRegistry implements IContentAdapterRegistry {
   private adapters: Map<string, ContentAdapterRegistration> = new Map()
 
-  private app: Pick<FaseehApp, 'storage' | 'plugins'>
+  private app: FaseehApp
 
-  constructor(app: Pick<FaseehApp, 'storage' | 'plugins'>) {
+  constructor() {
+    this.app = {} as FaseehApp
+    /* FIXME: the whole app context passing needs to be refactored
+     * The setApp method is just a temporary solution
+     * what should be done is to create another context/service/utilty class that will be passed
+     * to FaseehApp and then to the registry, that way we can avoid circular dependencies or at least that's the plan
+     */
+  }
+
+  setApp(app: FaseehApp): void {
     this.app = app
   }
 
@@ -179,7 +189,7 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
     registration: ContentAdapterRegistration,
     source: ContentAdapterSource,
     context: {
-      app: Pick<FaseehApp, 'storage' | 'plugins'>
+      app: FaseehApp
       originalPath?: string
       libraryItemId?: string | null
     }

@@ -335,7 +335,7 @@ export interface PluginInfo {
  * Language detection interface for plugins and services that need to identify the language of a given text source.
  * @public
  */
-export interface LanguageDetector {
+export interface ILanguageDetector {
   /**
    * Detects the language of the provided text source.
    * @param source The text source to analyze, can be a string or a file path.
@@ -354,17 +354,24 @@ export interface FaseehApp {
     readonly version: string
     readonly platform: 'win' | 'mac' | 'linux'
   }
-
-  /** Storage API facade for accessing the main process storage service */
+  /** Storage interface for managing all data storage operations in Faseeh.
+   * This includes database operations and file system management.*/
   storage: IStorage
 
-  plugins: {
-    getPlugin: (pluginId: string) => unknown
-    enabledPlugins: () => Set<string>
-  }
+  /** Plugin interface for interacting with other plugins in the system.*/
+  plugins: Pick<
+    IPluginManager,
+    'getPluginInstance' | 'on' | 'off' | 'emit' | 'onAny' | 'offAny' | 'once'
+  >
 
-  // Language Detector
-  languageDetector: LanguageDetector
+  /** A utility for detecting languages from text sources, useful for maintaining consistency with Faseeh's language detection.*/
+  languageDetector: ILanguageDetector
+
+  /** A registry for adding new content adapters that can process various content sources (e.g., files, URLs) into the structured Faseeh content format.*/
+  content: Pick<IContentAdapterRegistry, 'register' | 'unregister'>
+
+  /** A registry for adding new metadata scrapers that can extract structured metadata from various content sources (e.g., files, URLs).*/
+  metadata: Pick<IMetadataScraperRegistry, 'register' | 'unregister'>
 }
 
 /**
@@ -482,7 +489,7 @@ export interface ContentAdapterResult {
 export type ContentAdapterFunction = (
   source: ContentAdapterSource,
   context: {
-    app: Pick<FaseehApp, 'storage' | 'plugins'>
+    app: FaseehApp
     originalPath?: string
     libraryItemId?: string | null
   }
@@ -563,6 +570,7 @@ export interface IContentAdapterRegistry {
    *
    * @param id - The unique identifier of the content adapter.
    * @returns The content adapter registration, or `null` if not found.
+   * @internal
    */
   getAdapterById(id: string): ContentAdapterRegistration | null
 
@@ -570,6 +578,7 @@ export interface IContentAdapterRegistry {
    * Lists all registered content adapters.
    *
    * @returns An array of all registered content adapter registrations.
+   * @internal
    */
   listRegisteredAdapters(): ContentAdapterRegistration[]
 
@@ -582,6 +591,7 @@ export interface IContentAdapterRegistry {
    *   - `sourceUrl`: The URL of the source.
    * @returns A promise resolving to an object indicating the success of the operation,
    *          and optionally including a `libraryItemId` or an error message.
+   * @internal
    */
   processSource(
     source: ContentAdapterSource,
@@ -627,7 +637,7 @@ export interface MetadataScraperResult {
 export type MetadataScraperFunction = (
   source: MetadataScraperSource,
   context: {
-    app: Pick<FaseehApp, 'storage' | 'plugins'>
+    app: FaseehApp
     originalPath?: string
     sourceUrl?: string
   }
@@ -832,6 +842,7 @@ export interface IMetadataScraperRegistry {
    *   console.log(`Selected scraper: ${scraper.name}`)
    * }
    * ```
+   * @internal
    */
   findBestScraper(criteria: MetadataScraperFindCriteria): MetadataScraperRegistration | null
 
@@ -850,6 +861,7 @@ export interface IMetadataScraperRegistry {
    *   console.log(`Supported extensions: ${scraper.supportedExtensions.join(', ')}`)
    * }
    * ```
+   * @internal
    */
   getScraperById(id: string): MetadataScraperRegistration | null
 
@@ -873,6 +885,7 @@ export interface IMetadataScraperRegistry {
    *   console.log(`  Priority: ${scraper.priority || 0}`)
    * })
    * ```
+   * @internal
    */
   listRegisteredScrapers(): MetadataScraperRegistration[]
 
@@ -924,6 +937,7 @@ export interface IMetadataScraperRegistry {
    *   // Fallback logic here
    * }
    * ```
+   * @internal
    */
   scrapeMetadata(
     source: MetadataScraperSource,
@@ -936,6 +950,75 @@ export interface IMetadataScraperRegistry {
     metadata?: MetadataScraperResult
     error?: string
   }>
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             Plugin System Types                            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Plugin Manager interface defining the public API for managing community plugins
+ * Responsible for the complete lifecycle of community plugins including discovery,
+ * loading, dependency resolution, and runtime management.
+ * @public
+ */
+export interface IPluginManager extends EventBus<PluginEvents> {
+  /**
+   * Initialize the plugin manager and load enabled plugins
+   * This method sets up module resolution, discovers plugins, and loads enabled plugins
+   * with proper dependency resolution.
+   * @throws Error if initialization fails
+   */
+  initialize(): Promise<void>
+  /**
+   * Get a plugin instance by its ID
+   * @param pluginId The unique identifier of the plugin
+   * @returns The plugin instance if found and loaded, null otherwise
+   */
+  getPluginInstance(pluginId: string): IPlugin | null
+
+  /**
+   * Check if a plugin is currently enabled
+   * @param pluginId The unique identifier of the plugin
+   * @returns True if the plugin is enabled, false otherwise
+   */
+  isPluginEnabled(pluginId: string): boolean
+
+  /**
+   * Enable a plugin
+   * Adds the plugin to the enabled set, saves configuration, and loads the plugin
+   * if the plugin manager is already initialized.
+   * @param pluginId The unique identifier of the plugin to enable
+   * @throws Error if the plugin is not installed
+   */
+  enablePlugin(pluginId: string): Promise<void>
+
+  /**
+   * Disable a plugin
+   * Removes the plugin from the enabled set, unloads it if active, and saves configuration.
+   * May also disable dependent plugins if configured to do so.
+   * @param pluginId The unique identifier of the plugin to disable
+   */
+  disablePlugin(pluginId: string): Promise<void>
+
+  /**
+   * List all discovered plugins with their current status
+   * @returns Array of plugin information including manifest, enabled/loaded status, and any errors
+   */
+  listPlugins(): PluginInfo[]
+
+  /**
+   * Shutdown the plugin manager and unload all active plugins
+   * Cleanly unloads all plugins and clears internal state.
+   */
+  shutdown(): Promise<void>
+
+  /**
+   * Refresh plugin discovery
+   * Re-scans the plugins directory to discover newly installed plugins.
+   * Useful for development and dynamic plugin installation.
+   */
+  refreshPlugins(): Promise<void>
 }
 
 //===============================================================================

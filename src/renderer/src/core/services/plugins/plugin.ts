@@ -20,7 +20,6 @@ export abstract class BasePlugin implements IPlugin {
     this.listenerCleaners.push(disposer)
   }
 
-  // TODO: Reconsider the access modifiers for these methods. still not sure if they should be public or protected.
   // --- Database Storage Methods ---
 
   // Note: Let's consider these two methods are meant for general plugin data, most used ones.

@@ -9,7 +9,7 @@ import {
   FaseehApp
 } from '@shared/types/types'
 
-import { extname } from 'path'
+const { extname } = require('path')
 
 /**
  * Implementation of the Metadata Scraper Registry system.
@@ -48,16 +48,26 @@ export class MetadataScraperRegistry implements IMetadataScraperRegistry {
    * Reference to the Faseeh application instance for accessing storage and plugins.
    * @private
    */
-  private app: Pick<FaseehApp, 'storage' | 'plugins'>
+  private app: FaseehApp
 
   /**
    * Creates a new MetadataScraperRegistry instance.
    *
    * @param app - Faseeh application instance providing access to storage and plugins
    */
-  constructor(app: Pick<FaseehApp, 'storage' | 'plugins'>) {
+  constructor() {
+    this.app = {} as FaseehApp
+    /* FIXME: the whole app context passing needs to be refactored
+     * The setApp method is just a temporary solution
+     * what should be done is to create another context/service/utilty class that will be passed
+     * to FaseehApp and then to the registry, that way we can avoid circular dependencies or at least that's the plan
+     */
+  }
+
+  setApp(app: FaseehApp): void {
     this.app = app
   }
+
   /**
    * @inheritdoc
    */
@@ -309,7 +319,7 @@ export class MetadataScraperRegistry implements IMetadataScraperRegistry {
     registration: MetadataScraperRegistration,
     source: MetadataScraperSource,
     context: {
-      app: Pick<FaseehApp, 'storage' | 'plugins'>
+      app: FaseehApp
       originalPath?: string
       sourceUrl?: string
     }
