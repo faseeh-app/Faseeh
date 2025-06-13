@@ -352,7 +352,6 @@ export interface FaseehApp {
 
   // Language Detector
   languageDetector: LanguageDetector
-
 }
 
 /**

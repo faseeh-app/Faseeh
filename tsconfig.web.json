@@ -4,12 +4,14 @@
     "src/renderer/src/env.d.ts",
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.vue",
+    "src/renderer/src/**/*.test.ts",
     "src/preload/*.d.ts",
     "src/shared/**/*",
     "src/renderer/src/common/services/storage"
   ],
   "compilerOptions": {
-    "types": ["vite/client"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "composite": true,
     "baseUrl": ".",
     "paths": {

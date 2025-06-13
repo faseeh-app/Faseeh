@@ -16,6 +16,6 @@
       "@main/*": ["src/main/*"],
       "reka-ui": ["node_modules/reka-ui"]
     },
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler"
   }
 }

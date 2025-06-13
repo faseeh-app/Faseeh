@@ -2,6 +2,7 @@ import tseslint from '@electron-toolkit/eslint-config-ts'
 import eslintConfigPrettier from '@electron-toolkit/eslint-config-prettier'
 import eslintPluginVue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
+import eslintPluginJest from 'eslint-plugin-jest'
 
 export default tseslint.config(
   { ignores: ['**/node_modules', '**/dist', '**/out'] },
@@ -34,6 +35,11 @@ export default tseslint.config(
         }
       ]
     }
+  },
+  // Add Jest plugin configuration for test files
+  {
+    files: ['**/__tests__/*.{ts,tsx}'],
+    ...eslintPluginJest.configs['flat/recommended']
   },
   eslintConfigPrettier
 )

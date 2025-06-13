@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { RouteNames } from '@renderer/common/router/routes'
-import { workspaceService} from '@renderer/core/services/workspace/workspace-service'
+import { workspaceService } from '@renderer/core/services/workspace/workspace-service'
 
 export interface Tab {
   id: string
