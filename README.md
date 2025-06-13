@@ -45,47 +45,50 @@ $ npm run build:linux
 
 ## 🎯 Difficulty Estimation Feature
 
-## Overview
-The Difficulty Estimation feature analyzes text complexity using multiple linguistic algorithms to provide both general and personalized difficulty assessments for language learners.
+### Overview
+The Difficulty Estimation feature provides a sophisticated analysis of text complexity, tailored for multiple languages. It uses a hybrid approach, combining established readability formulas with a custom scoring model to deliver nuanced and accurate difficulty assessments for language learners. The system is built to be robust, fully typed with TypeScript, and gracefully handles various edge cases.
 
-## Features
-- **Language Detection**: Automatically detects text language using the project's internal LanguageDetector service
-- **Multi-Algorithm Analysis**: Implements three established readability metrics
-- **TypeScript Support**: Fully typed implementation with comprehensive interfaces
-- **Error Handling**: Graceful handling of unsupported languages and edge cases
+### Features
+- **Multi-Language Support**: Optimized for **English, French, Spanish, German, and Italian**. While it may process other Latin-script languages, accuracy is only guaranteed for this set.
+- **Hybrid Scoring Model**:
+    - For **English**, it uses a weighted average of the Flesch-Kincaid and Gunning Fog scores.
+    - For **French, Spanish, German, and Italian**, it employs a custom two-factor model based on average sentence length and the percentage of long words (8+ characters), as syllable-based metrics are less reliable in these languages.
+- **AST-Based Analysis**: Leverages the `retext` and `unified` ecosystems to perform analysis on an Abstract Syntax Tree (AST), ensuring accurate counts of sentences, words, syllables, and complex words.
+- **TypeScript Support**: Fully typed implementation with comprehensive interfaces for predictable and safe integration.
+- **Comprehensive Testing**: Includes a full suite of unit and integration tests to validate accuracy across all supported languages and numerous text types.
 
-## Algorithms Implemented
+### Algorithms & Scoring
 
-### 1. Flesch-Kincaid Readability Score
-- **Purpose**: Measures text readability based on sentence length and syllable complexity
-- **Formula**: `206.835 - (1.015 × ASL) - (84.6 × ASW)`
-- **Output**: Score from 0-100 (higher = easier to read)
+1.  **Flesch-Kincaid Reading Ease (English)**
+    - **Purpose**: Measures text readability based on sentence length and syllable complexity.
+    - **Output**: Score from 0-100 (higher = easier to read).
 
-### 2. Gunning Fog Index
-- **Purpose**: Estimates years of education needed to understand text
-- **Formula**: `0.4 × [(words/sentences) + 100 × (complex words/words)]`
-- **Output**: Grade level (e.g., 12 = high school level)
+2.  **Gunning Fog Index (English)**
+    - **Purpose**: Estimates the years of education needed to understand a text.
+    - **Output**: A grade level (e.g., 12 = high school level).
 
-### 3. Lexical Density
-- **Purpose**: Measures ratio of content words to total words
-- **Formula**: `(Content Words / Total Words) × 100`
-- **Output**: Percentage (higher = more information-dense)
+3.  **Custom Two-Factor Model (French, Spanish, German, Italian)**
+    - **Purpose**: Provides a reliable difficulty score when syllable counting is impractical.
+    - **Factors**:
+        1.  **Average Sentence Length**: The number of words per sentence.
+        2.  **Word Complexity**: The percentage of "long words" (8 or more characters).
+    - **Output**: A normalized score that is then mapped to a difficulty level.
 
-## API Reference
+### API Reference
 
-### Main Function
+#### Main Function
 ```typescript
 function estimateTextDifficulty(text: string, targetLanguage?: string): Promise<DifficultyResult | null>
 ```
 
-### Interfaces
+#### Interfaces
 ```typescript
 interface DifficultyResult {
   language: string;
   generalLevel: {
     fleschKincaid: number;
     gunningFogIndex: number;
-    lexicalDensity: number;
+    lexicalDensity: number; // Currently a placeholder
     overallScore: number;
     level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
   };
@@ -94,57 +97,31 @@ interface DifficultyResult {
     sentenceCount: number;
     syllableCount: number;
     complexWords: number;
+    longWordCount: number; // New metric for non-English scoring
   };
 }
 ```
 
-## Usage Example
+### Usage Example
 ```typescript
 import { estimateTextDifficulty } from './features/difficulty-estimation';
 
-const text = "This is a sample text for difficulty analysis.";
-const result = await estimateTextDifficulty(text, 'eng');
+const text = "L'implémentation de systèmes computazionali avanzati richiede competenze specifiche.";
+const result = await estimateTextDifficulty(text, 'ita');
 
 if (result) {
   console.log(`Language: ${result.language}`);
   console.log(`Difficulty Level: ${result.generalLevel.level}`);
-  console.log(`Flesch-Kincaid Score: ${result.generalLevel.fleschKincaid}`);
+  console.log(`Long Word Count: ${result.textStats.longWordCount}`);
 }
 ```
 
-## Testing
-See testing section below for comprehensive test coverage.
-
-## Integration
-This feature integrates with:
-- **Language Detection Service**: The project's core `LanguageDetector` service
-- **Plugin System**: Ready for plugin architecture
-- **Media Player**: For real-time text analysis
-
-## Manual Testing
-
-### Quick Test
+### Testing
+To run the full test suite and validate the difficulty estimator across all supported languages:
 ```bash
-# Run the estimator with sample text
-npm run test:difficulty
-
-# Or create a simple test script:
-node -e "
-const { estimateTextDifficulty } = require('./out/renderer/features/difficulty-estimation');
-estimateTextDifficulty('The quick brown fox jumps over the lazy dog.').then(console.log);
-"
+npm test
 ```
-
-### Test Cases
-1. **Simple Text**: "The cat sat on the mat."
-2. **Complex Text**: "The implementation of sophisticated algorithms requires comprehensive understanding of computational linguistics."
-3. **Mixed Language**: Include non-English text to test language detection
-4. **Edge Cases**: Empty string, single word, very long text
-
-### Expected Outputs
-- Simple text: Beginner level, high Flesch-Kincaid score
-- Complex text: Advanced level, low Flesch-Kincaid score
-- Proper language detection for all cases
+This command executes all tests located in `src/renderer/src/features/difficulty-estimation/__tests__`.
 
 ## 📜 License
 

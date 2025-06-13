@@ -7,7 +7,9 @@ export class LanguageDetector {
     }
 
     try {
-      const results = francAll(source)
+      const results = francAll(source, {
+        whitelist: ['eng', 'fra', 'spa', 'deu', 'ita']
+      })
 
       if (results.length === 0) {
         return null

@@ -1,3 +1,14 @@
+export interface TextAnalysisResult {
+  fleschKincaid: number
+  gunningFogIndex: number
+  wordCount: number
+  sentenceCount: number
+  syllableCount: number
+  complexWords: number
+  longWordCount: number
+  lexicalDensity: number
+}
+
 export interface DifficultyResult {
   language: string
   generalLevel: {
@@ -12,5 +23,6 @@ export interface DifficultyResult {
     sentenceCount: number
     syllableCount: number
     complexWords: number
+    longWordCount: number
   }
 }
