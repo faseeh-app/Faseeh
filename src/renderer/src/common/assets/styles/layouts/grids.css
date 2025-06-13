@@ -1,0 +1,51 @@
+/* -------------------------------------------------------------------------- */
+/*                              Masonry Grid                                  */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-media-grid {
+  @apply p-4;
+  columns: 1;
+  column-gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .faseeh-media-grid {
+    columns: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .faseeh-media-grid {
+    columns: 3;
+  }
+}
+
+@media (min-width: 1024px) {
+  .faseeh-media-grid {
+    columns: 4;
+  }
+}
+
+@media (min-width: 1280px) {
+  .faseeh-media-grid {
+    columns: 5;
+  }
+}
+
+@media (min-width: 1536px) {
+  .faseeh-media-grid {
+    columns: 6;
+  }
+}
+
+@utility faseeh-media-grid--dense {
+  @apply faseeh-media-grid;
+  column-gap: 0.5rem;
+  @apply p-2;
+}
+
+@utility faseeh-media-grid--sparse {
+  @apply faseeh-media-grid;
+  column-gap: 1.5rem;
+  @apply p-6;
+}

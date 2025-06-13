@@ -1,7 +1,4 @@
-import {
-  ContentAdapterFunction,
-  ContentAdapterInfo
-} from '@root/src/shared/types/content-adapter-types'
+import { ContentAdapterFunction, ContentAdapterInfo } from '@shared/types/content-adapter-types'
 
 export abstract class ContentAdapter {
   private readonly info: ContentAdapterInfo

@@ -1,18 +1,45 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider
 } from '@renderer/common/components/ui/tooltip'
+import CommandPalette from '@renderer/common/components/ui/CommandPalette.vue'
+import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useRouter } from 'vue-router'
 import { RouteNames } from '@renderer/common/router/routes'
-import { useRoute, useRouter } from 'vue-router'
 
+const tabStore = useTabStore()
 const router = useRouter()
 
-// Track active view
-const activeView = ref('library')
+// Command palette state
+const isCommandPaletteOpen = ref(false)
+
+const openCommandPalette = () => {
+  isCommandPaletteOpen.value = true
+}
+
+const closeCommandPalette = () => {
+  isCommandPaletteOpen.value = false
+}
+
+const activeView = computed(() => {
+  const activeTab = tabStore.activeTab
+  if (!activeTab) return 'library'
+
+  switch (activeTab.route.name) {
+    case 'library':
+      return 'library'
+    case 'community':
+      return 'discover'
+    case 'settings':
+      return 'settings'
+    default:
+      return 'library'
+  }
+})
 
 const navButtons = [
   {
@@ -20,8 +47,9 @@ const navButtons = [
     icon: 'icon-[solar--library-linear]',
     activeIcon: 'icon-[solar--library-bold]',
     label: 'Library',
-    action: () => {
-      router.replace({ name: RouteNames.LIBRARY })
+    action: (forceNew: boolean = false) => {
+      tabStore.openLibraryTab(forceNew)
+      router.push({ name: RouteNames.LIBRARY })
     }
   },
   {
@@ -29,8 +57,9 @@ const navButtons = [
     icon: 'icon-[fa-regular--compass]',
     activeIcon: 'icon-[fa-solid--compass]',
     label: 'Discover',
-    action: () => {
-      router.replace({ name: RouteNames.COMMUNITY })
+    action: (forceNew: boolean = false) => {
+      tabStore.openCommunityTab(forceNew)
+      router.push({ name: RouteNames.COMMUNITY })
     }
   },
   {
@@ -38,16 +67,27 @@ const navButtons = [
     icon: 'icon-[iconamoon--search-bold]',
     activeIcon: 'icon-[iconamoon--search-duotone]',
     label: 'Search',
-    action: () => {}
+    action: (_forceNew: boolean = false) => {
+      openCommandPalette()
+    }
   },
   {
     id: 'settings',
     icon: 'icon-[solar--settings-linear]',
     activeIcon: 'icon-[solar--settings-bold]',
     label: 'Settings',
-    action: () => {}
+    action: (forceNew: boolean = false) => {
+      tabStore.openSettingsTab(forceNew)
+      router.push({ name: RouteNames.SETTINGS })
+    }
   }
 ]
+
+// Handle navbar button click with Ctrl key detection
+const handleNavButtonClick = (button: (typeof navButtons)[0], event: MouseEvent) => {
+  const forceNew = event.ctrlKey || event.metaKey // Support both Ctrl (Windows/Linux) and Cmd (Mac)
+  button.action(forceNew)
+}
 </script>
 
 <template>
@@ -59,12 +99,7 @@ const navButtons = [
           <button
             class="faseeh-sidebar__button"
             :class="{ active: activeView === button.id }"
-            @click="
-              () => {
-                activeView = button.id
-                button.action()
-              }
-            "
+            @click="(event) => handleNavButtonClick(button, event)"
           >
             <span
               :class="`faseeh-icon ${activeView === button.id ? button.activeIcon : button.icon}`"
@@ -73,8 +108,12 @@ const navButtons = [
         </TooltipTrigger>
         <TooltipContent side="right">
           {{ button.label }}
+          <div class="text-xs text-muted-foreground mt-1">Hold Ctrl to open in new tab</div>
         </TooltipContent>
       </Tooltip>
     </div>
+
+    <!-- Command Palette -->
+    <CommandPalette :is-open="isCommandPaletteOpen" @close="closeCommandPalette" />
   </TooltipProvider>
 </template>

@@ -110,3 +110,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-track-transparent {
+    scrollbar-color: transparent transparent;
+  }
+
+  .scrollbar-thumb-border {
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .hover\:scrollbar-thumb-border\/80:hover {
+    scrollbar-color: color-mix(in srgb, var(--border) 80%, transparent) transparent;
+  }
+
+  /* Webkit scrollbar styling for better browsers */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thumb-border::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 3px;
+  }
+
+  .hover\:scrollbar-thumb-border\/80:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--border) 80%, transparent);
+  }
+}

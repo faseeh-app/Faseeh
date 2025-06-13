@@ -3,40 +3,34 @@ import { Button } from '@renderer/common/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@renderer/common/components/ui/dropdown-menu'
 import { ref } from 'vue'
 
-const sortOption = ref('bottom')
+const sortOption = ref('recently-added')
 
 const sortOptions = [
   {
     value: 'alphabetical',
     label: 'A-Z',
-    icon: 'icon-[iconamoon--sort-asc-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--sort-asc-bold]'
   },
   {
     value: 'reverse-alphabetical',
     label: 'Z-A',
-    icon: 'icon-[iconamoon--sort-desc-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--sort-desc-bold]'
   },
   {
     value: 'recently-added',
     label: 'Recently Added',
-    icon: 'icon-[iconamoon--clock-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--clock-bold]'
   },
   {
     value: 'recently-modified',
     label: 'Recently Modified',
-    icon: 'icon-[iconamoon--clock-bold]',
-    handler: () => {}
+    icon: 'icon-[iconamoon--clock-bold]'
   }
 ]
 </script>

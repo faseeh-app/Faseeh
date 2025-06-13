@@ -1,0 +1,161 @@
+/* -------------------------------------------------------------------------- */
+/*                              Command Palette                               */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-command-palette__container {
+  @apply flex flex-col h-full;
+  max-height: 600px;
+}
+
+@utility faseeh-command-palette__list {
+  @apply flex-1 overflow-y-auto;
+}
+
+@utility faseeh-command-palette__footer {
+  @apply border-t border-border bg-muted/30;
+  @apply px-6 py-6 flex-shrink-0;
+}
+
+@utility faseeh-command-palette__footer-content {
+  @apply flex items-center justify-between;
+  @apply text-sm text-muted-foreground;
+}
+
+@utility faseeh-command-palette__shortcuts-group {
+  @apply flex items-center;
+  gap: 1.5rem; /* 24px */
+}
+
+@utility faseeh-command-palette__shortcuts-group--main {
+  @apply flex items-center;
+  gap: 1.5rem; /* 24px */
+}
+
+@utility faseeh-command-palette__shortcuts-group--toggle {
+  @apply flex items-center;
+  gap: 0.5rem; /* 8px */
+}
+
+@utility faseeh-command-palette__shortcut-item {
+  @apply flex items-center;
+  gap: 0.5rem; /* 8px */
+}
+
+@utility faseeh-command-palette__kbd {
+  @apply pointer-events-none inline-flex select-none items-center;
+  @apply h-6 gap-1 rounded border bg-muted px-2;
+  @apply font-mono text-xs font-medium text-muted-foreground opacity-100;
+}
+
+@utility faseeh-command-palette__shortcut-label {
+  @apply text-sm text-muted-foreground;
+}
+
+@utility faseeh-command-palette__command-content {
+  @apply flex flex-col;
+}
+
+@utility faseeh-command-palette__command-title {
+  @apply font-medium;
+}
+
+@utility faseeh-command-palette__command-description {
+  @apply text-base text-muted-foreground;
+}
+
+/* Mobile-specific utilities for drawer implementation */
+@utility faseeh-command-palette__drawer-header {
+  @apply flex flex-col gap-1.5 p-4;
+}
+
+@utility faseeh-command-palette__drawer-title {
+  @apply text-foreground font-semibold leading-none tracking-tight;
+}
+
+@utility faseeh-command-palette__drawer-description {
+  @apply text-muted-foreground text-sm;
+}
+
+@utility faseeh-command-palette__drawer-footer {
+  @apply mt-auto flex flex-col gap-2 p-4;
+}
+
+@utility faseeh-command-palette__mobile-list {
+  @apply max-h-[50vh] overflow-y-auto;
+}
+
+@utility faseeh-command-palette__mobile-command {
+  @apply flex flex-col h-full min-h-0 px-2 pb-2;
+}
+
+/* Mobile-specific compact styling */
+@utility faseeh-command-palette__mobile-group {
+  @apply p-0;
+}
+
+@utility faseeh-command-palette__mobile-group-heading {
+  @apply px-2 py-0.5 text-xs font-medium text-muted-foreground;
+}
+
+@utility faseeh-command-palette__mobile-item {
+  @apply px-2 py-0.5 text-sm;
+}
+
+@utility faseeh-command-palette__mobile-content {
+  @apply flex flex-col gap-0;
+}
+
+@utility faseeh-command-palette__mobile-title {
+  @apply font-medium text-xs leading-tight;
+}
+
+@utility faseeh-command-palette__mobile-description {
+  @apply text-xs text-muted-foreground leading-tight;
+}
+
+@utility faseeh-command-palette__mobile-input {
+  @apply text-sm py-1.5 px-2 h-8 mt-auto flex-shrink-0;
+}
+
+@utility faseeh-command-palette__mobile-header {
+  @apply p-2 pb-1;
+}
+
+@utility faseeh-command-palette__mobile-header-title {
+  @apply text-sm font-semibold leading-none tracking-tight;
+}
+
+@utility faseeh-command-palette__mobile-header-description {
+  @apply text-xs text-muted-foreground mt-0.5;
+}
+
+s.faseeh-command-palette__mobile-command .faseeh-command-palette__mobile-group [role='group'] {
+  @apply p-0;
+}
+
+.faseeh-command-palette__mobile-command
+  .faseeh-command-palette__mobile-group
+  [role='group']
+  > div:first-child {
+  @apply px-1.5 py-0 text-xs font-medium text-muted-foreground;
+}
+
+@utility faseeh-command-palette__mobile-list-compact {
+  @apply max-h-[60vh] overflow-y-auto flex-1 mb-2;
+}
+
+@utility faseeh-command-palette__mobile-footer-compact {
+  @apply pt-0.5 pb-4;
+}
+
+@utility faseeh-command-palette__mobile-close-button {
+  @apply text-xs h-7 px-3;
+}
+
+@utility faseeh-command-palette__mobile-empty {
+  @apply text-xs text-muted-foreground py-2;
+}
+
+@utility faseeh-command-palette__mobile-separator {
+  @apply my-0;
+}

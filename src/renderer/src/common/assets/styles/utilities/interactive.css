@@ -1,0 +1,48 @@
+/* -------------------------------------------------------------------------- */
+/*                             Interactive States                             */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-interactive {
+  @apply transition-colors duration-200;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  @apply disabled:pointer-events-none disabled:opacity-50;
+}
+
+@utility faseeh-interactive--hover {
+  @apply faseeh-interactive;
+  @apply hover:bg-accent hover:text-accent-foreground;
+}
+
+@utility faseeh-interactive--active {
+  @apply faseeh-interactive;
+  @apply active:bg-accent active:text-accent-foreground;
+}
+
+@utility faseeh-interactive--focus {
+  @apply faseeh-interactive;
+  @apply focus:bg-accent focus:text-accent-foreground;
+}
+
+@utility faseeh-interactive--all {
+  @apply faseeh-interactive;
+  @apply hover:bg-accent hover:text-accent-foreground;
+  @apply active:bg-accent active:text-accent-foreground;
+  @apply focus:bg-accent focus:text-accent-foreground;
+}
+
+/* Filter width utilities */
+@utility faseeh-filter-width--sm {
+  @apply w-24;
+}
+
+@utility faseeh-filter-width--md {
+  @apply w-32;
+}
+
+@utility faseeh-filter-width--lg {
+  @apply w-40;
+}
+
+@utility faseeh-filter-width--xl {
+  @apply w-48;
+}

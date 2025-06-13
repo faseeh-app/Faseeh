@@ -1,0 +1,17 @@
+/* -------------------------------------------------------------------------- */
+/*                                Utilities                                   */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-spacer {
+  @apply flex-grow;
+}
+
+@utility faseeh-divider--horizontal {
+  @apply w-full h-px;
+  @apply bg-sidebar-border;
+}
+
+@utility faseeh-divider--vertical {
+  @apply w-px h-full;
+  @apply bg-sidebar-border;
+}
