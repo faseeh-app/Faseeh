@@ -1028,8 +1028,6 @@ export type { BasePlugin } from '@renderer/core/services/plugins/plugin'
 export type { ContentAdapter } from '@renderer/core/services/content-adapter/content-adapter'
 export type { MetadataScraper } from '@renderer/core/services/metadata-scraper/metadata-scraper'
 
-export type { BasePlugin } from '@renderer/core/services/plugins/plugin'
-
 /* -------------------------------------------------------------------------- */
 /*                          Subtitle Generation Types                         */
 /* -------------------------------------------------------------------------- */
@@ -1197,4 +1195,4 @@ export interface SubtitleEngineInfo {
   isCloudService?: boolean
 }
 
-export type { BaseSubtitleEngine } from '@renderer/core/services/subtitle-generation/subtitle-engine' 
+export type { BaseSubtitleEngine } from '@renderer/core/services/subtitle-generation/subtitle-engine'
