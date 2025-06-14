@@ -3,11 +3,21 @@ import { lookup } from '../dictionary.service';
 import { DictionaryError } from '../dictionary.types';
 import { LanguageDetector } from '../../language-detection/language-detector';
 
+type MockWordData = {
+  definitions: string[];
+  examples: string[];
+  synonyms: string[];
+};
+
+type MockData = {
+  [key in 'bonjour' | 'hello' | 'hola' | 'hallo' | 'ciao']: MockWordData;
+};
+
 // Mock language detector
 vi.mock('../../language-detection/language-detector', () => ({
   LanguageDetector: class {
     async detectLanguage(word: string): Promise<string | null> {
-      // Map words to their expected languages
+      // Map words to their expected languages, bypassing the 10-character requirement
       const languageMap: Record<string, string> = {
         'bonjour': 'fra',
         'hello': 'eng',
@@ -58,13 +68,42 @@ describe('Dictionary Service', () => {
     mockAxios = await vi.importMock('axios');
     mockGet = mockAxios.default.get;
 
-    // Mock successful API responses
+    // Mock successful API responses with more realistic data
     mockGet.mockImplementation((url: string) => {
       const word = url.split('/').pop()?.toLowerCase();
       if (!word) throw new Error('Invalid URL');
 
-      // Mock successful response
+      // Mock successful response with realistic data
       if (['bonjour', 'hello', 'hola', 'hallo', 'ciao'].includes(word)) {
+        const mockData: MockData = {
+          'bonjour': {
+            definitions: ['Used as a greeting when meeting someone'],
+            examples: ['Bonjour, comment allez-vous?'],
+            synonyms: ['salut', 'coucou']
+          },
+          'hello': {
+            definitions: ['Used as a greeting or to begin a telephone conversation'],
+            examples: ['Hello, how are you today?'],
+            synonyms: ['hi', 'hey', 'greetings']
+          },
+          'hola': {
+            definitions: ['Used as a greeting when meeting someone'],
+            examples: ['¡Hola! ¿Cómo estás?'],
+            synonyms: ['saludos', 'buenos días']
+          },
+          'hallo': {
+            definitions: ['Used as a greeting when meeting someone'],
+            examples: ['Hallo, wie geht es dir?'],
+            synonyms: ['servus', 'grüß dich']
+          },
+          'ciao': {
+            definitions: ['Used as a greeting or farewell'],
+            examples: ['Ciao, a presto!'],
+            synonyms: ['addio', 'arrivederci']
+          }
+        };
+
+        const wordData = mockData[word as keyof MockData];
         return Promise.resolve({
           data: {
             id: word,
@@ -76,9 +115,9 @@ describe('Dictionary Service', () => {
                 entries: [{
                   pronunciations: [{ phoneticSpelling: word }],
                   senses: [{
-                    definitions: [`Definition of ${word}`],
-                    examples: [{ text: `Example using ${word}` }],
-                    synonyms: [{ text: `synonym of ${word}` }]
+                    definitions: wordData.definitions,
+                    examples: wordData.examples.map((text: string) => ({ text })),
+                    synonyms: wordData.synonyms.map((text: string) => ({ text }))
                   }]
                 }]
               }]
@@ -106,7 +145,7 @@ describe('Dictionary Service', () => {
     });
   });
 
-  const testWords = ['bonjour', 'hello', 'hola', 'hallo', 'ciao'];
+  const testWords = ['bonjour', 'hello', 'hola', 'hallo', 'ciao'] as const;
   
   testWords.forEach(word => {
     it(`should lookup word: ${word}`, async () => {
