@@ -187,23 +187,3 @@ export default {
   ...arabicTokenizerInfo,
   tokenize: arabicTokenizer
 };
-
-
-# Add all tokenizer files except the example
-git add src/renderer/src/core/tokenizers/arabic-tokenizer.ts
-git add src/renderer/src/core/tokenizers/english-tokenizer.ts
-git add src/renderer/src/core/tokenizers/japanese-tokenizer.ts
-git add src/renderer/src/core/tokenizers/whitespace-tokenizer.ts
-git add src/renderer/src/core/services/default-tokenizers.ts
-
-# Create commit with specific date
-GIT_AUTHOR_DATE="2025-06-09T10:22:00" GIT_COMMITTER_DATE="2025-06-09T10:22:00" git commit -m "feat(tokenizer): implement language-specific tokenizers
-
-- Add Arabic tokenizer with support for Arabic script and diacritics
-- Add English tokenizer with contraction handling
-- Add Japanese tokenizer using TinySegmenter
-- Add fallback whitespace tokenizer
-- Configure default tokenizers in registry"
-
-# Push the changes
-git push origin text_tokenization
