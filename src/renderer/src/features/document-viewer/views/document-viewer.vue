@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { Button } from '@renderer/common/components/ui/button'
 import { ScrollArea } from '@renderer/common/components/ui/scroll-area'
 import { Separator } from '@renderer/common/components/ui/separator'
-import { RouteNames } from '@renderer/common/router/routes'
+import { useTabRouter } from '@renderer/common/services/tabRouter'
 import WordDetailsSidebar from '../components/WordDetailsSidebar.vue'
 import { ChevronLeft, BookOpen, Languages } from 'lucide-vue-next'
 
-const router = useRouter()
+const tabRouter = useTabRouter()
 
 interface WordDetails {
   word: string
@@ -61,78 +60,90 @@ const isLoading = ref(false)
 
 // Mock highlighted words with their details
 const highlightedWords = new Map<string, WordDetails>([
-  ['language', {
-    word: 'language',
-    lemma: 'language',
-    translation: 'a system of communication',
-    partOfSpeech: 'noun',
-    definitions: [
-      'A system of communication used by humans consisting of words and rules',
-      'The method of human communication, either spoken or written',
-      'A particular style of speaking or writing'
-    ],
-    examples: [
-      'English is a beautiful language',
-      'She speaks several languages fluently',
-      'The language of poetry is expressive'
-    ],
-    etymology: 'From Old French "language", from Latin "lingua" meaning "tongue"'
-  }],
-  ['literature', {
-    word: 'literature',
-    lemma: 'literature',
-    translation: 'written works of artistic value',
-    partOfSpeech: 'noun',
-    definitions: [
-      'Written works, especially those considered of superior or lasting artistic merit',
-      'Books and writings published on a particular subject',
-      'The body of written works produced in a particular language, country, or age'
-    ],
-    examples: [
-      'She studied English literature at university',
-      'The literature of the Renaissance period',
-      'Medical literature on the subject'
-    ],
-    etymology: 'From Latin "litteratura" meaning "writing formed with letters"'
-  }],
-  ['writing', {
-    word: 'writing',
-    lemma: 'write',
-    translation: 'the activity of creating text',
-    partOfSpeech: 'noun',
-    definitions: [
-      'The activity or skill of marking coherent words on paper',
-      'The work or style of a particular author',
-      'Something that has been written'
-    ],
-    examples: [
-      'Creative writing is an art form',
-      'Her writing style is elegant',
-      'The writing on the wall was clear'
-    ],
-    etymology: 'From Old English "writan" meaning "to score, outline, draw"'
-  }],
-  ['narrative', {
-    word: 'narrative',
-    lemma: 'narrative',
-    translation: 'a spoken or written account',
-    partOfSpeech: 'noun',
-    definitions: [
-      'A spoken or written account of connected events; a story',
-      'The practice or art of telling stories',
-      'A representation of a particular situation or process'
-    ],
-    examples: [
-      'The narrative structure of the novel',
-      'Personal narrative in autobiography',
-      'Historical narrative of events'
-    ],
-    etymology: 'From Latin "narrativus" meaning "telling a story"'
-  }]
+  [
+    'language',
+    {
+      word: 'language',
+      lemma: 'language',
+      translation: 'a system of communication',
+      partOfSpeech: 'noun',
+      definitions: [
+        'A system of communication used by humans consisting of words and rules',
+        'The method of human communication, either spoken or written',
+        'A particular style of speaking or writing'
+      ],
+      examples: [
+        'English is a beautiful language',
+        'She speaks several languages fluently',
+        'The language of poetry is expressive'
+      ],
+      etymology: 'From Old French "language", from Latin "lingua" meaning "tongue"'
+    }
+  ],
+  [
+    'literature',
+    {
+      word: 'literature',
+      lemma: 'literature',
+      translation: 'written works of artistic value',
+      partOfSpeech: 'noun',
+      definitions: [
+        'Written works, especially those considered of superior or lasting artistic merit',
+        'Books and writings published on a particular subject',
+        'The body of written works produced in a particular language, country, or age'
+      ],
+      examples: [
+        'She studied English literature at university',
+        'The literature of the Renaissance period',
+        'Medical literature on the subject'
+      ],
+      etymology: 'From Latin "litteratura" meaning "writing formed with letters"'
+    }
+  ],
+  [
+    'writing',
+    {
+      word: 'writing',
+      lemma: 'write',
+      translation: 'the activity of creating text',
+      partOfSpeech: 'noun',
+      definitions: [
+        'The activity or skill of marking coherent words on paper',
+        'The work or style of a particular author',
+        'Something that has been written'
+      ],
+      examples: [
+        'Creative writing is an art form',
+        'Her writing style is elegant',
+        'The writing on the wall was clear'
+      ],
+      etymology: 'From Old English "writan" meaning "to score, outline, draw"'
+    }
+  ],
+  [
+    'narrative',
+    {
+      word: 'narrative',
+      lemma: 'narrative',
+      translation: 'a spoken or written account',
+      partOfSpeech: 'noun',
+      definitions: [
+        'A spoken or written account of connected events; a story',
+        'The practice or art of telling stories',
+        'A representation of a particular situation or process'
+      ],
+      examples: [
+        'The narrative structure of the novel',
+        'Personal narrative in autobiography',
+        'Historical narrative of events'
+      ],
+      etymology: 'From Latin "narrativus" meaning "telling a story"'
+    }
+  ]
 ])
 
 const processedContent = computed(() => {
-  return document.value.chapters.map(chapter => ({
+  return document.value.chapters.map((chapter) => ({
     ...chapter,
     content: highlightWords(chapter.content)
   }))
@@ -173,9 +184,12 @@ function closeSidebar() {
   selectedWord.value = null
 }
 
-function goBack() {
-  // Navigate back to library
-  router.push({ name: RouteNames.LIBRARY })
+async function goBack() {
+  // Navigate back using tab router
+  const success = await tabRouter.back()
+  if (!success) {
+    await tabRouter.push({ name: 'library' }, { title: 'Library' })
+  }
 }
 </script>
 
@@ -216,7 +230,10 @@ function goBack() {
     <Separator />
 
     <!-- Main Content -->
-    <div class="document-viewer__main" :class="{ 'document-viewer__main--sidebar-open': isSidebarOpen }">
+    <div
+      class="document-viewer__main"
+      :class="{ 'document-viewer__main--sidebar-open': isSidebarOpen }"
+    >
       <!-- Document Content -->
       <div class="document-viewer__content">
         <ScrollArea class="document-viewer__scroll-area">
@@ -321,7 +338,7 @@ function goBack() {
   .document-viewer__main--sidebar-open {
     grid-template-columns: 1fr;
   }
-  
+
   .document-viewer__sidebar {
     position: fixed;
     top: 0;
@@ -408,7 +425,9 @@ function goBack() {
 .document-viewer__chapter-content :deep(.highlighted-word):hover {
   background-color: color-mix(in srgb, var(--color-primary) 25%, transparent);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 .document-viewer__chapter-content :deep(.highlighted-word):active {

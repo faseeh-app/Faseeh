@@ -1,15 +1,13 @@
 import { onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useTabRouter } from '@renderer/common/services/tabRouter'
 import { useTabStore } from '@renderer/common/stores/useTabStore'
 
 export function useKeyboardShortcuts() {
   const tabStore = useTabStore()
-  const router = useRouter()
+  const tabRouter = useTabRouter()
   const pressedKeys = new Set<string>()
-
   const handleAddTab = () => {
-    tabStore.openLibraryTab(true)
-    router.push({ name: 'library' })
+    tabRouter.push({ name: 'library' }, { title: 'Library', newTab: true })
   }
 
   onMounted(() => {
@@ -25,18 +23,13 @@ export function useKeyboardShortcuts() {
       if (event.ctrlKey && event.key === 't') {
         event.preventDefault()
         handleAddTab()
-      }
-      // Ctrl+W for close tab
+      } // Ctrl+W for close tab
       else if (event.ctrlKey && event.key === 'w') {
         event.preventDefault()
         const activeTab = tabStore.activeTab
         if (activeTab && activeTab.closable) {
           tabStore.removeTab(activeTab.id)
-          // Navigate to the new active tab after removal
-          const newActiveTab = tabStore.activeTab
-          if (newActiveTab) {
-            router.push(newActiveTab.route)
-          }
+          // Navigation will be handled by the TabBar component
         }
       }
 
@@ -47,7 +40,7 @@ export function useKeyboardShortcuts() {
         const nextIndex = (currentIndex + 1) % tabStore.tabs.length
         const nextTab = tabStore.tabs[nextIndex]
         tabStore.switchToTab(nextTab.id)
-        router.push(nextTab.route)
+        // Navigation will be handled by the TabBar component
       }
     }
 

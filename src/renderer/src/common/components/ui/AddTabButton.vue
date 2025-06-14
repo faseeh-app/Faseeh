@@ -1,21 +1,17 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import {
   TooltipProvider,
   TooltipContent,
   TooltipTrigger,
   Tooltip
 } from '@renderer/common/components/ui/tooltip'
-import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useTabRouter } from '@renderer/common/services/tabRouter'
 
-const tabStore = useTabStore()
-const router = useRouter()
+const tabRouter = useTabRouter()
 
 // Add tab functionality
 const handleAddTab = () => {
-  tabStore.openLibraryTab(true)
-  // Navigate to the library route
-  router.push({ name: 'library' })
+  tabRouter.push({ name: 'library' }, { title: 'Library', newTab: true })
 }
 </script>
 

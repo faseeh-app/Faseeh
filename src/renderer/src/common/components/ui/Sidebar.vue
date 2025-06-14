@@ -8,11 +8,10 @@ import {
 } from '@renderer/common/components/ui/tooltip'
 import CommandPalette from '@renderer/common/components/ui/CommandPalette.vue'
 import { useTabStore } from '@renderer/common/stores/useTabStore'
-import { useRouter } from 'vue-router'
-import { RouteNames } from '@renderer/common/router/routes'
+import { useTabRouter } from '@renderer/common/services/tabRouter'
 
 const tabStore = useTabStore()
-const router = useRouter()
+const tabRouter = useTabRouter()
 
 // Command palette state
 const isCommandPaletteOpen = ref(false)
@@ -48,8 +47,7 @@ const navButtons = [
     activeIcon: 'icon-[solar--library-bold]',
     label: 'Library',
     action: (forceNew: boolean = false) => {
-      tabStore.openLibraryTab(forceNew)
-      router.push({ name: RouteNames.LIBRARY })
+      tabRouter.push({ name: 'library' }, { title: 'Library', newTab: forceNew })
     }
   },
   {
@@ -58,8 +56,7 @@ const navButtons = [
     activeIcon: 'icon-[fa-solid--compass]',
     label: 'Discover',
     action: (forceNew: boolean = false) => {
-      tabStore.openCommunityTab(forceNew)
-      router.push({ name: RouteNames.COMMUNITY })
+      tabRouter.push({ name: 'community' }, { title: 'Community', newTab: forceNew })
     }
   },
   {
@@ -77,8 +74,8 @@ const navButtons = [
     activeIcon: 'icon-[solar--settings-bold]',
     label: 'Settings',
     action: (forceNew: boolean = false) => {
-      tabStore.openSettingsTab(forceNew)
-      router.push({ name: RouteNames.SETTINGS })
+      // TODO: Add settings route when settings component is implemented
+      console.log('Settings not implemented yet')
     }
   }
 ]

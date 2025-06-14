@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, useTemplateRef } from 'vue'
-import { useRouter } from 'vue-router'
 import SearchBar from '@renderer/common/components/ui/SearchBar.vue'
 import VDivider from '@renderer/common/components/ui/dividers/VDivider.vue'
 import HDivider from '@renderer/common/components/ui/dividers/HDivider.vue'
@@ -12,7 +11,7 @@ import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
 import ImportDialog from '../components/import/ImportDialog.vue'
 import { useScrollPosition } from '@renderer/common/composables/useScrollPosition'
-import { RouteNames } from '@renderer/common/router/routes'
+import { useTabRouter } from '@renderer/common/services/tabRouter'
 import videoThumbnail from '@renderer/common/assets/images/yt_video_thumbnail_1.webp'
 import playlistThumbnail from '@renderer/common/assets/images/yt_playlist_thumbnail_1.webp'
 import bookCover1 from '@renderer/common/assets/images/book_cover_1.webp'
@@ -24,34 +23,20 @@ interface MediaItem {
   id: string
   title: string
   subtitle?: string
-  type: 'video' | 'collection' | 'document'
+  type: 'video' | 'audio' | 'document' | 'collection' | 'article'
   duration?: string
   language?: string
   thumbnail?: string
 }
 
-interface LibraryItemForm {
-  name: string
-  type: 'video' | 'audio' | 'document' | 'book' | 'article' | 'webpage'
-  language: string
-  sourceUri: string
-  dynamicMetadata: {
-    description?: string
-    author?: string
-    genre?: string
-    tags?: string[]
-  }
-  thumbnail?: File | string
-}
-
-const router = useRouter()
+const tabRouter = useTabRouter()
 const scrollAreaRef = useTemplateRef<HTMLElement>('scrollAreaRef')
 
 useScrollPosition(scrollAreaRef)
 const open = ref(true)
 
 // Handle import from dialog
-const handleImport = (data: { source: FileList | string; metadata: LibraryItemForm }) => {
+const handleImport = (data: { source: FileList | string; metadata: Partial<LibraryItem> }) => {
   // TODO: Implement actual import logic using manual import service
   console.log('Importing:', data)
 
@@ -59,18 +44,34 @@ const handleImport = (data: { source: FileList | string; metadata: LibraryItemFo
   open.value = false
 }
 
-// Handle media card click
-const handleCardClick = (item: MediaItem) => {
-  if (item.type === 'document') {
-    // Navigate to document viewer
-    router.push({ name: RouteNames.DOCUMENT_VIEWER, params: { id: item.id } })
-  } else if (item.type === 'video') {
-    // Navigate to video player
-    router.push({ name: RouteNames.VIDEO_PLAYER, params: { id: item.id } })
-  } else {
-    // Handle other media types (audio, collection, etc.)
-    console.log('Opening media:', item)
+// Handle media card click with the new TabRouter
+const handleCardClick = (item: MediaItem, event?: MouseEvent) => {
+  // Check if Ctrl/Cmd key is pressed for opening in new tab
+  const openInNewTab = event ? event.ctrlKey || event.metaKey : false
+
+  // Determine the route based on media type
+  let routeName: string
+  let routeParams: Record<string, any> = { id: item.id }
+
+  switch (item.type) {
+    case 'video':
+      routeName = 'video-player'
+      break
+    case 'document':
+    case 'article':
+      routeName = 'document-viewer'
+      break
+    default:
+      // For collections and other types, stay in library for now
+      routeName = 'library'
+      routeParams = {}
+      break
   }
+
+  tabRouter.push(
+    { name: routeName, params: routeParams },
+    { title: item.title, newTab: openInNewTab }
+  )
 }
 
 // Sample media items data
@@ -118,6 +119,16 @@ const mediaItems = ref<MediaItem[]>([
   <div class="faseeh-user-library">
     <!-- Search & Import Controls -->
     <div class="faseeh-user-library__header">
+      <Button
+        v-if="tabRouter.canGoBack"
+        variant="ghost"
+        size="sm"
+        @click="tabRouter.back()"
+        class="mr-2"
+      >
+        <span class="icon-[solar--arrow-left-linear] mr-1" />
+        Back
+      </Button>
       <SearchBar />
       <SortMenu />
       <VDivider />
@@ -132,14 +143,15 @@ const mediaItems = ref<MediaItem[]>([
       <LanguageFilter />
       <TypeFilter />
     </div>
-    <HDivider />    <!-- Content Area -->
+    <HDivider />
+    <!-- Content Area -->
     <ScrollArea ref="scrollAreaRef" class="faseeh-user-library__content">
       <div class="faseeh-media-grid">
         <MediaCard
           v-for="item in mediaItems"
           :key="item.id"
           :item="item"
-          @click="handleCardClick"
+          @click="(item, event) => handleCardClick(item, event)"
         />
       </div>
     </ScrollArea>

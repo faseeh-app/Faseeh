@@ -14,7 +14,7 @@ interface Props {
 }
 
 interface Emits {
-  click: [item: MediaItem]
+  click: [item: MediaItem, event: MouseEvent]
 }
 
 const props = defineProps<Props>()
@@ -50,15 +50,15 @@ const getCardClass = (type: string) => {
   }
 }
 
-const handleCardClick = () => {
-  emit('click', props.item)
+const handleCardClick = (event: MouseEvent) => {
+  emit('click', props.item, event)
 }
 </script>
 
 <template>
   <div
     :class="getCardClass(item.type)"
-    @click="handleCardClick"
+    @click="handleCardClick($event)"
     role="button"
     tabindex="0"
     :aria-label="`Open ${item.title}`"

@@ -20,7 +20,7 @@ const contextMenu = ref({
 const handleTabActivate = (tabId: string) => {
   tabStore.switchToTab(tabId)
 
-  // Navigate to the tab's route
+  // Navigate to the tab's current route
   const tab = tabStore.tabs.find((t) => t.id === tabId)
   if (tab) {
     router.push(tab.route)
