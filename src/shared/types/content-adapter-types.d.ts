@@ -2,7 +2,7 @@ import { FaseehApp } from '@shared/types/types'
 export type ContentAdapterSource = string | Buffer | File
 import { LibraryItem } from '@shared/types/models'
 import { ContentDocument } from '@shared/types/types'
-import { ContentAdapter } from '@renderer/core/services/content-adapter'
+import { ContentAdapter } from '@root/src/renderer/src/core/services/content-adapter/content-adapter'
 export interface AssetDetail {
   format: string
   content: Buffer | string
