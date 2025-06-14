@@ -11,3 +11,5 @@ faseeh-specs/
 .idea/
 /plugins
 /packages
+.vscode/settings.json
+/.vscode

@@ -31,7 +31,10 @@
     ".prettierrc.yaml": true,
     "LICENSE": true,
     ".vscode": true,
-    ".idea": true
+    ".idea": true,
+    "out": true,
+    "node_modules": true,
+    "package-lock.json": true
   },
   "hide-files.files": [
     ".prettierignore",
@@ -44,7 +47,10 @@
     ".prettierrc.yaml",
     "LICENSE",
     ".vscode",
-    ".idea"
+    ".idea",
+    "out",
+    "node_modules",
+    "package-lock.json"
   ],
 
   "files.associations": {

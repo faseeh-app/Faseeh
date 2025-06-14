@@ -263,6 +263,7 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
 
     return libraryItem.id
   }
+  
   async processSource(
     source: ContentAdapterSource,
     context?: {

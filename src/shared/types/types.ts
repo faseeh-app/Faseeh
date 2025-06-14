@@ -1,3 +1,4 @@
+import { LanguageDetector } from '@root/src/renderer/src/core/services/language-detection/language-detector'
 import type { IStorage } from '@shared/types/domain-storage'
 export type { IStorage }
 
@@ -1026,3 +1027,174 @@ export interface IPluginManager extends EventBus<PluginEvents> {
 export type { BasePlugin } from '@renderer/core/services/plugins/plugin'
 export type { ContentAdapter } from '@renderer/core/services/content-adapter/content-adapter'
 export type { MetadataScraper } from '@renderer/core/services/metadata-scraper/metadata-scraper'
+
+export type { BasePlugin } from '@renderer/core/services/plugins/plugin'
+
+/* -------------------------------------------------------------------------- */
+/*                          Subtitle Generation Types                         */
+/* -------------------------------------------------------------------------- */
+
+// Input data for subtitle generation
+export type SubtitleSourceData = Buffer | string
+// Audio/Video file content as Buffer, or file path/URL string
+
+/**
+ * Represents a single subtitle segment with timing information and text content.
+ *
+ * @interface SubtitleSegment
+ * @example
+ * ```typescript
+ * const segment: SubtitleSegment = {
+ *   startTimeMs: 1000,
+ *   endTimeMs: 3000,
+ *   text: "Hello, world!",
+ *   confidence: 0.95
+ * };
+ * ```
+ * @public
+ */
+export interface SubtitleSegment {
+  /** The start time of the subtitle segment in milliseconds */
+  startTimeMs: number
+
+  /** The end time of the subtitle segment in milliseconds */
+  endTimeMs: number
+
+  /** The text content displayed during this subtitle segment */
+  text: string
+
+  /**
+   * Optional confidence score indicating the accuracy of the subtitle text.
+   * @remarks Typically ranges from 0.0 (no confidence) to 1.0 (full confidence)
+   */
+  confidence?: number
+}
+
+/**
+ * Represents the result of a subtitle generation operation.
+ *
+ * This interface encapsulates all the data returned after processing
+ * audio/video content to generate subtitles, including the detected
+ * language, subtitle segments, and metadata about the generation engine.
+ *
+ * @interface SubtitleGenerationResult * @example
+ * ```typescript
+ * const result: SubtitleGenerationResult = {
+ *   language: 'en',
+ *   segments: [
+ *     {
+ *       startTimeMs: 0,
+ *       endTimeMs: 3500,
+ *       text: 'Hello, world!',
+ *       confidence: 0.95
+ *     }
+ *   ],
+ *   engineInfo: {
+ *     id: 'whisper-1',
+ *     name: 'OpenAI Whisper',
+ *     model: 'whisper-large-v3'
+ *   },
+ *   raw: {
+ *     text: '1\n00:00:00,000 --> 00:00:03,500\nHello, world!\n\n',
+ *     format: 'srt'
+ *   }
+ * };
+ * ```
+ */
+export interface SubtitleGenerationResult {
+  language: string // Detected or confirmed language (ISO 639 code)
+  segments: SubtitleSegment[]
+  engineInfo?: {
+    // Info about the engine/model used
+    id: string
+    name: string
+    model?: string // Specific model identifier if applicable
+  }
+
+  /**
+   * Optional raw subtitle content in a standard format.
+   * If provided, contains the subtitles as a formatted string ready for file output.
+   */
+  raw?: {
+    text: string
+    format: 'srt' | 'vtt' | 'ttml' | 'scc' | 'stl'
+  }
+}
+
+// Metadata describing a Subtitle Engine's capabilities
+/**
+ * Configuration interface for subtitle generation engines.
+ *
+ * Defines the capabilities, requirements, and metadata for different subtitle
+ * generation services, including local plugins and cloud-based services.
+ *
+ * @interface SubtitleEngineInfo
+ * @example
+ * ```typescript
+ * const engine: SubtitleEngineInfo = {
+ *   id: "faseeh-cloud-stt",
+ *   name: "Faseeh Cloud",
+ *   supportedLanguages: ["en", "ar", "fr"],
+ *   inputType: ["audio", "video"],
+ *   description: "Cloud-based speech-to-text service",
+ *   requiresApiKey: true,
+ *   isCloudService: true
+ * };
+ * ```
+ */
+export interface SubtitleEngineInfo {
+  /**
+   * Unique identifier for the subtitle engine.
+   * Should follow kebab-case naming convention.
+   * @example "faseeh-cloud-stt", "plugin-local-whisper"
+   */
+  id: string
+
+  /**
+   * Human-readable display name for the engine.
+   * Used in UI components and user-facing documentation.
+   * @example "Faseeh Cloud", "Local Whisper (Medium)"
+   */
+  name: string
+
+  /**
+   * Array of supported language codes in ISO 639 format.
+   * Indicates which languages this engine can transcribe.
+   * @example ["en", "ar", "fr", "de"]
+   */
+  supportedLanguages: string[]
+
+  /**
+   * Types of input sources the engine can process.
+   * - `audio`: Audio files (mp3, wav, etc.)
+   * - `video`: Video files (mp4, avi, etc.)
+   * - `url`: Remote URLs or streaming sources
+   */
+  inputType: ('audio' | 'video' | 'url')[]
+
+  /**
+   * Optional detailed description of the engine.
+   * Should include information about the underlying model, service capabilities,
+   * or any special features.
+   * @optional
+   */
+  description?: string
+
+  /**
+   * Indicates whether this engine requires an API key for operation.
+   * True for cloud services or third-party APIs that need authentication.
+   * @optional
+   * @default false
+   */
+  requiresApiKey?: boolean
+
+  /**
+   * Indicates whether this engine is a cloud-based service.
+   * True for engines that process data remotely, false for local engines.
+   * @optional
+   * @default false
+   */
+  isCloudService?: boolean
+}
+
+export type { BaseSubtitleEngine } from '@renderer/core/services/subtitle-generation/subtitle-engine' 

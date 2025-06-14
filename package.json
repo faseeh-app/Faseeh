@@ -43,6 +43,7 @@
     "reka-ui": "^2.3.1",
     "tailwind-merge": "^3.2.0",
     "tsyringe": "^4.10.0",
+    "tiny-segmenter": "^0.2.0",
     "tw-animate-css": "^1.2.9",
     "vaul-vue": "^0.4.1",
     "vue-router": "^4.5.1"
@@ -59,6 +60,7 @@
     "@types/node": "^22.15.31",
     "@vitejs/plugin-vue": "^5.2.3",
     "chalk": "^5.4.1",
+    "dotenv": "^16.5.0",
     "electron": "^35.1.5",
     "electron-builder": "^25.1.8",
     "electron-rebuild": "^3.2.9",
@@ -68,6 +70,7 @@
     "glob": "^11.0.2",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.5",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vite": "^6.2.6",

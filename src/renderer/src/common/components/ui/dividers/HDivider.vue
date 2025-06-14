@@ -1,3 +1,3 @@
 <template>
-    <div class="faseeh-divider--horizontal" />
+  <div class="faseeh-divider--horizontal" />
 </template>
