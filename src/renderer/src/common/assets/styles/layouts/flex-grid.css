@@ -1,0 +1,59 @@
+/* -------------------------------------------------------------------------- */
+/*                               Layout Utilities                             */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-flex-center {
+  @apply flex items-center justify-center;
+}
+
+@utility faseeh-flex-between {
+  @apply flex items-center justify-between;
+}
+
+@utility faseeh-flex-start {
+  @apply flex items-center justify-start;
+}
+
+@utility faseeh-flex-end {
+  @apply flex items-center justify-end;
+}
+
+@utility faseeh-card {
+  @apply bg-card text-card-foreground;
+  @apply rounded-lg border shadow-sm;
+}
+
+@utility faseeh-card--interactive {
+  @apply faseeh-card;
+  @apply cursor-pointer transition-all duration-200;
+  @apply hover:shadow-md hover:border-accent;
+}
+
+@utility faseeh-grid {
+  @apply grid gap-4;
+}
+
+@utility faseeh-grid--cols-1 {
+  @apply faseeh-grid;
+  @apply grid-cols-1;
+}
+
+@utility faseeh-grid--cols-2 {
+  @apply faseeh-grid;
+  @apply grid-cols-2;
+}
+
+@utility faseeh-grid--cols-3 {
+  @apply faseeh-grid;
+  @apply grid-cols-3;
+}
+
+@utility faseeh-grid--cols-4 {
+  @apply faseeh-grid;
+  @apply grid-cols-4;
+}
+
+@utility faseeh-grid--responsive {
+  @apply faseeh-grid;
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}

@@ -3,7 +3,7 @@ import { Kysely, SqliteDialect, Migrator, FileMigrationProvider } from 'kysely'
 import { app } from 'electron'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import type { Database as DBInterface } from './types'
+import type { Database as DBInterface } from '@shared/types/db'
 
 // --- Singleton Instance Management ---
 let kyselyInstance: Kysely<DBInterface> | undefined = undefined
@@ -79,7 +79,7 @@ async function getMigrator(): Promise<Migrator> {
   })
 }
 
-export async function migrateToLatest(db: Kysely<DBInterface>): Promise<void> {
+export async function migrateToLatest(_db: Kysely<DBInterface>): Promise<void> {
   const migrator = await getMigrator()
   const { error, results } = await migrator.migrateToLatest()
 

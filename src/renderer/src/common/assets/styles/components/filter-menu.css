@@ -1,0 +1,19 @@
+/* -------------------------------------------------------------------------- */
+/*                                 FilterMenu                                 */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-filter-menu__icon {
+  @apply mr-2 size-4;
+}
+
+@utility faseeh-filter-menu__content {
+  @apply w-auto;
+}
+
+@utility faseeh-filter-menu__clear-button {
+  @apply hover:bg-transparent size-10;
+}
+
+@utility faseeh-filter-menu__clear-icon {
+  @apply icon-[fluent-emoji-high-contrast--multiply];
+}

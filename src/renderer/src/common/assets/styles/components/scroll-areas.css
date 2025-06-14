@@ -1,0 +1,27 @@
+/* -------------------------------------------------------------------------- */
+/*                                Scroll Areas                                */
+/* -------------------------------------------------------------------------- */
+
+@utility faseeh-scroll-area {
+  @apply relative;
+}
+
+@utility faseeh-scroll-area__viewport {
+  @apply focus-visible:ring-ring/50 size-full rounded-[inherit];
+  @apply transition-[color,box-shadow] outline-none;
+  @apply focus-visible:ring-[3px] focus-visible:outline-1;
+}
+
+@utility faseeh-scroll-bar {
+  @apply flex touch-none select-none transition-colors;
+}
+
+@utility faseeh-scroll-bar--vertical {
+  @apply faseeh-scroll-bar;
+  @apply h-full w-2.5 border-l border-l-transparent p-[1px];
+}
+
+@utility faseeh-scroll-bar--horizontal {
+  @apply faseeh-scroll-bar;
+  @apply h-2.5 flex-col border-t border-t-transparent p-[1px];
+}
