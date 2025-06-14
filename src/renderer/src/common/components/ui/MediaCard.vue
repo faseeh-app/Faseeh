@@ -13,7 +13,12 @@ interface Props {
   item: MediaItem
 }
 
+interface Emits {
+  click: [item: MediaItem]
+}
+
 const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
 const getTypeIcon = (type: string) => {
   switch (type) {
@@ -46,7 +51,7 @@ const getCardClass = (type: string) => {
 }
 
 const handleCardClick = () => {
-  console.log('Card clicked:', props.item.id)
+  emit('click', props.item)
 }
 </script>
 
