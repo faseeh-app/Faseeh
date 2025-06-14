@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FilterMenu from '@renderer/common/components/ui/FilterMenu.vue'
+import FilterMenu from '@renderer/common/components/FilterMenu.vue'
 import { ref, computed } from 'vue'
 
 const options = ref([

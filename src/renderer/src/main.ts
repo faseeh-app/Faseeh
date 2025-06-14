@@ -2,15 +2,18 @@ import '@renderer/common/assets/styles/main.css'
 import { createApp, App as VueApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, Router } from 'vue-router'
-import { storage } from '@root/src/renderer/src/core/services/storage/storage-service'
 import App from './App.vue'
 import { routes } from '@renderer/common/router/routes'
-import { pluginManager } from '@renderer/core/faseeh-app'
+import {
+  storage,
+  pluginManager,
+  initializeServices,
+  shutdownServices
+} from '@renderer/core/services/service-container'
 
 class RendererLifecycle {
   private app: VueApp | null = null
   private router: Router | null = null
-
   init(): void {
     const pinia = createPinia()
 
@@ -21,53 +24,63 @@ class RendererLifecycle {
 
     this.app = createApp(App)
     this.app.use(pinia)
-    this.app.use(this.router) // Initialize Plugin Manager
+    this.app.use(this.router)
 
+    // Set up shutdown event listeners
     window.addEventListener('beforeunload', () => this.close())
+
+    // Additional Electron-specific shutdown handling
+    window.addEventListener('unload', () => this.close())
+
+    // Handle page visibility changes (optional cleanup on hide)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        // Could add partial cleanup here if needed
+      }
+    })
   }
   async run(): Promise<void> {
     if (!this.app) {
       throw new Error('Application not initialized. Call init() first.')
     }
 
-    // Initialize plugin manager first
-    if (pluginManager) {
-      await pluginManager.initialize()
-      console.log(pluginManager.listPlugins())
-    }
+    // Initialize all services first (includes plugin manager)
+    await initializeServices()
+
+    // Get the plugin manager instance
+    const pluginMgr = pluginManager()
+    console.log(pluginMgr.listPlugins())
 
     this.app.mount('#app')
   }
   test(): void {
     if (import.meta.env.DEV) {
-      storage.on('media:saved', (event) => {
+      const storageService = storage()
+      storageService.on('media:saved', (event) => {
         console.log('Renderer received event - Media saved:', event.mediaId, 'from', event.path)
       })
 
-      storage.emit('media:saved', { mediaId: '67890', path: 'local' })
+      storageService.emit('media:saved', { mediaId: '67890', path: 'local' })
 
       // Test storage API
       this.testStorage()
     }
   }
   async close(): Promise<void> {
-    // Shutdown plugin manager first
-    if (pluginManager) {
-      await pluginManager.shutdown()
-    }
-
-    storage.clearAllHandlers()
+    // Shutdown all services properly (includes storage cleanup)
+    await shutdownServices()
   }
   private async testStorage(): Promise<void> {
     try {
-      console.log(await storage.listPluginDirectories())
+      const storageService = storage()
+      console.log(await storageService.listPluginDirectories())
 
-      await storage.setAppSetting({
+      await storageService.setAppSetting({
         key: 'testKey',
         value: JSON.stringify({ test: 'value' })
       })
 
-      // const setting = await storage.getAppSetting('testKey')
+      // const setting = await storageService.getAppSetting('testKey')
       // if (setting) {
       //   console.log('Value from storage:', JSON.parse(setting.value))
       // } else {

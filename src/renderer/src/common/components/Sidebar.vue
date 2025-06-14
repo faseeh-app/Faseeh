@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipProvider
 } from '@renderer/common/components/ui/tooltip'
-import CommandPalette from '@renderer/common/components/ui/CommandPalette.vue'
+import CommandPalette from '@renderer/common/components/CommandPalette.vue'
 import { useTabStore } from '@renderer/common/stores/useTabStore'
 import { useTabRouter } from '@renderer/common/services/tabRouter'
 

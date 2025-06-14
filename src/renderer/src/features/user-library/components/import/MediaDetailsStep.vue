@@ -3,7 +3,7 @@ import { computed, inject, ref, onUnmounted, type Ref, onMounted, watch } from '
 import { Input } from '@renderer/common/components/ui/input'
 import { Upload, Image as ImageIcon, Loader2 } from 'lucide-vue-next'
 import type { LibraryItem, MetadataScraperResult } from '@shared/types/types'
-import { metadataRegistry } from '@renderer/core/faseeh-app'
+import { metadataRegistry } from '@renderer/core/services/service-container'
 
 const libraryItemForm = defineModel<Partial<LibraryItem>>({
   default: () => ({
@@ -34,9 +34,8 @@ const error = ref<string | null>(null)
 const fetchMetadata = async (source: string | File) => {
   isLoading.value = true
   error.value = null
-
   try {
-    const result = await metadataRegistry.scrapeMetadata(source)
+    const result = await metadataRegistry().scrapeMetadata(source)
 
     if (result.success && result.metadata) {
       // Update the form with scraped metadata

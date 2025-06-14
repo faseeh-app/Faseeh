@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, useTemplateRef } from 'vue'
-import SearchBar from '@renderer/common/components/ui/SearchBar.vue'
+import SearchBar from '@renderer/common/components/SearchBar.vue'
 import VDivider from '@renderer/common/components/ui/dividers/VDivider.vue'
 import HDivider from '@renderer/common/components/ui/dividers/HDivider.vue'
-import SortMenu from '@renderer/common/components/ui/SortMenu.vue'
+import SortMenu from '@renderer/common/components/SortMenu.vue'
 import { Button } from '@renderer/common/components/ui/button'
 import ScrollArea from '@renderer/common/components/ui/scroll-area/ScrollArea.vue'
-import MediaCard from '@renderer/common/components/ui/MediaCard.vue'
+import MediaCard from '@renderer/common/components/MediaCard.vue'
 import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
 import ImportDialog from '../components/import/ImportDialog.vue'
@@ -33,7 +33,7 @@ const tabRouter = useTabRouter()
 const scrollAreaRef = useTemplateRef<HTMLElement>('scrollAreaRef')
 
 useScrollPosition(scrollAreaRef)
-const open = ref(true)
+const open = ref(false)
 
 // Handle import from dialog
 const handleImport = (data: { source: FileList | string; metadata: Partial<LibraryItem> }) => {

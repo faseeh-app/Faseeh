@@ -1,27 +1,21 @@
-import { FaseehApp } from '@shared/types/types'
-import { ContentAdapterRegistry } from '@renderer/core/services/content-adapter/content-adapter-registry'
-import { PluginManager } from '@renderer/core/services/plugins/plugin-manager'
-import { MetadataScraperRegistry } from '@renderer/core/services/metadata-scraper/metadata-scraper-registry'
-import { LanguageDetector } from '@renderer/core/services/language-detection/language-detector'
-import { storage } from '@renderer/core/services/storage/storage-service'
+import 'reflect-metadata'
+import {
+  contentRegistry,
+  pluginManager,
+  metadataRegistry,
+  languageDetector,
+  faseehApp,
+  initializeServices,
+  shutdownServices
+} from '@renderer/core/services/service-container'
 
-export const contentRegistry = new ContentAdapterRegistry()
-export const pluginManager = new PluginManager()
-export const metadataRegistry = new MetadataScraperRegistry()
-export const langDetector = new LanguageDetector()
-
-export const Faseeh: FaseehApp = {
-  appInfo: {
-    version: '1.1.0',
-    platform: 'win'
-  },
-  storage: storage,
-  plugins: pluginManager,
-  content: contentRegistry,
-  metadata: metadataRegistry,
-  languageDetector: langDetector
+export {
+  contentRegistry,
+  pluginManager,
+  metadataRegistry,
+  languageDetector,
+  initializeServices,
+  shutdownServices
 }
 
-contentRegistry.setApp(Faseeh)
-pluginManager.setApp(Faseeh)
-metadataRegistry.setApp(Faseeh)
+export const Faseeh = faseehApp

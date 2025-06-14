@@ -23,7 +23,7 @@ const { ipcRenderer } = require('electron')
  * It extends EventBusService to emit storage-related events.
  * @public
  */
-class StorageService extends EventBusService<StorageEvents> implements IStorage {
+export class StorageService extends EventBusService<StorageEvents> implements IStorage {
   constructor() {
     super('storage')
   }
@@ -340,37 +340,16 @@ class StorageService extends EventBusService<StorageEvents> implements IStorage 
   ): Promise<SupplementaryFile | undefined> {
     return ipcRenderer.invoke('storage:updateSupplementaryFile', id, fileUpdate)
   }
-
   async deleteSupplementaryFile(id: string): Promise<boolean> {
     return ipcRenderer.invoke('storage:deleteSupplementaryFile', id)
   }
-}
 
-/**
- * Singleton instance of the storage service for the renderer process.
- *
- * This is the primary interface for all data persistence operations in the renderer.
- * Use this instance throughout the application to access database and file system.
- *
- * @example
- * ```typescript
- * import { storage } from '@renderer/core/services/storage/storage-service'
- *
- * // Get library items
- * const items = await storage.getLibraryItems()
- *
- * // Create a new library item
- * const newItem = await storage.createLibraryItem({
- *   title: 'My Document',
- *   type: 'text'
- * })
- *
- * // Listen for storage events
- * storage.on('library-item-created', (item) => {
- *   console.log('New item created:', item)
- * })
- * ```
- *
- * @public
- */
-export const storage = new StorageService()
+  /**
+   * Cleanup method for graceful shutdown
+   * Called automatically by the service lifecycle manager
+   */
+  async shutdown(): Promise<void> {
+    this.clearAllHandlers()
+    console.log('📦 Storage service shutdown complete')
+  }
+}

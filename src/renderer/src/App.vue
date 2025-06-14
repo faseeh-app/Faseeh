@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import TitleBar from '@renderer/common/components/ui/TitleBar.vue'
-import Sidebar from '@renderer/common/components/ui/Sidebar.vue'
+import TitleBar from '@renderer/common/components/TitleBar.vue'
+import Sidebar from '@renderer/common/components/Sidebar.vue'
 import { useTabStore } from '@renderer/common/stores/useTabStore'
 
 const tabStore = useTabStore()

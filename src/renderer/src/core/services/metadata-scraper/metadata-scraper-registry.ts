@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import {
   MetadataScraperRegistration,
   MetadataScraperInfo,
@@ -23,7 +24,7 @@ const { extname } = require('path')
  *
  * @example
  * ```typescript
- * const registry = new MetadataScraperRegistry(app)
+ * const registry = new MetadataScraperRegistry()
  *
  * // Register a scraper
  * registry.register(youtubeScraper)
@@ -42,31 +43,10 @@ export class MetadataScraperRegistry implements IMetadataScraperRegistry {
    * Internal map storing registered scrapers by their unique identifiers.
    * @private
    */
-  private scrapers: Map<string, MetadataScraperRegistration> = new Map()
-
-  /**
-   * Reference to the Faseeh application instance for accessing storage and plugins.
-   * @private
-   */
-  private app: FaseehApp
-
-  /**
+  private scrapers: Map<string, MetadataScraperRegistration> = new Map() /**
    * Creates a new MetadataScraperRegistry instance.
-   *
-   * @param app - Faseeh application instance providing access to storage and plugins
    */
-  constructor() {
-    this.app = {} as FaseehApp
-    /* FIXME: the whole app context passing needs to be refactored
-     * The setApp method is just a temporary solution
-     * what should be done is to create another context/service/utilty class that will be passed
-     * to FaseehApp and then to the registry, that way we can avoid circular dependencies or at least that's the plan
-     */
-  }
-
-  setApp(app: FaseehApp): void {
-    this.app = app
-  }
+  constructor(private faseehAppInstance: FaseehApp) {}
 
   /**
    * @inheritdoc
@@ -360,10 +340,9 @@ export class MetadataScraperRegistry implements IMetadataScraperRegistry {
         error: 'No suitable metadata scraper found for the provided source.'
       }
     }
-
     try {
       const result = await this.invokeScraperMethod(scraper, source, {
-        app: this.app,
+        app: this.faseehAppInstance,
         originalPath: context?.originalPath,
         sourceUrl: context?.sourceUrl
       })

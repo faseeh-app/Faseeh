@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import {
   ContentAdapterRegistration,
   ContentAdapterInfo,
@@ -11,6 +12,7 @@ import {
   ContentAdapterSource,
   FaseehApp
 } from '@shared/types/types'
+import { StorageService } from '@renderer/core/services/storage/storage-service'
 
 import { fileTypeFromBuffer } from 'file-type'
 
@@ -18,21 +20,10 @@ const { extname } = require('path')
 
 export class ContentAdapterRegistry implements IContentAdapterRegistry {
   private adapters: Map<string, ContentAdapterRegistration> = new Map()
-
-  private app: FaseehApp
-
-  constructor() {
-    this.app = {} as FaseehApp
-    /* FIXME: the whole app context passing needs to be refactored
-     * The setApp method is just a temporary solution
-     * what should be done is to create another context/service/utilty class that will be passed
-     * to FaseehApp and then to the registry, that way we can avoid circular dependencies or at least that's the plan
-     */
-  }
-
-  setApp(app: FaseehApp): void {
-    this.app = app
-  }
+  constructor(
+    private storage: StorageService,
+    private faseehAppInstance: FaseehApp
+  ) {}
 
   register(registration: ContentAdapterRegistration): void {
     if (this.adapters.has(registration.id)) {
@@ -224,7 +215,7 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
       groupOrder: libraryItemData.groupOrder
     }
 
-    const libraryItem = await this.app.storage.createLibraryItem(newItemData, contentDocument)
+    const libraryItem = await this.storage.createLibraryItem(newItemData, contentDocument)
 
     if (!libraryItem?.id) {
       throw new Error('Failed to create library item')
@@ -245,7 +236,7 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
           height: undefined
         }
 
-        await this.app.storage.createEmbeddedAsset(newAsset)
+        await this.storage.createEmbeddedAsset(newAsset)
       }
     }
 
@@ -266,13 +257,12 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
           language: file.language
         }
 
-        await this.app.storage.createSupplementaryFile(newFile)
+        await this.storage.createSupplementaryFile(newFile)
       }
     }
 
     return libraryItem.id
   }
-
   async processSource(
     source: ContentAdapterSource,
     context?: {
@@ -293,10 +283,9 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
         error: 'No suitable content adapter found for the provided source.'
       }
     }
-
     try {
       const result = await this.invokeAdapterMethod(adapter, source, {
-        app: this.app,
+        app: this.faseehAppInstance,
         originalPath: context?.originalPath
       })
 

@@ -1,4 +1,5 @@
-import type {
+import 'reflect-metadata'
+import {
   PluginManifest,
   PluginInfo,
   FaseehApp,
@@ -7,35 +8,27 @@ import type {
   IPluginManager
 } from '@shared/types/types'
 import { BasePlugin as BasePluginClass } from './plugin'
-import * as Runtime from '@shared/types/runtime'
-import { EventBusService } from '@root/src/main/services/event-bus-service'
+import { EventBusService } from '@renderer/core/services/event-bus/event-bus-service'
+import { StorageService } from '@renderer/core/services/storage/storage-service'
 
 /**
  * Plugin Manager Service
  * Responsible for the complete lifecycle of community plugins
  */
 export class PluginManager extends EventBusService<PluginEvents> implements IPluginManager {
-  private app: FaseehApp
   private activePlugins = new Map<string, BasePlugin>()
   private discoveredManifests = new Map<string, PluginManifest>()
   private enabledPlugins = new Set<string>()
-  private failedPlugins = new Map<string, string>() // pluginId -> error message
+  private failedPlugins = new Map<string, string>()
   private isInitialized = false
+  private readonly APP_VERSION = '1.1.0'
 
-  constructor() {
+  constructor(
+    private storage: StorageService,
+    private faseehAppInstance: FaseehApp
+  ) {
     super('plugins')
-    this.app = {} as FaseehApp
-    /* FIXME: the whole app context passing needs to be refactored
-     * The setApp method is just a temporary solution
-     * what should be done is to create another context/service/utilty class that will be passed
-     * to FaseehApp and then to the registry, that way we can avoid circular dependencies or at least that's the plan
-     */
   }
-
-  setApp(app: FaseehApp): void {
-    this.app = app
-  }
-
   /**
    * Initialize the plugin manager and load enabled plugins
    */
@@ -90,8 +83,9 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
       const originalLoad = Module._load
       Module._load = function (request: string, parent: any, isMain: boolean) {
         if (request === '@faseeh-app/faseeh' || request === '@faseeh-app/faseeh-runtime') {
-          // Return all plugin runtime exports from the barrel file
-          return Runtime
+          return {
+            BasePlugin: BasePluginClass
+          }
         }
         return originalLoad.call(this, request, parent, isMain)
       }
@@ -107,7 +101,7 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
    */
   private async loadEnabledPluginsConfig(): Promise<void> {
     try {
-      const enabledPluginIds = await this.app.storage.getEnabledPluginIds()
+      const enabledPluginIds = await this.storage.getEnabledPluginIds()
       this.enabledPlugins = new Set(enabledPluginIds)
       console.log(`📋 Loaded ${enabledPluginIds.length} enabled plugins from config`)
     } catch (error) {
@@ -122,7 +116,7 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
   private async saveEnabledPluginsConfig(): Promise<void> {
     try {
       const enabledPluginIds = Array.from(this.enabledPlugins)
-      await this.app.storage.setEnabledPluginIds(enabledPluginIds)
+      await this.storage.setEnabledPluginIds(enabledPluginIds)
     } catch (error) {
       console.error('Failed to save enabled plugins config:', error)
     }
@@ -130,10 +124,9 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
 
   /**
    * Discover all installed plugins by scanning the plugins directory
-   */
-  private async discoverPlugins(): Promise<void> {
+   */ private async discoverPlugins(): Promise<void> {
     try {
-      const pluginDirs = await this.app.storage.listPluginDirectories()
+      const pluginDirs = await this.storage.listPluginDirectories()
       console.log(`🔍 Discovered ${pluginDirs.length} plugin directories`)
 
       this.discoveredManifests.clear()
@@ -141,7 +134,7 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
       for (const pluginDir of pluginDirs) {
         try {
           const dirName = pluginDir.split('\\').pop() || pluginDir.split('/').pop() || pluginDir
-          const manifest = await this.app.storage.readPluginManifest(dirName)
+          const manifest = await this.storage.readPluginManifest(dirName)
           // Validate required fields
           if (!this.validateManifest(manifest)) {
             console.warn(`⚠️ Invalid manifest for plugin: ${pluginDir}`)
@@ -150,7 +143,7 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
           // Check app version compatibility
           if (!this.isVersionCompatible(manifest.minAppVersion)) {
             console.warn(
-              `⚠️ Plugin ${manifest.id} requires app version ${manifest.minAppVersion}, current: ${this.app.appInfo.version}`
+              `⚠️ Plugin ${manifest.id} requires app version ${manifest.minAppVersion}, current: ${this.APP_VERSION}`
             )
             continue
           }
@@ -184,7 +177,7 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
    */
   private isVersionCompatible(minAppVersion: string): boolean {
     // Simple version comparison - you might want to use a proper semver library
-    const currentParts = this.app.appInfo.version.split('.').map(Number)
+    const currentParts = this.APP_VERSION.split('.').map(Number)
     const requiredParts = minAppVersion.split('.').map(Number)
 
     for (let i = 0; i < Math.max(currentParts.length, requiredParts.length); i++) {
@@ -323,9 +316,8 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
           throw new Error(`Dependency ${depId} is not loaded`)
         }
       }
-
       console.log(`🔄 Loading plugin: ${manifest.name} (${pluginId})`) // Get plugin directories to find the main file
-      const pluginDirs = await this.app.storage.listPluginDirectories()
+      const pluginDirs = await this.storage.listPluginDirectories()
       let pluginDir = pluginDirs.find((dir) => {
         // Extract just the directory name from absolute path
         const dirName = dir.split('\\').pop() || dir.split('/').pop() || dir
@@ -345,7 +337,7 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
         console.log(`🔄 Loading plugin: ${manifest.name} (${pluginId})`)
 
         // Use the storage service to get the plugin directory path
-        const pluginDir = await this.app.storage.getPluginDirectoryPath(pluginId)
+        const pluginDir = await this.storage.getPluginDirectoryPath(pluginId)
 
         if (!pluginDir) {
           throw new Error(`Could not find directory for plugin: ${pluginId}`)
@@ -359,10 +351,8 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
       } catch (requireError) {
         console.error(`Failed to require plugin at path: ${pluginPath}`, requireError)
         throw new Error(`Failed to load plugin module: ${requireError}`)
-      }
-
-      // Create FaseehApp instance for the plugin
-      const faseehApp: FaseehApp = this.createFaseehAppInstance()
+      } // Create FaseehApp instance for the plugin
+      const faseehApp: FaseehApp = this.faseehAppInstance
 
       // Instantiate plugin
       const pluginInstance = new PluginClass(faseehApp, manifest) as BasePlugin
@@ -396,13 +386,6 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
       // Disable plugins that depend on this failed plugin
       await this.disableDependentPlugins(pluginId)
     }
-  }
-
-  /**
-   * Create FaseehApp instance for plugins
-   */
-  private createFaseehAppInstance(): FaseehApp {
-    return this.app
   }
 
   /**
