@@ -45,6 +45,14 @@ export default defineConfig({
         '@main': resolve('src/main/')
       }
     },
-    plugins: [vue(), tailwindcss()]
+    plugins: [vue(), tailwindcss()],
+    optimizeDeps: {
+      include: ['axios']
+    },
+    build: {
+      rollupOptions: {
+        external: ['axios']
+      }
+    }
   }
 })

@@ -11,3 +11,4 @@ faseeh-specs/
 .idea/
 /plugins
 /packages
+.env
