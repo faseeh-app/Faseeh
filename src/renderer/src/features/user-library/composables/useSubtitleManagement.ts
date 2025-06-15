@@ -7,7 +7,6 @@ import {
   combineSubtitleSources
 } from '../utilities/video-extractor'
 
-// Default demo subtitles for testing
 const defaultSubtitles: SubtitleCue[] = [
   {
     id: '1',
@@ -76,13 +75,10 @@ export function useSubtitleManagement(
 ) {
   const { fallbackToDemo = true } = options
 
-  // Reactive state
   const loadedSubtitles = ref<SubtitleCue[]>([])
   const isLoadingSubtitles = ref(false)
   const subtitleError = ref<string | null>(null)
   const currentCue = ref<SubtitleCue | null>(null)
-
-  // Load subtitles from LibraryItem
   async function loadSubtitles() {
     isLoadingSubtitles.value = true
     subtitleError.value = null
@@ -94,7 +90,6 @@ export function useSubtitleManagement(
       if (bestSource && bestSource.cues.length > 0) {
         loadedSubtitles.value = bestSource.cues
       } else {
-        // Try combining all available sources
         const allSubtitles = combineSubtitleSources(subtitleSources)
         loadedSubtitles.value = allSubtitles
       }
@@ -106,8 +101,6 @@ export function useSubtitleManagement(
       isLoadingSubtitles.value = false
     }
   }
-
-  // Get active subtitles (loaded or demo fallback)
   const activeSubtitles = computed(() => {
     if (loadedSubtitles.value.length > 0) {
       return loadedSubtitles.value
@@ -120,12 +113,9 @@ export function useSubtitleManagement(
     return []
   })
 
-  // Find current subtitle cue based on time
   function findCurrentCue(time: number): SubtitleCue | null {
     return activeSubtitles.value.find((cue) => time >= cue.start && time <= cue.end) || null
   }
-
-  // Update current cue based on video time
   function updateCurrentCue(time: number) {
     const newCue = findCurrentCue(time)
     if (newCue !== currentCue.value) {
@@ -133,27 +123,23 @@ export function useSubtitleManagement(
     }
   }
 
-  // Load subtitles when component mounts
   onMounted(() => {
     loadSubtitles()
   })
 
-  // Watch for changes to libraryItem and reload subtitles
   watch(
     () => libraryItem.value.id,
     () => {
       loadSubtitles()
     }
   )
+
   return {
-    // State
     loadedSubtitles,
     isLoadingSubtitles,
     subtitleError,
     currentCue,
     activeSubtitles,
-
-    // Methods
     loadSubtitles,
     findCurrentCue,
     updateCurrentCue

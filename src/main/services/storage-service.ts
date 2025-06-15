@@ -333,6 +333,7 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       const newDbAsset = await this.createEmbeddedAsset(dbAsset)
       return newDbAsset ? converters.toEmbeddedAssetDomain(newDbAsset) : undefined
     })
+
     handle('storage:updateEmbeddedAsset', async (id: string, update: any) => {
       const dbUpdate = converters.toEmbeddedAssetUpdateDb(update)
       const updatedDbAsset = await this.updateEmbeddedAsset(id, dbUpdate)
@@ -367,6 +368,9 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       'storage:writeSupplementaryFileContent',
       (libraryItemId: string, filename: string, content: string) =>
         this.writeSupplementaryFileContent(libraryItemId, filename, content)
+    )
+    handle('storage:readSupplementaryFileContent', (libraryItemId: string, filename: string) =>
+      this.readSupplementaryFileContent(libraryItemId, filename)
     )
   }
 
@@ -1362,7 +1366,6 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
     }
     return result.numDeletedRows > 0
   }
-
   async writeSupplementaryFileContent(
     libraryItemId: string,
     filename: string,
@@ -1385,6 +1388,29 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
     } catch (error) {
       console.error(`Failed to write supplementary file ${filePath}:`, error)
       return false
+    }
+  }
+
+  async readSupplementaryFileContent(
+    libraryItemId: string,
+    filename: string
+  ): Promise<string | null> {
+    if (!libraryItemId || !filename) return null
+
+    const itemSuppDir = path.join(
+      FASEEH_BASE_PATH,
+      LIBRARY_DIR_NAME,
+      libraryItemId,
+      SUPPLEMENTARY_FILES_DIR_NAME
+    )
+
+    const filePath = path.join(itemSuppDir, filename)
+    try {
+      const content = await fs.readFile(filePath, 'utf-8')
+      return content
+    } catch (error) {
+      console.error(`Failed to read supplementary file ${filePath}:`, error)
+      return null
     }
   }
 }

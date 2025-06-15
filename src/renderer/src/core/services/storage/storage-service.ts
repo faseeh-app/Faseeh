@@ -385,7 +385,6 @@ export class StorageService extends EventBusService<StorageEvents> implements IS
   async deleteSupplementaryFile(id: string): Promise<boolean> {
     return ipcRenderer.invoke('storage:deleteSupplementaryFile', id)
   }
-
   async writeSupplementaryFileContent(
     libraryItemId: string,
     filename: string,
@@ -397,6 +396,13 @@ export class StorageService extends EventBusService<StorageEvents> implements IS
       filename,
       content
     )
+  }
+
+  async readSupplementaryFileContent(
+    libraryItemId: string,
+    filename: string
+  ): Promise<string | null> {
+    return ipcRenderer.invoke('storage:readSupplementaryFileContent', libraryItemId, filename)
   }
 
   /**

@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import type { LibraryItem } from '@shared/types/types'
 import type { SubtitleCue, SubtitleWord } from '../composables/useVideoPlayer'
+import type { Token } from '@shared/types/text-tokenizer-types'
 
 // Import minimal components
 import VideoPlayerCore from '../components/VideoPlayerCore.vue'
@@ -12,16 +13,6 @@ import InteractiveSubtitles from '../components/InteractiveSubtitles.vue'
 import { createDemoLibraryItem } from '../utilities/video-extractor'
 import { useSubtitleManagement } from '../composables/useSubtitleManagement'
 import { storage } from '@renderer/core/services/service-container'
-
-/**
- * Video Player Component
- *
- * Features:
- * - Video playback (YouTube, MP4, etc.)
- * - Interactive clickable subtitles
- * - LibraryItem-based content loading from route params
- * - Development mode for testing
- */
 
 interface Props {
   libraryItem?: LibraryItem
@@ -44,17 +35,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 const route = useRoute()
 
-// State for loading library item
 const loadedLibraryItem = ref<LibraryItem | null>(null)
 const isLoading = ref(false)
 const loadError = ref<string | null>(null)
 
-// Load library item from route parameter
 const loadLibraryItem = async () => {
   const itemId = route.params.id as string
 
   if (!itemId) {
-    console.warn('[VideoPlayer] No item ID in route params')
     return
   }
 
@@ -62,73 +50,57 @@ const loadLibraryItem = async () => {
   loadError.value = null
 
   try {
-    console.log('[VideoPlayer] Loading library item with ID:', itemId)
     const item = await storage().getLibraryItemById(itemId)
 
     if (!item) {
       throw new Error(`Library item not found: ${itemId}`)
     }
-    console.log('[VideoPlayer] Successfully loaded library item:', item)
-    console.log('[VideoPlayer] Library item structure:', {
-      id: item.id,
-      name: item.name,
-      type: item.type,
-      sourceUri: item.sourceUri,
-      contentDocumentPath: item.contentDocumentPath,
-      hasDocument: !!item.document,
-      dynamicMetadata: item.dynamicMetadata
-    })
     loadedLibraryItem.value = item
   } catch (error) {
-    console.error('[VideoPlayer] Failed to load library item:', error)
     loadError.value = error instanceof Error ? error.message : 'Failed to load library item'
   } finally {
     isLoading.value = false
   }
 }
 
-// Create demo LibraryItem for development/testing
 const demoLibraryItem = createDemoLibraryItem(
   props.fallbackVideoUrl || 'https://www.youtube.com/watch?v=LXb3EKWsInQ',
   true
 )
 
-// Determine which LibraryItem to use
 const activeLibraryItem = computed(() => {
-  // Priority: loaded item from route > provided prop > demo item
   if (loadedLibraryItem.value) {
     return loadedLibraryItem.value
   } else if (props.libraryItem) {
     return props.libraryItem
   } else if (props.devMode) {
-    console.warn('[VideoPlayer] Development mode: Using demo LibraryItem')
     return demoLibraryItem
   } else {
-    console.warn('[VideoPlayer] No LibraryItem loaded, using demo item as fallback')
     return demoLibraryItem
   }
 })
 
-// Subtitle management
 const { currentCue, activeSubtitles, updateCurrentCue, isLoadingSubtitles, subtitleError } =
   useSubtitleManagement(activeLibraryItem)
 
-// Video player ref for controls
 const videoPlayerCore = ref<InstanceType<typeof VideoPlayerCore>>()
 
-// Event handlers
 function handleWordClick(word: SubtitleWord, cue: SubtitleCue) {
-  console.log('Word clicked:', word.text, 'from cue:', cue.text)
   // Add custom word click logic here
+}
+
+function handleTokenClick(token: Token, cue: SubtitleCue) {
+  console.log('Token clicked:', token.text)
+  // Add custom token click logic here
 }
 
 function handleTimeUpdate(currentTime: number) {
   updateCurrentCue(currentTime)
 }
 
-// Emits for parent component integration
 interface Emits {
   wordClick: [word: SubtitleWord, cue: SubtitleCue]
+  tokenClick: [token: Token, cue: SubtitleCue]
   playerReady: [player: any]
   timeUpdate: [currentTime: number]
 }
@@ -144,17 +116,20 @@ function handleWordClickEmit(word: SubtitleWord, cue: SubtitleCue) {
   handleWordClick(word, cue)
 }
 
+function handleTokenClickEmit(token: Token, cue: SubtitleCue) {
+  emit('tokenClick', token, cue)
+  handleTokenClick(token, cue)
+}
+
 function handleTimeUpdateEmit(currentTime: number) {
   emit('timeUpdate', currentTime)
   handleTimeUpdate(currentTime)
 }
 
-// Load library item on mount and when route changes
 onMounted(() => {
   loadLibraryItem()
 })
 
-// Watch for route parameter changes
 watch(
   () => route.params.id,
   () => {
@@ -168,20 +143,17 @@ watch(
 
 <template>
   <div class="video-player-minimal">
-    <!-- Loading state for library item -->
     <div v-if="isLoading" class="loading-container">
       <div class="loading-spinner"></div>
       <div class="loading-text">Loading video...</div>
     </div>
 
-    <!-- Error state for library item -->
     <div v-else-if="loadError" class="error-container">
       <div class="error-icon">⚠️</div>
       <div class="error-text">{{ loadError }}</div>
       <button @click="loadLibraryItem" class="retry-button">Retry</button>
     </div>
 
-    <!-- Video player (shown when loaded or using fallback) -->
     <VideoPlayerCore
       v-else
       ref="videoPlayerCore"
@@ -193,19 +165,17 @@ watch(
       @player-ready="handlePlayerReady"
       @time-update="handleTimeUpdateEmit"
     >
-      <!-- Interactive Subtitles Overlay -->
       <InteractiveSubtitles
         v-if="showSubtitles"
         :current-cue="currentCue"
         :visible="activeSubtitles.length > 0"
         @word-click="handleWordClickEmit"
+        @token-click="handleTokenClickEmit"
       />
     </VideoPlayerCore>
 
-    <!-- Loading indicator for subtitles -->
     <div v-if="isLoadingSubtitles" class="loading-indicator">Loading subtitles...</div>
 
-    <!-- Subtitle error indicator -->
     <div v-if="subtitleError" class="error-indicator">Error: {{ subtitleError }}</div>
   </div>
 </template>
@@ -217,7 +187,6 @@ watch(
   position: relative;
 }
 
-/* Loading state styles */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -251,7 +220,6 @@ watch(
   }
 }
 
-/* Error state styles */
 .error-container {
   display: flex;
   flex-direction: column;

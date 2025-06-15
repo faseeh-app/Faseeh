@@ -18,7 +18,6 @@ import { StorageService } from '@renderer/core/services/storage/storage-service'
 import { fileTypeFromBuffer } from 'file-type'
 
 const { extname } = require('path')
-const { ipcRenderer } = require('electron')
 
 export class ContentAdapterRegistry implements IContentAdapterRegistry {
   private adapters: Map<string, ContentAdapterRegistration> = new Map()
@@ -186,33 +185,22 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
       libraryItemId?: string | null
     }
   ): Promise<ContentAdapterResult> {
-    console.log('invokeAdapterMethod called with registration:', registration)
-
     let adaptFn: ContentAdapterFunction
     if (registration.adapterClass) {
-      console.log('Creating adapter instance from class:', registration.adapterClass)
       const adapterInstance = new registration.adapterClass(registration)
-      console.log('Adapter instance created:', adapterInstance)
-      console.log('Adapter instance adapt property:', adapterInstance.adapt)
-      console.log('Type of adapt property:', typeof adapterInstance.adapt)
-
       adaptFn = adapterInstance.adapt
 
       if (!adaptFn) {
-        console.error('adapt function is null/undefined on instance')
         return Promise.reject(
           new Error('Could not extract functions - adapt property is null/undefined')
         )
       }
     } else if (registration.adapter) {
-      console.log('Using direct adapter function')
       adaptFn = registration.adapter
     } else {
-      console.error('no adapter function found for registration', registration)
       return Promise.reject(new Error('Could not extract functions'))
     }
 
-    console.log('About to call adaptFn with source:', source)
     return adaptFn(source, context)
   }
   private async saveAdapterResult(
@@ -235,17 +223,6 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
     // Serialize the simplified metadata for SQLite storage
     const serializedDynamicMetadata = this.serializeMetadataForStorage(simplifiedMetadata || {})
 
-    console.log('Original dynamicMetadata:', libraryItemData.dynamicMetadata)
-    console.log('Simplified and serialized dynamicMetadata:', serializedDynamicMetadata)
-    console.log('Type check of serialized metadata:')
-    for (const [key, value] of Object.entries(serializedDynamicMetadata)) {
-      console.log(
-        `  ${key}: ${typeof value} ${Array.isArray(value) ? '(array)' : ''} ${Buffer.isBuffer(value) ? '(buffer)' : ''}`
-      )
-      if (typeof value === 'object' && value !== null && !Buffer.isBuffer(value)) {
-        console.log(`    WARNING: Found non-serialized object for key ${key}:`, value)
-      }
-    }
     const newItemData: CreateLibraryItemDTO = {
       id: libraryItemId,
       type: userMetadata?.type || libraryItemData.type || 'unknown',
@@ -259,15 +236,11 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
       groupOrder: libraryItemData.groupOrder || undefined
     }
 
-    console.log('Complete newItemData being sent to storage:', JSON.stringify(newItemData, null, 2))
-    console.log('contentDocument being sent to storage:', JSON.stringify(contentDocument, null, 2))
-
     const libraryItem = await this.storage.createLibraryItem(newItemData, contentDocument)
 
     if (!libraryItem?.id) {
       throw new Error('Failed to create library item')
     } // Thumbnail handling is now done separately in ImportDialog after successful import
-    // This avoids conflicts and simplifies the flow
 
     if (documentAssets) {
       for (const [assetId, assetDetail] of Object.entries(documentAssets)) {
@@ -324,9 +297,7 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
           }
 
           // Create the supplementary file record
-          await this.storage.createSupplementaryFile(newFile)
-
-          // Write the file content to disk
+          await this.storage.createSupplementaryFile(newFile) // Write the file content to disk
           const content = Buffer.isBuffer(file.content)
             ? file.content.toString('utf-8')
             : file.content
@@ -337,7 +308,7 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
           )
 
           if (success) {
-            console.log(`Supplementary file ${uniqueFilename} saved successfully`)
+            // File saved successfully
           } else {
             console.error(`Failed to write content for supplementary file ${uniqueFilename}`)
           }
@@ -349,10 +320,8 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
     }
 
     return libraryItem.id
-  }
-  /**
+  } /**
    * Serialize complex metadata objects for SQLite storage
-   * SQLite can only handle primitive types, so we need to stringify objects and arrays
    */
   private serializeMetadataForStorage(metadata: Record<string, any>): Record<string, any> {
     const serialized: Record<string, any> = {}
@@ -377,13 +346,10 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
     } else if (Buffer.isBuffer(value)) {
       return value
     } else if (Array.isArray(value)) {
-      // For arrays, stringify the entire array
       return JSON.stringify(value)
     } else if (typeof value === 'object') {
-      // For objects, stringify the entire object
       return JSON.stringify(value)
     } else {
-      // For any other complex types, stringify them
       return JSON.stringify(value)
     }
   }
@@ -399,11 +365,8 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
     libraryItemId?: string
     error?: string
   }> {
-    console.log('processSource called with source:', source)
     const criteria = await this.sourceToCriteria(source, context)
-    console.log('Generated criteria:', criteria)
     const adapter = this.findBestAdapter(criteria)
-    console.log('Found adapter:', adapter)
 
     if (!adapter) {
       return {
@@ -412,16 +375,12 @@ export class ContentAdapterRegistry implements IContentAdapterRegistry {
       }
     }
     try {
-      console.log('About to invoke adapter method')
       const result = await this.invokeAdapterMethod(adapter, source, {
         app: this.faseehAppInstance,
         originalPath: context?.originalPath
       })
-      console.log('Adapter method result:', result)
 
-      console.log('About to save adapter result')
       const libraryItemId = await this.saveAdapterResult(result, context?.userMetadata)
-      console.log('Saved library item with ID:', libraryItemId)
 
       return {
         success: true,

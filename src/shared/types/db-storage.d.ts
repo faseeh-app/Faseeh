@@ -716,8 +716,7 @@ export interface IStorageAPI extends EventBus<StorageEvents> {
   /**
    * Writes content to a supplementary file on the filesystem.
    *
-   * @param {string} libraryItemId - The unique identifier of the library item
-   * @param {string} filename - The name of the file to write
+   * @param {string} libraryItemId - The unique identifier of the library item   * @param {string} filename - The name of the file to write
    * @param {string} content - The content to write to the file
    * @returns {Promise<boolean>} True if the write was successful, false otherwise
    */
@@ -726,4 +725,13 @@ export interface IStorageAPI extends EventBus<StorageEvents> {
     filename: string,
     content: string
   ) => Promise<boolean>
+
+  /**
+   * Reads content from a supplementary file on the filesystem.
+   *
+   * @param {string} libraryItemId - The unique identifier of the library item
+   * @param {string} filename - The name of the file to read
+   * @returns {Promise<string | null>} The file content as string, or null if file doesn't exist
+   */
+  readSupplementaryFileContent: (libraryItemId: string, filename: string) => Promise<string | null>
 }

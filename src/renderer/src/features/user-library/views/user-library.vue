@@ -37,12 +37,10 @@ const contextMenu = ref({
   item: null as MediaItem | null
 })
 
-// Library state
 const libraryItems = ref<LibraryItem[]>([])
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 
-// Computed media items for display
 const mediaItems = computed<MediaItem[]>(() => {
   return libraryItems.value.map((item: LibraryItem) => ({
     id: item.id,
@@ -51,12 +49,10 @@ const mediaItems = computed<MediaItem[]>(() => {
     type: mapLibraryItemType(item.type),
     duration: item.dynamicMetadata?.duration,
     language: item.language,
-    // Thumbnail will be loaded separately for each item
     thumbnail: undefined
   }))
 })
 
-// Map LibraryItem type to MediaItem type
 function mapLibraryItemType(libraryType: string): MediaItem['type'] {
   switch (libraryType.toLowerCase()) {
     case 'video':
@@ -73,7 +69,6 @@ function mapLibraryItemType(libraryType: string): MediaItem['type'] {
   }
 }
 
-// Load library items from storage
 const loadLibraryItems = async () => {
   isLoading.value = true
   error.value = null
@@ -89,29 +84,19 @@ const loadLibraryItems = async () => {
   }
 }
 
-// Handle import from dialog
 const handleImport = async (data: {
   source: FileList | string
   metadata: Partial<LibraryItem>
 }) => {
-  console.log('Import completed:', data)
-
-  // Refresh the library items to show the newly imported item
   await loadLibraryItems()
-
-  // Close dialog
   open.value = false
 }
 
-// Handle media card click with the new MediaLayout navigation
 const handleCardClick = async (item: MediaItem, event?: MouseEvent) => {
-  // For collection types, stay in library for now
   if (item.type === 'collection' || item.type === 'audio') {
-    console.log('Collection/Audio navigation not implemented yet')
     return
   }
 
-  // Convert to MediaNavigationItem format
   const mediaItem: MediaNavigationItem = {
     id: item.id,
     title: item.title,
@@ -125,7 +110,6 @@ const handleCardClick = async (item: MediaItem, event?: MouseEvent) => {
   }
 }
 
-// Handle context menu
 const handleContextMenu = (item: MediaItem, event: MouseEvent) => {
   contextMenu.value = {
     visible: true,
@@ -135,7 +119,6 @@ const handleContextMenu = (item: MediaItem, event: MouseEvent) => {
   }
 }
 
-// Handle context menu actions
 const handleContextMenuOpen = (item: MediaItem) => {
   handleCardClick(item)
 }
@@ -144,14 +127,10 @@ const handleContextMenuDelete = async (item: MediaItem) => {
   try {
     const success = await storage().deleteLibraryItem(item.id)
     if (success) {
-      await loadLibraryItems() // Refresh the list
-      console.log(`Successfully deleted library item: ${item.title}`)
-    } else {
-      console.error('Failed to delete library item: No item was deleted')
+      await loadLibraryItems()
     }
   } catch (error) {
     console.error('Failed to delete library item:', error)
-    // You might want to show a toast notification or error dialog here
   }
 }
 
@@ -159,7 +138,6 @@ const handleContextMenuClose = () => {
   contextMenu.value.visible = false
 }
 
-// Load library items on mount
 onMounted(() => {
   loadLibraryItems()
 })

@@ -714,7 +714,6 @@ export interface IStorage extends EventBus<StorageEvents> {
    * @returns {Promise<boolean>} True if the deletion was successful, false otherwise
    */
   deleteSupplementaryFile: (id: string) => Promise<boolean>
-
   /**
    * Writes content to a supplementary file on the filesystem.
    *
@@ -728,4 +727,13 @@ export interface IStorage extends EventBus<StorageEvents> {
     filename: string,
     content: string
   ) => Promise<boolean>
+
+  /**
+   * Reads content from a supplementary file on the filesystem.
+   *
+   * @param {string} libraryItemId - The unique identifier of the library item
+   * @param {string} filename - The name of the file to read
+   * @returns {Promise<string | null>} The file content as string, or null if file doesn't exist
+   */
+  readSupplementaryFileContent: (libraryItemId: string, filename: string) => Promise<string | null>
 }

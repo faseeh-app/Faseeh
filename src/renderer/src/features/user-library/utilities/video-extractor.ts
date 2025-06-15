@@ -7,15 +7,8 @@ import type {
 } from '@shared/types/types'
 import { SupplementaryFileType } from '@shared/types/models.d'
 import { storage } from '@renderer/core/services/service-container'
-// TODO: Import SubtitleParser when file reading is implemented
-// import { SubtitleParser } from './subtitle-parser'
+import { parseSubtitleFile } from './subtitle-parser'
 import type { SubtitleCue } from '../composables/useVideoPlayer'
-
-/**
- * Utility functions for extracting video and subtitle data from LibraryItem
- * These functions handle the business logic of parsing LibraryItem data
- * for the video player component and integrate with the storage service.
- */
 
 export interface VideoSource {
   url: string | null
@@ -32,57 +25,36 @@ export interface SubtitleSource {
   storagePath?: string
 }
 
-/**
- * Extract video source information from a LibraryItem
- */
 export function extractVideoSource(libraryItem: LibraryItem, fallbackUrl?: string): VideoSource {
-  console.log('[VideoExtractor] Extracting video source from LibraryItem:', {
-    id: libraryItem.id,
-    name: libraryItem.name,
-    type: libraryItem.type,
-    sourceUri: libraryItem.sourceUri,
-    hasDocument: !!libraryItem.document,
-    contentDocumentPath: libraryItem.contentDocumentPath
-  })
   try {
-    // First check if there's a direct sourceUri - this is common for imported videos
     if (libraryItem.sourceUri && libraryItem.sourceUri.trim() !== '') {
-      console.log('[VideoExtractor] Found sourceUri:', libraryItem.sourceUri)
       return {
         url: libraryItem.sourceUri,
         type: 'external'
       }
     }
 
-    // Then check if document is directly available
     let contentDoc: ContentDocument | null = null
 
     if (libraryItem.document) {
       contentDoc = libraryItem.document
     } else if (libraryItem.contentDocumentPath) {
-      // TODO: Load document from storage service using contentDocumentPath
-      console.warn('[VideoExtractor] ContentDocument loading from storage path not yet implemented')
       return { url: fallbackUrl || null, type: 'fallback' }
     } else {
       return { url: fallbackUrl || null, type: 'fallback' }
     }
 
-    // Find the first VideoBlock in the content
     const videoBlock = contentDoc.contentBlocks?.find(
       (block): block is VideoBlock => block.type === 'video'
     )
 
     if (videoBlock) {
-      // Return external source
       if (videoBlock.externalSrc) {
         return {
           url: videoBlock.externalSrc,
           type: 'external'
         }
-      }
-      // Return asset reference (requires storage service integration)
-      else if (videoBlock.assetId && contentDoc.assets?.[videoBlock.assetId]) {
-        console.warn('[VideoExtractor] Asset-based video URLs not yet implemented')
+      } else if (videoBlock.assetId && contentDoc.assets?.[videoBlock.assetId]) {
         return {
           url: fallbackUrl || null,
           type: 'asset',
@@ -91,22 +63,15 @@ export function extractVideoSource(libraryItem: LibraryItem, fallbackUrl?: strin
       }
     }
 
-    console.log('[VideoExtractor] No direct sourceUri found, checking ContentDocument')
     return { url: fallbackUrl || null, type: 'fallback' }
   } catch (error) {
-    console.error('[VideoExtractor] Error parsing ContentDocument:', error)
     return { url: fallbackUrl || null, type: 'fallback' }
   }
 }
 
-/**
- * Extract subtitle information from a LibraryItem
- * This includes both generated subtitles and supplementary files
- */
 export async function extractSubtitleSources(libraryItem: LibraryItem): Promise<SubtitleSource[]> {
   const sources: SubtitleSource[] = []
 
-  // Extract subtitles from generation results in dynamicMetadata
   try {
     if (libraryItem.dynamicMetadata?.subtitleGenerationResult) {
       const result = libraryItem.dynamicMetadata
@@ -114,10 +79,10 @@ export async function extractSubtitleSources(libraryItem: LibraryItem): Promise<
 
       const cues: SubtitleCue[] = result.segments.map((segment, index) => ({
         id: `generated-${index}`,
-        start: segment.startTimeMs / 1000, // Convert to seconds
+        start: segment.startTimeMs / 1000,
         end: segment.endTimeMs / 1000,
         text: segment.text,
-        words: [] // TODO: Implement word-level timing if available
+        words: []
       }))
 
       sources.push({
@@ -130,50 +95,44 @@ export async function extractSubtitleSources(libraryItem: LibraryItem): Promise<
   } catch (error) {
     console.error('[VideoExtractor] Error parsing subtitle generation result:', error)
   }
-  // Extract subtitles from SupplementaryFiles using storage service
+
   try {
-    // Note: This is now implemented with actual storage service integration
     const storageService = storage()
 
-    // Get supplementary files for this library item
     const supplementaryFiles = await storageService.getSupplementaryFilesByLibraryItem(
       libraryItem.id,
-      undefined, // type filter - get all types initially
-      undefined // language filter - get all languages
+      undefined,
+      undefined
     )
 
-    // Filter for subtitle and transcript files
     const subtitleFiles = supplementaryFiles.filter(
       (file: SupplementaryFile) =>
         file.type === SupplementaryFileType.SUBTITLE ||
         file.type === SupplementaryFileType.TRANSCRIPT
     )
 
-    // Load and parse each subtitle file
     for (const file of subtitleFiles) {
       try {
-        // Get the absolute path to the subtitle file
-        const filePath = await storageService.getSupplementaryFileAbsolutePath(file.id)
+        const content = await storageService.readSupplementaryFileContent(
+          libraryItem.id,
+          file.filename || file.storagePath || ''
+        )
 
-        if (filePath) {
-          console.log(
-            `[VideoExtractor] Found subtitle file: ${file.filename || file.storagePath} at ${filePath}`
-          )
+        if (content) {
+          const cues = parseSubtitleFile(content, file.filename)
 
-          // TODO: Add file reading capability to storage service or use fs directly
-          // For now, we'll create a placeholder subtitle source
-          // const content = await fs.readFile(filePath, 'utf-8')
-          // const parsed = SubtitleParser.parse(content, file.format as any)
-
-          // Placeholder for actual file content parsing
           sources.push({
-            cues: [], // Will be populated when file reading is implemented
+            cues,
             language: file.language || 'unknown',
             source: 'file',
             format: file.format || 'unknown',
             filename: file.filename,
             storagePath: file.storagePath
           })
+        } else {
+          console.warn(
+            `[VideoExtractor] Could not read content for subtitle file: ${file.filename}`
+          )
         }
       } catch (error) {
         console.error(`[VideoExtractor] Error loading subtitle file ${file.filename}:`, error)
@@ -182,55 +141,38 @@ export async function extractSubtitleSources(libraryItem: LibraryItem): Promise<
   } catch (error) {
     console.error('[VideoExtractor] Error processing supplementary files:', error)
   }
-
   return sources
 }
 
-/**
- * Get the best subtitle source from available sources
- * Prioritizes generation results over files, but this can be customized
- */
 export function getBestSubtitleSource(
   sources: SubtitleSource[],
   preferredLanguage?: string
 ): SubtitleSource | null {
   if (sources.length === 0) return null
 
-  // If preferred language is specified, try to find a match
   if (preferredLanguage) {
     const languageMatch = sources.find((source) => source.language === preferredLanguage)
     if (languageMatch) return languageMatch
   }
 
-  // Otherwise, prioritize by source type (generation > file)
   const generationSource = sources.find((source) => source.source === 'generation')
   if (generationSource) return generationSource
 
   const fileSource = sources.find((source) => source.source === 'file')
   if (fileSource) return fileSource
 
-  // Return the first available source
   return sources[0]
 }
 
-/**
- * Utility function to combine multiple subtitle sources
- * Useful when displaying multiple language tracks or different sources
- */
 export function combineSubtitleSources(sources: SubtitleSource[]): SubtitleCue[] {
   const allCues: SubtitleCue[] = []
-
   sources.forEach((source) => {
     allCues.push(...source.cues)
   })
 
-  // Sort by start time
   return allCues.sort((a, b) => a.start - b.start)
 }
 
-/**
- * Create a demo LibraryItem for testing purposes
- */
 export function createDemoLibraryItem(videoUrl: string, includeSubtitles = true): LibraryItem {
   const now = new Date()
 
