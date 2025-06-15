@@ -24,3 +24,43 @@
 /* Import utility stylesheets */
 @import './utilities/common.css';
 @import './utilities/interactive.css';
+
+.faseeh-media-bar {
+  @apply flex items-center justify-between h-10 p-4;
+}
+
+.faseeh-media-bar__navigation {
+  @apply flex items-center justify-start w-fit gap-2;
+}
+
+.faseeh-media-bar__navigation-button {
+  @apply flex items-center justify-center w-6 h-6;
+
+  &:disabled {
+    @apply opacity-30 cursor-not-allowed;
+  }
+
+  span {
+    @apply text-lg;
+  }
+}
+
+.faseeh-media-bar__title {
+  @apply w-fit text-sm text-muted-foreground;
+}
+
+.faseeh-media-bar__actions {
+  @apply w-fit flex items-center justify-end gap-2;
+}
+
+.faseeh-media-bar__action-button {
+  @apply flex items-center justify-center w-6 h-6;
+
+  &:disabled {
+    @apply opacity-30 cursor-not-allowed;
+  }
+
+  span {
+    @apply text-lg;
+  }
+}

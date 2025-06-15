@@ -12,6 +12,10 @@ import TypeFilter from '../components/filters/TypeFilter.vue'
 import ImportDialog from '../components/import/ImportDialog.vue'
 import { useScrollPosition } from '@renderer/common/composables/useScrollPosition'
 import { useTabRouter } from '@renderer/common/services/tabRouter'
+import {
+  useMediaNavigation,
+  type MediaItem as MediaNavigationItem
+} from '../composables/useMediaNavigation'
 import videoThumbnail from '@renderer/common/assets/images/yt_video_thumbnail_1.webp'
 import playlistThumbnail from '@renderer/common/assets/images/yt_playlist_thumbnail_1.webp'
 import bookCover1 from '@renderer/common/assets/images/book_cover_1.webp'
@@ -30,6 +34,7 @@ interface MediaItem {
 }
 
 const tabRouter = useTabRouter()
+const mediaNavigation = useMediaNavigation()
 const scrollAreaRef = useTemplateRef<HTMLElement>('scrollAreaRef')
 
 useScrollPosition(scrollAreaRef)
@@ -44,34 +49,26 @@ const handleImport = (data: { source: FileList | string; metadata: Partial<Libra
   open.value = false
 }
 
-// Handle media card click with the new TabRouter
-const handleCardClick = (item: MediaItem, event?: MouseEvent) => {
-  // Check if Ctrl/Cmd key is pressed for opening in new tab
-  const openInNewTab = event ? event.ctrlKey || event.metaKey : false
-
-  // Determine the route based on media type
-  let routeName: string
-  let routeParams: Record<string, any> = { id: item.id }
-
-  switch (item.type) {
-    case 'video':
-      routeName = 'video-player'
-      break
-    case 'document':
-    case 'article':
-      routeName = 'document-viewer'
-      break
-    default:
-      // For collections and other types, stay in library for now
-      routeName = 'library'
-      routeParams = {}
-      break
+// Handle media card click with the new MediaLayout navigation
+const handleCardClick = async (item: MediaItem, event?: MouseEvent) => {
+  // For collection types, stay in library for now
+  if (item.type === 'collection' || item.type === 'audio') {
+    console.log('Collection/Audio navigation not implemented yet')
+    return
   }
 
-  tabRouter.push(
-    { name: routeName, params: routeParams },
-    { title: item.title, newTab: openInNewTab }
-  )
+  // Convert to MediaNavigationItem format
+  const mediaItem: MediaNavigationItem = {
+    id: item.id,
+    title: item.title,
+    type: item.type === 'video' ? 'video' : 'document'
+  }
+
+  try {
+    await mediaNavigation.openMediaWithModifiers(mediaItem, event)
+  } catch (error) {
+    console.error('Failed to navigate to media:', error)
+  }
 }
 
 // Sample media items data
