@@ -4,7 +4,6 @@
 
 @utility faseeh-titlebar {
   @apply flex;
-  -webkit-app-region: drag;
   > *:not(.faseeh-titlebar__tabs) {
     @apply border-b-1 border-input;
   }
@@ -13,11 +12,22 @@
 @utility faseeh-titlebar__center-area {
   @apply w-full max-w-full shrink min-w-0;
   @apply flex flex-col;
+  -webkit-app-region: drag;
 }
 
 @utility faseeh-titlebar__drag-area {
   @apply h-2 shrink;
   -webkit-app-region: drag;
+}
+
+.faseeh-titlebar__sidepanel-toggle {
+  @apply flex items-center justify-center m-0 rounded-b-none;
+  @apply h-full w-10;
+
+  .faseeh-titlebar__sidepanel-toggle-button {
+    @apply flex items-center justify-center m-0 rounded-b-none;
+    @apply h-6 w-6;
+  }
 }
 
 @utility faseeh-titlebar__window-controls {
@@ -52,7 +62,7 @@
 }
 
 @utility faseeh-titlebar__container {
-  @apply flex w-full max-w-full;
+  @apply flex w-fit max-w-full;
   @apply gap-1;
   @apply shrink min-h-0;
   -webkit-app-region: no-drag;

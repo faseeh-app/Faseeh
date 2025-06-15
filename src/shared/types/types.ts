@@ -1,4 +1,4 @@
-import { LanguageDetector } from '@root/src/renderer/src/core/services/language-detection/language-detector'
+import { LanguageDetector } from '@renderer/core/services/language-detection/language-detector'
 import type { IStorage } from '@shared/types/domain-storage'
 export type { IStorage }
 
