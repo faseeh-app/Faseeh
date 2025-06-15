@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted } from 'vue'
-import { useTabRouter } from '@root/src/renderer/src/core/services/tabRouter'
-import { useTabStore } from '@root/src/renderer/src/core/stores/useTabStore'
+import { useTabRouter } from '@renderer/core/services/tabRouter'
+import { useTabStore } from '@renderer/core/stores/useTabStore'
 
 export function useKeyboardShortcuts() {
   const tabStore = useTabStore()

@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
   Tooltip
 } from '@renderer/common/components/ui/tooltip'
-import { useTabRouter } from '@root/src/renderer/src/core/services/tabRouter'
+import { useTabRouter } from '@renderer/core/services/tabRouter'
 
 const tabRouter = useTabRouter()
 

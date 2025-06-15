@@ -11,7 +11,7 @@ import LanguageFilter from '../components/filters/LanguageFilter.vue'
 import TypeFilter from '../components/filters/TypeFilter.vue'
 import ImportDialog from '../components/import/ImportDialog.vue'
 import { useScrollPosition } from '@renderer/common/composables/useScrollPosition'
-import { useTabRouter } from '@root/src/renderer/src/core/services/tabRouter'
+import { useTabRouter } from '@renderer/core/services/tabRouter'
 import {
   useMediaNavigation,
   type MediaItem as MediaNavigationItem
