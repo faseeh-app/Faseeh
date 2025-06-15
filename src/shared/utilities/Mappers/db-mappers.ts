@@ -91,8 +91,12 @@ const parseJsonData = (jsonData: any): any => {
 
 // Helper to stringify JSON data for database storage
 const stringifyJsonData = (data: any): any => {
-  if (typeof data === 'object' && data !== null) {
-    return data // Kysely handles JSON serialization automatically
+  if (data === null || data === undefined) {
+    return {}
+  }
+  if (typeof data === 'object') {
+    // Properly stringify objects for SQLite storage
+    return JSON.stringify(data)
   }
   return data || {}
 }

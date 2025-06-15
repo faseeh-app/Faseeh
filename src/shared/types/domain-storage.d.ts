@@ -160,7 +160,6 @@ export interface IStorage extends EventBus<StorageEvents> {
    * @returns {Promise<ContentDocument | undefined>} The document content, or undefined if not found
    */
   getDocumentJson: (libraryItemId: string) => Promise<ContentDocument | undefined>
-
   /**
    * Saves document content to the document.json file for a library item.
    *
@@ -169,6 +168,35 @@ export interface IStorage extends EventBus<StorageEvents> {
    * @returns {Promise<boolean>} True if the save operation was successful, false otherwise
    */
   saveDocumentJson: (libraryItemId: string, content: ContentDocument) => Promise<boolean>
+
+  // == Thumbnail Management ==
+
+  /**   * Saves a thumbnail image for a library item.
+   * The thumbnail will be saved as 'thumbnail.{ext}' in the library item's directory.
+   *
+   * @param {string} libraryItemId - The unique identifier of the library item
+   * @param {File} thumbnail - The thumbnail image file to save
+   * @returns {Promise<boolean>} True if the save operation was successful, false otherwise
+   */
+  saveThumbnail: (libraryItemId: string, thumbnail: File) => Promise<boolean>
+
+  /**
+   * Gets the absolute path to a library item's thumbnail if it exists.
+   * Checks for common image extensions (jpg, jpeg, png, gif, webp).
+   *
+   * @param {string} libraryItemId - The unique identifier of the library item
+   * @returns {Promise<string | null>} The absolute path to the thumbnail, or null if not found
+   */
+  getThumbnailPath: (libraryItemId: string) => Promise<string | null>
+
+  /**
+   * Deletes the thumbnail file for a library item.
+   * Will remove any thumbnail file regardless of extension.
+   *
+   * @param {string} libraryItemId - The unique identifier of the library item
+   * @returns {Promise<boolean>} True if a thumbnail was deleted, false if none existed
+   */
+  deleteThumbnail: (libraryItemId: string) => Promise<boolean>
 
   // == PluginData (Database) ==
 
@@ -678,7 +706,6 @@ export interface IStorage extends EventBus<StorageEvents> {
     id: string,
     fileUpdate: UpdateSupplementaryFileDTO
   ) => Promise<SupplementaryFile | undefined>
-
   /**
    * Deletes a supplementary file by its ID.
    * This removes the database record but does not delete the actual file.
@@ -687,4 +714,18 @@ export interface IStorage extends EventBus<StorageEvents> {
    * @returns {Promise<boolean>} True if the deletion was successful, false otherwise
    */
   deleteSupplementaryFile: (id: string) => Promise<boolean>
+
+  /**
+   * Writes content to a supplementary file on the filesystem.
+   *
+   * @param {string} libraryItemId - The unique identifier of the library item
+   * @param {string} filename - The name of the file to write
+   * @param {string} content - The content to write to the file
+   * @returns {Promise<boolean>} True if the write was successful, false otherwise
+   */
+  writeSupplementaryFileContent: (
+    libraryItemId: string,
+    filename: string,
+    content: string
+  ) => Promise<boolean>
 }

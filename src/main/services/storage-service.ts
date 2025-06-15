@@ -138,9 +138,21 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       return updatedDbItem ? converters.toLibraryItemDomain(updatedDbItem) : undefined
     })
     handle('storage:deleteLibraryItem', (id: string) => this.deleteLibraryItem(id))
+
     handle('storage:getDocumentJson', (id: string) => this.getDocumentJson(id))
     handle('storage:saveDocumentJson', (id: string, content: ContentDocument) =>
       this.saveDocumentJson(id, content)
+    ) // == Thumbnail Management ==
+    handle(
+      'storage:saveThumbnail',
+      (libraryItemId: string, thumbnailData: { buffer: ArrayBuffer; filename: string }) =>
+        this.saveThumbnail(libraryItemId, thumbnailData)
+    )
+    handle('storage:getThumbnailPath', (libraryItemId: string) =>
+      this.getThumbnailPath(libraryItemId)
+    )
+    handle('storage:deleteThumbnail', (libraryItemId: string) =>
+      this.deleteThumbnail(libraryItemId)
     )
 
     // == PluginData (Database) ==
@@ -351,6 +363,11 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       return updatedDbFile ? converters.toSupplementaryFileDomain(updatedDbFile) : undefined
     })
     handle('storage:deleteSupplementaryFile', (id: string) => this.deleteSupplementaryFile(id))
+    handle(
+      'storage:writeSupplementaryFileContent',
+      (libraryItemId: string, filename: string, content: string) =>
+        this.writeSupplementaryFileContent(libraryItemId, filename, content)
+    )
   }
 
   // == Path Management ==
@@ -477,20 +494,51 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       .returningAll()
       .executeTakeFirst()
   }
-
   async deleteLibraryItem(id: string): Promise<boolean> {
-    const result = await this.db.deleteFrom('libraryItems').where('id', '=', id).executeTakeFirst()
-    if (result.numDeletedRows > 0) {
-      const itemDirPath = path.join(FASEEH_BASE_PATH, LIBRARY_DIR_NAME, id)
-      try {
-        await fs.rm(itemDirPath, { recursive: true, force: true })
-      } catch (error) {
-        console.error(`Failed to delete directory for library item ${id}:`, error)
-        // Decide if this should make the overall operation fail
+    try {
+      // Delete related records first to avoid foreign key constraint violations
+
+      // Delete plugin data
+      await this.db.deleteFrom('pluginData').where('libraryItemId', '=', id).execute()
+
+      // Delete vocabulary sources
+      await this.db.deleteFrom('vocabularySources').where('libraryItemId', '=', id).execute()
+
+      // Delete embedded assets
+      await this.db.deleteFrom('embeddedAssets').where('libraryItemId', '=', id).execute()
+
+      // Delete supplementary files
+      await this.db.deleteFrom('supplementaryFiles').where('libraryItemId', '=', id).execute()
+
+      // Delete collection members that reference this library item
+      await this.db
+        .deleteFrom('collectionMembers')
+        .where('itemId', '=', id)
+        .where('itemType', '=', 'LibraryItem')
+        .execute()
+
+      // Now delete the library item itself
+      const result = await this.db
+        .deleteFrom('libraryItems')
+        .where('id', '=', id)
+        .executeTakeFirst()
+
+      if (result.numDeletedRows > 0) {
+        // Delete the physical directory
+        const itemDirPath = path.join(FASEEH_BASE_PATH, LIBRARY_DIR_NAME, id)
+        try {
+          await fs.rm(itemDirPath, { recursive: true, force: true })
+        } catch (error) {
+          console.error(`Failed to delete directory for library item ${id}:`, error)
+          // Continue even if directory deletion fails
+        }
+        return true
       }
-      return true
+      return false
+    } catch (error) {
+      console.error(`Failed to delete library item ${id}:`, error)
+      throw error
     }
-    return false
   }
 
   async getDocumentJson(libraryItemId: string): Promise<ContentDocument | undefined> {
@@ -512,7 +560,6 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       return undefined
     }
   }
-
   async saveDocumentJson(libraryItemId: string, content: ContentDocument): Promise<boolean> {
     const itemDirPath = path.join(FASEEH_BASE_PATH, LIBRARY_DIR_NAME, libraryItemId)
     await this.ensureDirExists(itemDirPath) // Ensure parent dir exists
@@ -523,6 +570,140 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
     } catch (error) {
       console.error(`Failed to save document.json for ${libraryItemId}:`, error)
       return false
+    }
+  }
+  // == Thumbnail Management ==
+
+  async saveThumbnail(
+    libraryItemId: string,
+    thumbnailData: { buffer: ArrayBuffer; filename: string }
+  ): Promise<boolean> {
+    console.log('Main process saveThumbnail called with:', {
+      libraryItemId,
+      bufferSize: thumbnailData?.buffer?.byteLength,
+      filename: thumbnailData?.filename
+    })
+
+    if (!libraryItemId || !thumbnailData || !thumbnailData.buffer || !thumbnailData.filename) {
+      console.error('Invalid parameters for saveThumbnail:', {
+        libraryItemId: !!libraryItemId,
+        hasBuffer: !!thumbnailData?.buffer,
+        hasFilename: !!thumbnailData?.filename,
+        thumbnailData
+      })
+      return false
+    }
+
+    const itemDirPath = path.join(FASEEH_BASE_PATH, LIBRARY_DIR_NAME, libraryItemId)
+    console.log('Creating directory:', itemDirPath)
+    await this.ensureDirExists(itemDirPath)
+
+    // Determine file extension from the filename
+    const extension = thumbnailData.filename.split('.').pop() || 'jpg'
+    const thumbnailFileName = `thumbnail.${extension}`
+    const thumbnailPath = path.join(itemDirPath, thumbnailFileName)
+
+    console.log('Saving thumbnail to:', thumbnailPath)
+
+    try {
+      // Convert ArrayBuffer to Buffer
+      const buffer = Buffer.from(thumbnailData.buffer)
+      console.log('Buffer created successfully, size:', buffer.length)
+
+      await fs.writeFile(thumbnailPath, buffer)
+      console.log(`Thumbnail saved successfully to: ${thumbnailPath}`)
+
+      // Verify the file was written
+      const stats = await fs.stat(thumbnailPath)
+      console.log('File verification - size:', stats.size, 'bytes')
+
+      return true
+    } catch (error) {
+      console.error(`Failed to save thumbnail for ${libraryItemId}:`, error)
+      return false
+    }
+  }
+
+  async getThumbnailPath(libraryItemId: string): Promise<string | null> {
+    const itemDirPath = path.join(FASEEH_BASE_PATH, LIBRARY_DIR_NAME, libraryItemId)
+
+    // Check for common thumbnail extensions
+    const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+
+    for (const ext of extensions) {
+      const thumbnailPath = path.join(itemDirPath, `thumbnail.${ext}`)
+      try {
+        await fs.access(thumbnailPath)
+        return thumbnailPath // Return absolute path if file exists
+      } catch {
+        // File doesn't exist, try next extension
+      }
+    }
+
+    return null // No thumbnail found
+  }
+
+  async deleteThumbnail(libraryItemId: string): Promise<boolean> {
+    const itemDirPath = path.join(FASEEH_BASE_PATH, LIBRARY_DIR_NAME, libraryItemId)
+
+    // Check for common thumbnail extensions and delete if found
+    const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+    let deleted = false
+
+    for (const ext of extensions) {
+      const thumbnailPath = path.join(itemDirPath, `thumbnail.${ext}`)
+      try {
+        await fs.unlink(thumbnailPath)
+        deleted = true
+      } catch {
+        // File doesn't exist or couldn't be deleted, continue
+      }
+    }
+
+    return deleted
+  }
+
+  async getThumbnailData(
+    libraryItemId: string
+  ): Promise<{ buffer: ArrayBuffer; type: string } | null> {
+    const thumbnailPath = await this.getThumbnailPath(libraryItemId)
+    if (!thumbnailPath) {
+      return null
+    }
+
+    try {
+      const buffer = await fs.readFile(thumbnailPath)
+
+      // Determine MIME type based on file extension
+      const ext = path.extname(thumbnailPath).toLowerCase()
+      let mimeType = 'image/jpeg' // default
+
+      switch (ext) {
+        case '.png':
+          mimeType = 'image/png'
+          break
+        case '.gif':
+          mimeType = 'image/gif'
+          break
+        case '.webp':
+          mimeType = 'image/webp'
+          break
+        case '.jpg':
+        case '.jpeg':
+        default:
+          mimeType = 'image/jpeg'
+          break
+      }
+      return {
+        buffer: buffer.buffer.slice(
+          buffer.byteOffset,
+          buffer.byteOffset + buffer.byteLength
+        ) as ArrayBuffer,
+        type: mimeType
+      }
+    } catch (error) {
+      console.error('Error reading thumbnail file:', error)
+      return null
     }
   }
 
@@ -1180,6 +1361,31 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       }
     }
     return result.numDeletedRows > 0
+  }
+
+  async writeSupplementaryFileContent(
+    libraryItemId: string,
+    filename: string,
+    content: string
+  ): Promise<boolean> {
+    if (!libraryItemId || !filename) return false
+
+    const itemSuppDir = path.join(
+      FASEEH_BASE_PATH,
+      LIBRARY_DIR_NAME,
+      libraryItemId,
+      SUPPLEMENTARY_FILES_DIR_NAME
+    )
+    await this.ensureDirExists(itemSuppDir)
+
+    const filePath = path.join(itemSuppDir, filename)
+    try {
+      await fs.writeFile(filePath, content, 'utf-8')
+      return true
+    } catch (error) {
+      console.error(`Failed to write supplementary file ${filePath}:`, error)
+      return false
+    }
   }
 }
 

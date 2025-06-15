@@ -15,6 +15,7 @@
 @import './components/filter-menu.css';
 @import './components/command-palette.css';
 @import '../../../features/user-library/styles/import-dialog.css';
+@import '../../../features/user-library/styles/import-progress.css';
 @import '../../../features/user-library/styles/user-library.css';
 
 /* Import layout stylesheets */

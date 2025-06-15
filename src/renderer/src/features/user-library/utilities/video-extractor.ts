@@ -36,8 +36,25 @@ export interface SubtitleSource {
  * Extract video source information from a LibraryItem
  */
 export function extractVideoSource(libraryItem: LibraryItem, fallbackUrl?: string): VideoSource {
+  console.log('[VideoExtractor] Extracting video source from LibraryItem:', {
+    id: libraryItem.id,
+    name: libraryItem.name,
+    type: libraryItem.type,
+    sourceUri: libraryItem.sourceUri,
+    hasDocument: !!libraryItem.document,
+    contentDocumentPath: libraryItem.contentDocumentPath
+  })
   try {
-    // First check if document is directly available
+    // First check if there's a direct sourceUri - this is common for imported videos
+    if (libraryItem.sourceUri && libraryItem.sourceUri.trim() !== '') {
+      console.log('[VideoExtractor] Found sourceUri:', libraryItem.sourceUri)
+      return {
+        url: libraryItem.sourceUri,
+        type: 'external'
+      }
+    }
+
+    // Then check if document is directly available
     let contentDoc: ContentDocument | null = null
 
     if (libraryItem.document) {
@@ -74,6 +91,7 @@ export function extractVideoSource(libraryItem: LibraryItem, fallbackUrl?: strin
       }
     }
 
+    console.log('[VideoExtractor] No direct sourceUri found, checking ContentDocument')
     return { url: fallbackUrl || null, type: 'fallback' }
   } catch (error) {
     console.error('[VideoExtractor] Error parsing ContentDocument:', error)

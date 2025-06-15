@@ -5,12 +5,14 @@ import {
   FaseehApp,
   BasePlugin,
   PluginEvents,
-  IPluginManager
+  IPluginManager,
+  ContentAdapter
 } from '@shared/types/types'
 import { BasePlugin as BasePluginClass } from './plugin'
 import { EventBusService } from '@renderer/core/services/event-bus/event-bus-service'
 import { StorageService } from '@renderer/core/services/storage/storage-service'
-
+import { ContentAdapter as ContentAdapterClass } from '@renderer/core/services/content-adapter/content-adapter'
+import { ContentAdapterFacade } from '../facades/service-facades'
 /**
  * Plugin Manager Service
  * Responsible for the complete lifecycle of community plugins
@@ -84,7 +86,8 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
       Module._load = function (request: string, parent: any, isMain: boolean) {
         if (request === '@faseeh-app/faseeh' || request === '@faseeh-app/faseeh-runtime') {
           return {
-            BasePlugin: BasePluginClass
+            BasePlugin: BasePluginClass,
+            ContentAdapter: ContentAdapterFacade
           }
         }
         return originalLoad.call(this, request, parent, isMain)

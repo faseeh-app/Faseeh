@@ -15,6 +15,7 @@ interface Props {
 
 interface Emits {
   click: [item: MediaItem, event: MouseEvent]
+  'context-menu': [item: MediaItem, event: MouseEvent]
 }
 
 const props = defineProps<Props>()
@@ -53,12 +54,18 @@ const getCardClass = (type: string) => {
 const handleCardClick = (event: MouseEvent) => {
   emit('click', props.item, event)
 }
+
+const handleContextMenu = (event: MouseEvent) => {
+  event.preventDefault()
+  emit('context-menu', props.item, event)
+}
 </script>
 
 <template>
   <div
     :class="getCardClass(item.type)"
     @click="handleCardClick($event)"
+    @contextmenu="handleContextMenu"
     role="button"
     tabindex="0"
     :aria-label="`Open ${item.title}`"

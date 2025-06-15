@@ -81,9 +81,51 @@ export class StorageService extends EventBusService<StorageEvents> implements IS
   async getDocumentJson(libraryItemId: string): Promise<any> {
     return ipcRenderer.invoke('storage:getDocumentJson', libraryItemId)
   }
-
   async saveDocumentJson(libraryItemId: string, content: any): Promise<boolean> {
     return ipcRenderer.invoke('storage:saveDocumentJson', libraryItemId, content)
+  } // == Thumbnail Management ==
+  async saveThumbnail(libraryItemId: string, thumbnail: File): Promise<boolean> {
+    try {
+      console.log('Converting thumbnail for IPC transmission:', {
+        filename: thumbnail.name,
+        size: thumbnail.size,
+        type: thumbnail.type
+      })
+
+      // Convert File to ArrayBuffer for IPC transmission
+      const buffer = await thumbnail.arrayBuffer()
+      const thumbnailData = {
+        buffer: buffer,
+        filename: thumbnail.name
+      }
+
+      console.log('Thumbnail data prepared for IPC:', {
+        bufferSize: buffer.byteLength,
+        filename: thumbnailData.filename
+      })
+
+      const result = await ipcRenderer.invoke('storage:saveThumbnail', libraryItemId, thumbnailData)
+      console.log('Thumbnail save result:', result)
+
+      return result
+    } catch (error) {
+      console.error('Error converting thumbnail for IPC transmission:', error)
+      return false
+    }
+  }
+
+  async getThumbnailPath(libraryItemId: string): Promise<string | null> {
+    return ipcRenderer.invoke('storage:getThumbnailPath', libraryItemId)
+  }
+  async deleteThumbnail(libraryItemId: string): Promise<boolean> {
+    return ipcRenderer.invoke('storage:deleteThumbnail', libraryItemId)
+  }
+  async getThumbnailUrl(libraryItemId: string): Promise<string | null> {
+    const thumbnailPath = await this.getThumbnailPath(libraryItemId)
+    if (thumbnailPath) {
+      return `file://${thumbnailPath}`
+    }
+    return null
   }
 
   // == PluginData (Database) ==
@@ -342,6 +384,19 @@ export class StorageService extends EventBusService<StorageEvents> implements IS
   }
   async deleteSupplementaryFile(id: string): Promise<boolean> {
     return ipcRenderer.invoke('storage:deleteSupplementaryFile', id)
+  }
+
+  async writeSupplementaryFileContent(
+    libraryItemId: string,
+    filename: string,
+    content: string
+  ): Promise<boolean> {
+    return ipcRenderer.invoke(
+      'storage:writeSupplementaryFileContent',
+      libraryItemId,
+      filename,
+      content
+    )
   }
 
   /**

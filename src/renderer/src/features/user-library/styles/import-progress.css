@@ -1,0 +1,64 @@
+/* Import Progress Step Styles */
+.faseeh-import-progress {
+  @apply flex flex-col items-center justify-center min-h-[300px] p-6;
+}
+
+.faseeh-import-progress__container {
+  @apply flex flex-col items-center text-center max-w-md;
+}
+
+.faseeh-import-progress__icon-container {
+  @apply mb-6;
+}
+
+.faseeh-import-progress__icon {
+  @apply w-16 h-16;
+}
+
+.faseeh-import-progress__icon--spinning {
+  @apply animate-spin;
+}
+
+.faseeh-import-progress__content {
+  @apply w-full;
+}
+
+.faseeh-import-progress__progress-container {
+  @apply mb-4;
+}
+
+.faseeh-import-progress__progress-bar {
+  @apply w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2;
+}
+
+.faseeh-import-progress__progress-fill {
+  @apply h-full bg-blue-500 transition-all duration-300 ease-out;
+}
+
+.faseeh-import-progress__percentage {
+  @apply text-sm text-gray-600 text-right;
+}
+
+.faseeh-import-progress__message {
+  @apply mb-4;
+}
+
+.faseeh-import-progress__title {
+  @apply text-lg font-semibold mb-2;
+}
+
+.faseeh-import-progress__description {
+  @apply text-gray-600 text-sm mb-2;
+}
+
+.faseeh-import-progress__error {
+  @apply text-red-600 text-sm bg-red-50 p-3 rounded-md border border-red-200;
+}
+
+.faseeh-import-progress__success-details {
+  @apply bg-green-50 p-4 rounded-md border border-green-200;
+}
+
+.faseeh-import-progress__success-text {
+  @apply text-green-700 text-sm;
+}

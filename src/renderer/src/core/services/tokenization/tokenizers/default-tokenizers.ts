@@ -1,8 +1,8 @@
-import { TokenizerRegistry } from './text-tokenizer-registry'
-import { whitespaceTokenizer, whitespaceTokenizerInfo } from './tokenizers/whitespace-tokenizer'
-import { englishTokenizer, englishTokenizerInfo } from './tokenizers/english-tokenizer'
-import { arabicTokenizer, arabicTokenizerInfo } from './tokenizers/arabic-tokenizer'
-import { japaneseTokenizer, japaneseTokenizerInfo } from './tokenizers/japanese-tokenizer'
+import { TokenizerRegistry } from '../text-tokenizer-registry'
+import { whitespaceTokenizer, whitespaceTokenizerInfo } from './whitespace-tokenizer'
+import { englishTokenizer, englishTokenizerInfo } from './english-tokenizer'
+import { arabicTokenizer, arabicTokenizerInfo } from './arabic-tokenizer'
+import { japaneseTokenizer, japaneseTokenizerInfo } from './japanese-tokenizer'
 
 /**
  * Initializes and registers the default/core tokenizers that come with Faseeh

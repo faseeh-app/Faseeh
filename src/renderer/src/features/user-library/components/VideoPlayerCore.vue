@@ -39,6 +39,8 @@ const player = ref<Player>()
 // Extract video URL from LibraryItem
 const videoUrl = computed(() => {
   const source = extractVideoSource(props.libraryItem, props.fallbackVideoUrl)
+  console.log('[VideoPlayerCore] Extracted video source:', source)
+  console.log('[VideoPlayerCore] Using video URL:', source.url)
   return source.url
 })
 
