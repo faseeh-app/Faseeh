@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import type { SubtitleCue, SubtitleWord } from '../composables/useVideoPlayer'
+import { ref, watch } from 'vue'
+import type {
+  SubtitleCue,
+  SubtitleWord
+} from '@renderer/features/user-library/composables/useVideoPlayer'
 import { tokenizerRegistry } from '@renderer/core/services/tokenization/text-tokenizer-registry'
 import { initializeDefaultTokenizers } from '@renderer/core/services/tokenization/tokenizers/default-tokenizers'
 import type { Token } from '@shared/types/text-tokenizer-types'

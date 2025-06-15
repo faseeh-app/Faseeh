@@ -17,6 +17,7 @@
 @import '../../../features/user-library/styles/import-dialog.css';
 @import '../../../features/user-library/styles/import-progress.css';
 @import '../../../features/user-library/styles/user-library.css';
+@import '../../../features/user-library/styles/text-reader.css';
 
 /* Import layout stylesheets */
 @import './layouts/grids.css';

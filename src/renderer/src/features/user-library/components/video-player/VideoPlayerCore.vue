@@ -6,7 +6,7 @@ import type Player from 'video.js/dist/types/player'
 import 'video.js/dist/video-js.css'
 import 'videojs-youtube'
 import type { LibraryItem } from '@shared/types/types'
-import { extractVideoSource } from '../utilities/video-extractor'
+import { extractVideoSource } from '@renderer/features/user-library/utilities/video-extractor'
 
 interface Props {
   libraryItem: LibraryItem

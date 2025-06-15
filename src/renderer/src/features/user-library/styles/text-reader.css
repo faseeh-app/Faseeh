@@ -1,0 +1,230 @@
+/* -------------------------------------------------------------------------- */
+/*                                Text Reader                                 */
+/* -------------------------------------------------------------------------- */
+
+/* Main Container */
+.faseeh-text-reader {
+  @apply flex flex-col min-h-screen;
+  background-color: var(--faseeh-background-base);
+  color: var(--faseeh-text-primary);
+  font-family: var(--faseeh-font-family-base);
+  line-height: var(--faseeh-line-height-relaxed);
+
+  /* Performance optimizations for resizing */
+  contain: layout style;
+  will-change: scroll-position;
+}
+
+/* Loading State */
+.faseeh-text-reader__loading {
+  @apply flex items-center justify-center flex-1;
+  color: var(--faseeh-text-secondary);
+  font-size: var(--faseeh-font-size-md);
+}
+
+/* Error State */
+.faseeh-text-reader__error {
+  @apply flex items-center justify-center flex-1;
+  color: var(--faseeh-color-error);
+  font-size: var(--faseeh-font-size-md);
+}
+
+/* Content Container */
+.faseeh-text-reader__content {
+  @apply mx-auto px-6 py-8;
+
+  /* Center-narrowed layout for readability */
+  max-width: min(90ch, calc(100vw - 3rem)); /* Optimal reading width with viewport constraint */
+  width: 100%;
+
+  /* Enhanced text spacing for readability */
+  word-spacing: 0.05em;
+  letter-spacing: 0.01em;
+
+  /* Prevent overflow while preserving word integrity */
+  overflow-wrap: break-word;
+  hyphens: auto; /* Use automatic hyphenation instead of breaking anywhere */
+
+  /* Performance optimizations */
+  contain: layout;
+  transform: translateZ(0); /* Create a new stacking context for better performance */
+}
+
+/* Content Block Components */
+
+/* Text Blocks */
+@utility faseeh-content-block__text {
+  @apply mb-4;
+  color: var(--faseeh-text-primary);
+  line-height: var(--faseeh-line-height-relaxed);
+}
+
+@utility faseeh-content-block__text--h1 {
+  @apply faseeh-content-block__text mb-6;
+  font-size: var(--faseeh-font-size-h1);
+  font-weight: var(--faseeh-font-weight-bold);
+  color: var(--faseeh-accent-primary);
+}
+
+@utility faseeh-content-block__text--h2 {
+  @apply faseeh-content-block__text mb-5;
+  font-size: var(--faseeh-font-size-h2);
+  font-weight: var(--faseeh-font-weight-semibold);
+  color: var(--faseeh-text-primary);
+}
+
+@utility faseeh-content-block__text--h3 {
+  @apply faseeh-content-block__text mb-4;
+  font-size: var(--faseeh-font-size-h3);
+  font-weight: var(--faseeh-font-weight-semibold);
+  color: var(--faseeh-text-primary);
+}
+
+@utility faseeh-content-block__text--paragraph {
+  @apply faseeh-content-block__text;
+  font-size: var(--faseeh-font-size-base);
+  font-weight: var(--faseeh-font-weight-normal);
+  line-height: var(--faseeh-line-height-relaxed);
+}
+
+@utility faseeh-content-block__text--caption {
+  @apply faseeh-content-block__text text-center italic;
+  font-size: var(--faseeh-font-size-sm);
+  color: var(--faseeh-text-secondary);
+}
+
+@utility faseeh-content-block__text--quote {
+  @apply faseeh-content-block__text pl-4 italic;
+  font-size: var(--faseeh-font-size-lg);
+  border-left: 4px solid var(--faseeh-accent-primary);
+  color: var(--faseeh-text-secondary);
+}
+
+/* Media Blocks */
+@utility faseeh-content-block__image {
+  @apply mb-6 text-center;
+}
+
+@utility faseeh-content-block__image-element {
+  @apply max-w-full h-auto rounded-lg mx-auto block;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+@utility faseeh-content-block__figcaption {
+  @apply mt-2 italic text-center;
+  font-size: var(--faseeh-font-size-sm);
+  color: var(--faseeh-text-secondary);
+}
+
+@utility faseeh-content-block__video {
+  @apply mb-6;
+}
+
+@utility faseeh-content-block__video-container {
+  @apply aspect-video rounded-lg overflow-hidden;
+  background-color: var(--faseeh-background-secondary);
+}
+
+/* Container Blocks */
+@utility faseeh-content-block__container {
+  @apply mb-6;
+}
+
+@utility faseeh-content-block__container--section {
+  @apply faseeh-content-block__container pl-4;
+  border-left: 2px solid var(--faseeh-border-primary);
+}
+
+@utility faseeh-content-block__container--panel {
+  @apply faseeh-content-block__container p-4 rounded-lg;
+  background-color: var(--faseeh-background-secondary);
+  border: 1px solid var(--faseeh-border-primary);
+}
+
+/* Interactive Token Styling */
+.interactive-token {
+  @apply faseeh-interactive;
+  display: inline;
+  cursor: pointer;
+  border-radius: var(--faseeh-radius-sm, 0.25rem);
+  padding: 1px 2px;
+
+  /* Performance optimizations */
+  backface-visibility: hidden;
+  perspective: 1000px;
+
+  /* Smooth transitions */
+  transition:
+    background-color 0.15s ease-in-out,
+    transform 0.15s ease-in-out;
+}
+
+.interactive-token:hover {
+  background-color: rgba(0, 169, 224, 0.6); /* #00a9e0 with 20% opacity */
+  transform: scale(1.02);
+
+  /* GPU acceleration for hover effects */
+  will-change: transform, background-color;
+}
+
+.interactive-token:active {
+  background-color: var(--faseeh-interactive-background-active);
+  transform: scale(0.98);
+}
+
+.interactive-token:focus-visible {
+  outline: 2px solid var(--faseeh-border-interactive);
+  outline-offset: 1px;
+}
+
+/* Token type variants */
+.interactive-token.is-word {
+  font-weight: var(--faseeh-font-weight-medium);
+  margin-right: 0.25em; /* Add space after words */
+}
+
+.interactive-token.is-punctuation {
+  opacity: 0.8;
+  font-weight: var(--faseeh-font-weight-normal);
+  margin-right: 0; /* No space after punctuation */
+}
+
+/* Token grouping for hyphenated words */
+.token-group-no-break {
+  white-space: nowrap; /* Prevent line breaks within hyphenated words */
+  display: inline; /* Keep inline behavior */
+}
+
+/* Token interaction states */
+.interactive-token--selected {
+  background-color: var(--faseeh-accent-primary);
+  color: var(--faseeh-text-on-accent-primary);
+}
+
+.interactive-token--highlighted {
+  background-color: var(--faseeh-accent-secondary);
+  color: var(--faseeh-text-on-accent-secondary);
+}
+
+/* Loading and Error States for Blocks */
+.faseeh-content-block__loading {
+  @apply italic;
+  color: var(--faseeh-text-muted);
+}
+
+.faseeh-content-block__non-interactive {
+  color: var(--faseeh-text-primary);
+}
+
+/* Resize Placeholder */
+.resize-placeholder {
+  @apply flex items-center justify-center;
+  min-height: 200px;
+  opacity: 0.6;
+}
+
+.resize-placeholder__text {
+  @apply italic;
+  font-size: var(--faseeh-font-size-sm);
+  color: var(--faseeh-text-secondary);
+}

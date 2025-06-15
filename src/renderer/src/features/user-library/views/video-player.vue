@@ -5,13 +5,11 @@ import type { LibraryItem } from '@shared/types/types'
 import type { SubtitleCue, SubtitleWord } from '../composables/useVideoPlayer'
 import type { Token } from '@shared/types/text-tokenizer-types'
 
-// Import minimal components
-import VideoPlayerCore from '../components/VideoPlayerCore.vue'
-import InteractiveSubtitles from '../components/InteractiveSubtitles.vue'
+import VideoPlayerCore from '@renderer/features/user-library/components/video-player/VideoPlayerCore.vue'
+import InteractiveSubtitles from '@renderer/features/user-library/components/video-player/InteractiveSubtitles.vue'
 
-// Import utilities and services
-import { createDemoLibraryItem } from '../utilities/video-extractor'
-import { useSubtitleManagement } from '../composables/useSubtitleManagement'
+import { createDemoLibraryItem } from '@renderer/features/user-library/utilities/video-extractor'
+import { useSubtitleManagement } from '@renderer/features/user-library/composables/useSubtitleManagement'
 import { storage } from '@renderer/core/services/service-container'
 
 interface Props {

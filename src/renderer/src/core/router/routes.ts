@@ -2,7 +2,6 @@ const RouteNames = {
   LIBRARY: 'library',
   COMMUNITY: 'community',
   MEDIA_LAYOUT: 'media-layout',
-  MEDIA_PLAYER: 'mediaplayer',
   DOCUMENT_VIEWER: 'document-viewer',
   VIDEO_PLAYER: 'video-player',
   SETTINGS: 'settings'
@@ -12,14 +11,7 @@ const routes = [
   {
     path: '/',
     name: RouteNames.LIBRARY,
-    component: () => import('@renderer/features/user-library/views/user-library.vue'),
-    children: [
-      {
-        path: 'mediaplayer',
-        name: 'mediaplayer',
-        component: () => import('@renderer/features/user-library/views/video-player.vue')
-      }
-    ]
+    component: () => import('@renderer/features/user-library/views/user-library.vue')
   },
   {
     path: '/community',
@@ -40,12 +32,12 @@ const routes = [
       {
         path: 'document/:id',
         name: RouteNames.DOCUMENT_VIEWER,
-        component: () => import('@renderer/features/document-viewer/views/document-viewer.vue'),
+        component: () => import('@renderer/features/user-library/views/text-reader.vue'),
         meta: { title: 'Document Viewer' }
       }
     ]
   },
-  // Keep legacy routes for backward compatibility
+  // Legacy redirects for backward compatibility
   {
     path: '/document/:id',
     redirect: (to) => `/media/document/${to.params.id}`
@@ -53,6 +45,10 @@ const routes = [
   {
     path: '/video/:id',
     redirect: (to) => `/media/video/${to.params.id}`
+  },
+  {
+    path: '/mediaplayer',
+    redirect: '/media'
   }
 ]
 
