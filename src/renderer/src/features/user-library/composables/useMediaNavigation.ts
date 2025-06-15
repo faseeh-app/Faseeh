@@ -1,5 +1,5 @@
-import { useTabRouter } from '@renderer/common/services/tabRouter'
-import { RouteNames } from '@renderer/common/router/routes'
+import { useTabRouter } from '@renderer/core/services/tabRouter'
+import { RouteNames } from '@renderer/core/router/routes'
 
 /**
  * Media item interface for navigation

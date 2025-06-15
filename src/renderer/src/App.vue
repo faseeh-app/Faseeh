@@ -2,7 +2,7 @@
 import TitleBar from '@renderer/common/components/TitleBar.vue'
 import Sidebar from '@renderer/common/components/Sidebar.vue'
 import ResizablePanel from '@renderer/common/components/ui/ResizablePanel.vue'
-import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useTabStore } from '@root/src/renderer/src/core/stores/useTabStore'
 
 const tabStore = useTabStore()
 </script>

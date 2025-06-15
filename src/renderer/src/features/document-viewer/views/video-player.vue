@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { Button } from '@renderer/common/components/ui/button'
 import { ScrollArea } from '@renderer/common/components/ui/scroll-area'
 import { Separator } from '@renderer/common/components/ui/separator'
-import { useTabRouter } from '@renderer/common/services/tabRouter'
+import { useTabRouter } from '@root/src/renderer/src/core/services/tabRouter'
 import VideoWordDetailsSidebar from '../components/VideoWordDetailsSidebar.vue'
 import {
   ChevronLeft,
@@ -189,7 +189,7 @@ const wordDetails = new Map<string, WordDetails>([
       synonyms: ['execution', 'achievement', 'accomplishment', 'results'],
       difficulty: 'intermediate'
     }
-  ], 
+  ],
   [
     'strategic',
     {

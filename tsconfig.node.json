@@ -11,7 +11,9 @@
     "src/shared/**/*",
     "src/shared/**/*.ts",
     "src/shared/**/*.d.ts",
-    "src/renderer/src/core/services/**/*"
+    "src/renderer/**/*",
+    "src/renderer/**/*.d.ts",
+    "src/renderer/**/*.vue"
   ],
   "compilerOptions": {
     "composite": true,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { Button } from '@renderer/common/components/ui/button'
-import { type Tab } from '@renderer/common/stores/useTabStore'
+import { type Tab } from '@root/src/renderer/src/core/stores/useTabStore'
 import {
   TooltipProvider,
   Tooltip,

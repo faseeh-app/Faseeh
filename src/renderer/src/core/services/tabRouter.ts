@@ -1,6 +1,6 @@
 import { Router, RouteLocationNormalized, useRouter, useRoute } from 'vue-router'
 import { watch } from 'vue'
-import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useTabStore } from '@renderer/core/stores/useTabStore'
 
 /**
  * Configuration object for route navigation.

@@ -7,8 +7,8 @@ import {
   TooltipProvider
 } from '@renderer/common/components/ui/tooltip'
 import CommandPalette from '@renderer/common/components/CommandPalette.vue'
-import { useTabStore } from '@renderer/common/stores/useTabStore'
-import { useTabRouter } from '@renderer/common/services/tabRouter'
+import { useTabStore } from '@root/src/renderer/src/core/stores/useTabStore'
+import { useTabRouter } from '@root/src/renderer/src/core/services/tabRouter'
 
 const tabStore = useTabStore()
 const tabRouter = useTabRouter()

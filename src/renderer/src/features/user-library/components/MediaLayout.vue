@@ -3,8 +3,8 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Button } from '@renderer/common/components/ui/button'
 import ScrollArea from '@renderer/common/components/ui/scroll-area/ScrollArea.vue'
-import { useTabRouter } from '@renderer/common/services/tabRouter'
-import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useTabRouter } from '@root/src/renderer/src/core/services/tabRouter'
+import { useTabStore } from '@root/src/renderer/src/core/stores/useTabStore'
 
 interface Props {
   title?: string

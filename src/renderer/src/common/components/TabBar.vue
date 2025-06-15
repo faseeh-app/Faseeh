@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import TabItem from './TabItem.vue'
 import AddTabButton from './AddTabButton.vue'
 import TabContextMenu from './TabContextMenu.vue'
-import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useTabStore } from '@root/src/renderer/src/core/stores/useTabStore'
 
 const tabStore = useTabStore()
 const router = useRouter()

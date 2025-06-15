@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@renderer/common/components/ui/dropdown-menu'
-import { useTabStore, type Tab } from '@renderer/common/stores/useTabStore'
+import { useTabStore, type Tab } from '@root/src/renderer/src/core/stores/useTabStore'
 import { useRouter } from 'vue-router'
 
 interface Props {

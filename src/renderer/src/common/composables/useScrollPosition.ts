@@ -1,6 +1,6 @@
 import { nextTick, onActivated, onDeactivated, computed, type Ref } from 'vue'
 import { useScroll } from '@vueuse/core'
-import { useTabStore } from '@renderer/common/stores/useTabStore'
+import { useTabStore } from '@root/src/renderer/src/core/stores/useTabStore'
 
 export function useScrollPosition(scrollAreaRef: Ref<any>) {
   const tabStore = useTabStore()

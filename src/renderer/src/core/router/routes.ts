@@ -1,0 +1,59 @@
+const RouteNames = {
+  LIBRARY: 'library',
+  COMMUNITY: 'community',
+  MEDIA_LAYOUT: 'media-layout',
+  MEDIA_PLAYER: 'mediaplayer',
+  DOCUMENT_VIEWER: 'document-viewer',
+  VIDEO_PLAYER: 'video-player',
+  SETTINGS: 'settings'
+}
+
+const routes = [
+  {
+    path: '/',
+    name: RouteNames.LIBRARY,
+    component: () => import('@renderer/features/user-library/views/user-library.vue'),
+    children: [
+      {
+        path: 'mediaplayer',
+        name: 'mediaplayer',
+        component: () => import('@renderer/features/user-library/views/video-player.vue')
+      }
+    ]
+  },
+  {
+    path: '/community',
+    name: RouteNames.COMMUNITY,
+    component: () => import('@renderer/features/community-explorer/views/community-explorer.vue')
+  },
+  {
+    path: '/media',
+    name: RouteNames.MEDIA_LAYOUT,
+    component: () => import('@renderer/features/user-library/components/MediaLayout.vue'),
+    children: [
+      {
+        path: 'video/:id',
+        name: RouteNames.VIDEO_PLAYER,
+        component: () => import('@renderer/features/user-library/views/video-player.vue'),
+        meta: { title: 'Video Player' }
+      },
+      {
+        path: 'document/:id',
+        name: RouteNames.DOCUMENT_VIEWER,
+        component: () => import('@renderer/features/document-viewer/views/document-viewer.vue'),
+        meta: { title: 'Document Viewer' }
+      }
+    ]
+  },
+  // Keep legacy routes for backward compatibility
+  {
+    path: '/document/:id',
+    redirect: (to) => `/media/document/${to.params.id}`
+  },
+  {
+    path: '/video/:id',
+    redirect: (to) => `/media/video/${to.params.id}`
+  }
+]
+
+export { routes, RouteNames }
