@@ -34,6 +34,7 @@ interface CommandAction {
 interface Props {
   isOpen: boolean
   placeholder?: string
+  openSettings?: () => void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -97,15 +98,16 @@ const commands: CommandAction[] = [
       console.log('Create collection action')
       handleOpenChange()
     }
-  },
-  {
+  },  {
     id: 'open-settings',
     title: 'Open Settings',
     description: 'Configure application settings',
     keywords: ['settings', 'preferences', 'configure', 'options'],
     category: 'Application',
     action: () => {
-      console.log('Open settings action')
+      if (props.openSettings) {
+        props.openSettings()
+      }
       handleOpenChange()
     }
   },
