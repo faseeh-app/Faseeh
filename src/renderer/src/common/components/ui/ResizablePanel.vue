@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { cn } from '@renderer/common/lib/utils'
 import { usePanelState } from '@renderer/common/composables/usePanelState'
+import PluginUIContainer from './PluginUIContainer.vue'
 
 interface Props {
   initialWidth?: number
@@ -107,10 +108,7 @@ onUnmounted(() => {
       "
       @mousedown="handleMouseDown"
     />
-
     <!-- Panel content -->
-    <div class="flex-1 overflow-hidden">
-      <slot />
-    </div>
+    <PluginUIContainer class="flex-1 overflow-hidden" />
   </div>
 </template>

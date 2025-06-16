@@ -25,12 +25,7 @@ const tabStore = useTabStore()
         <KeepAlive>
           <ResizablePanel
             :key="`panel-${tabStore.activeTabId}-${String($route.name)}-${JSON.stringify($route.params)}`"
-          >
-            <div class="p-4">
-              <h3 class="text-sm font-medium mb-2">Panel Content</h3>
-              <p class="text-xs text-muted-foreground">Drag the left edge to resize</p>
-            </div>
-          </ResizablePanel>
+          />
         </KeepAlive>
       </main>
     </div>

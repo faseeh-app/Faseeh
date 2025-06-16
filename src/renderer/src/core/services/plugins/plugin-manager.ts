@@ -5,13 +5,11 @@ import {
   FaseehApp,
   BasePlugin,
   PluginEvents,
-  IPluginManager,
-  ContentAdapter
+  IPluginManager
 } from '@shared/types/types'
 import { BasePlugin as BasePluginClass } from './plugin'
 import { EventBusService } from '@renderer/core/services/event-bus/event-bus-service'
 import { StorageService } from '@renderer/core/services/storage/storage-service'
-import { ContentAdapter as ContentAdapterClass } from '@renderer/core/services/content-adapter/content-adapter'
 import { ContentAdapterFacade } from '../facades/service-facades'
 /**
  * Plugin Manager Service
@@ -62,7 +60,6 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
       throw error
     }
   }
-
   /**
    * Set up module resolution for plugins
    * This allows plugins to import '@faseeh-app/faseeh' and get the runtime exports
@@ -71,10 +68,10 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
     // Set up module resolution for plugins
     // When plugins require('@faseeh-app/faseeh'), provide the actual runtime exports
     if (typeof window !== 'undefined' && typeof (window as any).require === 'function') {
-      const Module = (window as any).require('module')
-      const originalResolveFilename = Module._resolveFilename
+      const ModuleClass = (window as any).require('module')
+      const originalResolveFilename = ModuleClass._resolveFilename
 
-      Module._resolveFilename = function (request: string, parent: any, isMain: boolean) {
+      ModuleClass._resolveFilename = function (request: string, parent: any, isMain: boolean) {
         if (request === '@faseeh-app/faseeh') {
           // Return a dummy path that we'll handle in load
           return '@faseeh-app/faseeh-runtime'
@@ -82,8 +79,9 @@ export class PluginManager extends EventBusService<PluginEvents> implements IPlu
         return originalResolveFilename.call(this, request, parent, isMain)
       }
 
-      const originalLoad = Module._load
-      Module._load = function (request: string, parent: any, isMain: boolean) {
+      const originalLoad = ModuleClass._load
+
+      ModuleClass._load = function (this: any, request: string, parent: any, isMain: boolean) {
         if (request === '@faseeh-app/faseeh' || request === '@faseeh-app/faseeh-runtime') {
           return {
             BasePlugin: BasePluginClass,

@@ -373,6 +373,22 @@ export interface FaseehApp {
 
   /** A registry for adding new metadata scrapers that can extract structured metadata from various content sources (e.g., files, URLs).*/
   metadata: Pick<IMetadataScraperRegistry, 'register' | 'unregister'>
+
+  /** Plugin UI registry for managing plugin user interfaces in the side panel.*/
+  ui?: Pick<
+    IPluginUIRegistry,
+    | 'registerView'
+    | 'unregisterView'
+    | 'activateViewById'
+    | 'deactivateCurrentView'
+    | 'getAllViews'
+    | 'getPluginViews'
+    | 'getActiveView'
+    | 'getActiveViewRef'
+    | 'on'
+    | 'off'
+    | 'emit'
+  >
 }
 
 /**
@@ -439,6 +455,39 @@ export interface IPlugin {
    * @param subDirectory Optional subdirectory within plugin's data directory
    */
   listDataFiles(subDirectory?: string): Promise<string[]>
+
+  // --- Plugin UI Methods ---
+
+  /**
+   * Register a UI view that will appear in the side panel
+   * @param config Configuration for the UI view
+   * @returns Unique key for the registered view
+   */
+  registerView(config: PluginUIViewConfig): string
+
+  /**
+   * Open a specific view (either from this plugin or another)
+   * @param pluginId ID of the plugin that owns the view
+   * @param viewId ID of the view to open
+   * @returns true if view was opened successfully
+   */
+  openView(pluginId: string, viewId: string): boolean
+
+  /**
+   * Close a specific view
+   * @param pluginId ID of the plugin that owns the view
+   * @param viewId ID of the view to close
+   * @returns true if view was closed successfully
+   */
+  closeView(pluginId: string, viewId: string): boolean
+
+  /**
+   * Activate a specific view (bring it to front)
+   * @param pluginId ID of the plugin that owns the view
+   * @param viewId ID of the view to activate
+   * @returns true if view was activated successfully
+   */
+  activateView(pluginId: string, viewId: string): boolean
 
   /** method to clean up all registered listeners */
   _cleanupListeners(): void
@@ -1196,3 +1245,105 @@ export interface SubtitleEngineInfo {
 }
 
 export type { BaseSubtitleEngine } from '@renderer/core/services/subtitle-generation/subtitle-engine'
+
+/* -------------------------------------------------------------------------- */
+/*                           Plugin UI System Types                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Configuration for registering a plugin UI view
+ * @public
+ */
+export interface PluginUIViewConfig {
+  /** Unique identifier for this view within the plugin */
+  id: string
+  /** Display label for the view */
+  label: string
+  /** Icon class for the view */
+  icon?: string
+  /** Callback function that receives a DOM element to populate */
+  onMount?: (element: HTMLDivElement) => void | Promise<void>
+  /** Callback function called when the view is unmounted */
+  onUnmount?: () => void | Promise<void>
+  /** Whether this view can be closed by the user */
+  closable?: boolean
+  /** Whether this view should be the default active view for the plugin */
+  isDefault?: boolean
+  /** Optional context/state for the view */
+  context?: Record<string, any>
+}
+
+/**
+ * Internal representation of a registered plugin UI view
+ * @public
+ */
+export interface RegisteredPluginView extends PluginUIViewConfig {
+  pluginId: string
+  isActive: boolean
+  mountedComponent?: any
+  lastActivated?: Date
+}
+
+/**
+ * Events emitted by the Plugin UI Registry
+ * @public
+ */
+export type PluginUIEvents = {
+  'ui:registered': { pluginId: string; viewId: string; label: string }
+  'ui:unregistered': { pluginId: string; viewId: string }
+  'ui:activated': { pluginId: string; viewId: string }
+  'ui:deactivated': { pluginId: string; viewId: string }
+  'ui:error': { pluginId: string; viewId: string; error: string }
+}
+
+/**
+ * Plugin UI Registry interface for managing plugin user interfaces
+ * Similar to Obsidian's workspace API for plugins
+ * @public
+ */
+export interface IPluginUIRegistry extends EventBus<PluginUIEvents> {
+  /** Register a new UI view for a plugin */
+  registerView(pluginId: string, config: PluginUIViewConfig): string
+
+  /** Unregister a UI view */
+  unregisterView(pluginId: string, viewId: string): boolean
+
+  /** Unregister all views for a plugin */
+  unregisterPluginViews(pluginId: string): number
+
+  /** Activate a specific view by plugin ID and view ID */
+  activateViewById(pluginId: string, viewId: string): boolean
+
+  /** Deactivate the currently active view */
+  deactivateCurrentView(): boolean
+
+  /** Get the currently active view */
+  getActiveView(): RegisteredPluginView | null
+
+  /** Get all registered views */
+  getAllViews(): RegisteredPluginView[]
+
+  /** Get all views for a specific plugin */
+  getPluginViews(pluginId: string): RegisteredPluginView[]
+
+  /** Get a specific view */
+  getView(pluginId: string, viewId: string): RegisteredPluginView | null
+
+  /** Update view configuration */
+  updateView(pluginId: string, viewId: string, updates: Partial<PluginUIViewConfig>): boolean
+
+  /** Check if a view is registered */
+  hasView(pluginId: string, viewId: string): boolean
+
+  /** Get the reactive active view ref for components to watch */
+  getActiveViewRef(): any // Ref<RegisteredPluginView | null> but avoiding Vue types
+
+  /** Get the reactive views map for components to watch */
+  getViewsRef(): any // Reactive map but avoiding Vue types
+
+  /** Report an error for a specific view */
+  reportViewError(pluginId: string, viewId: string, error: string): void
+
+  /** Clean up all resources */
+  destroy(): void
+}

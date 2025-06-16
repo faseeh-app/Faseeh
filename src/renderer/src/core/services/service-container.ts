@@ -11,6 +11,8 @@ import {
   MetadataScraperFacade,
   PluginManagerFacade
 } from '@renderer/core/services/facades/service-facades'
+import { PluginUIRegistry } from '@renderer/core/services/plugin-ui/plugin-ui-registry'
+import { PluginUIFacade } from '@renderer/core/services/facades/plugin-ui-facade'
 
 // Service tokens for dependency injection
 export const TOKENS = {
@@ -19,6 +21,7 @@ export const TOKENS = {
   PluginManager: 'PluginManager',
   MetadataRegistry: 'MetadataRegistry',
   LanguageDetector: 'LanguageDetector',
+  PluginUIRegistry: 'PluginUIRegistry',
   FaseehApp: 'FaseehApp'
 } as const
 
@@ -31,6 +34,7 @@ function configureDI(): void {
 
   const storageInstance = container.resolve<StorageService>(TOKENS.Storage)
   const languageDetectorInstance = container.resolve<LanguageDetector>(TOKENS.LanguageDetector)
+
   const faseehAppInstance: FaseehApp = {
     appInfo: {
       version: '1.1.0',
@@ -40,7 +44,8 @@ function configureDI(): void {
     plugins: null as any,
     content: null as any,
     metadata: null as any,
-    languageDetector: languageDetectorInstance
+    languageDetector: languageDetectorInstance,
+    ui: null as any
   }
   container.registerInstance(TOKENS.FaseehApp, faseehAppInstance)
 
@@ -50,11 +55,16 @@ function configureDI(): void {
   const metadataRegistryInstance = new MetadataScraperRegistry(faseehAppInstance)
   container.registerInstance(TOKENS.MetadataRegistry, metadataRegistryInstance)
 
+  const pluginUIRegistryInstance = new PluginUIRegistry()
+  container.registerInstance(TOKENS.PluginUIRegistry, pluginUIRegistryInstance)
+
   const pluginManagerInstance = new PluginManager(storageInstance, faseehAppInstance)
   container.registerInstance(TOKENS.PluginManager, pluginManagerInstance)
+
   faseehAppInstance.plugins = new PluginManagerFacade(pluginManagerInstance)
   faseehAppInstance.content = new ContentAdapterFacade(contentRegistryInstance)
   faseehAppInstance.metadata = new MetadataScraperFacade(metadataRegistryInstance)
+  faseehAppInstance.ui = new PluginUIFacade(pluginUIRegistryInstance)
 }
 
 // Configure dependency injection
@@ -68,6 +78,7 @@ export const metadataRegistry = () =>
   container.resolve<MetadataScraperRegistry>(TOKENS.MetadataRegistry)
 export const languageDetector = () => container.resolve<LanguageDetector>(TOKENS.LanguageDetector)
 export const storage = () => container.resolve<StorageService>(TOKENS.Storage)
+export const pluginUIRegistry = () => container.resolve<PluginUIRegistry>(TOKENS.PluginUIRegistry)
 export const faseehApp = () => container.resolve<FaseehApp>(TOKENS.FaseehApp)
 
 // Track initialization state
@@ -86,6 +97,10 @@ export async function initializeServices(): Promise<void> {
   if (pluginMgr.initialize) {
     await pluginMgr.initialize()
   }
+  // Set up the plugin UI registry in the panel state
+  const { usePanelState } = await import('@renderer/common/composables/usePanelState')
+  const { setPluginUIRegistry } = usePanelState()
+  setPluginUIRegistry(pluginUIRegistry())
 
   isInitialized = true
 }

@@ -1,4 +1,4 @@
-import type { IPlugin, FaseehApp, PluginManifest } from '@shared/types/types'
+import type { IPlugin, FaseehApp, PluginManifest, PluginUIViewConfig } from '@shared/types/types'
 /**
  * Plugin abstract class that all plugins must implement
  * @public
@@ -105,7 +105,6 @@ export abstract class BasePlugin implements IPlugin {
       return false
     }
   }
-
   public async listDataFiles(subDirectory?: string): Promise<string[]> {
     try {
       return await this.app.storage.listPluginDataFiles(this.manifest.id, subDirectory)
@@ -113,6 +112,56 @@ export abstract class BasePlugin implements IPlugin {
       console.error(`Failed to list plugin data files:`, error)
       return []
     }
+  }
+
+  // --- Plugin UI Methods ---
+
+  public registerView(config: PluginUIViewConfig): string {
+    if (!this.app.ui) {
+      throw new Error('Plugin UI system not available')
+    }
+
+    const viewKey = this.app.ui.registerView(this.manifest.id, config)
+
+    // Register cleanup
+    this.registerEvent(() => {
+      this.app.ui?.unregisterView(this.manifest.id, config.id)
+    })
+
+    return viewKey
+  }
+
+  public openView(pluginId: string, viewId: string): boolean {
+    if (!this.app.ui) {
+      console.warn('Plugin UI system not available')
+      return false
+    }
+
+    return this.app.ui.activateViewById(pluginId, viewId)
+  }
+
+  public closeView(pluginId: string, viewId: string): boolean {
+    if (!this.app.ui) {
+      console.warn('Plugin UI system not available')
+      return false
+    }
+
+    // For now, we can only deactivate the current view
+    const activeView = this.app.ui.getActiveView()
+    if (activeView && activeView.pluginId === pluginId && activeView.id === viewId) {
+      return this.app.ui.deactivateCurrentView()
+    }
+
+    return false
+  }
+
+  public activateView(pluginId: string, viewId: string): boolean {
+    if (!this.app.ui) {
+      console.warn('Plugin UI system not available')
+      return false
+    }
+
+    return this.app.ui.activateViewById(pluginId, viewId)
   }
 
   public _cleanupListeners(): void {
