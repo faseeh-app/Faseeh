@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch, shallowRef, nextTick, onBeforeUnmount 
 import { useRoute } from 'vue-router'
 import type { ContentDocument, ContentBlock, TextBlock } from '@shared/types/types'
 import type { Token } from '@shared/types/text-tokenizer-types'
-import { storage, faseehApp } from '@renderer/core/services/service-container'
+import { storage, faseehApp, pluginUIRegistry } from '@renderer/core/services/service-container'
 import { tokenizerRegistry } from '@renderer/core/services/tokenization/text-tokenizer-registry'
 import { initializeDefaultTokenizers } from '@renderer/core/services/tokenization/tokenizers/default-tokenizers'
 import ContentBlockRenderer from '@renderer/features/user-library/components/ContentBlockRenderer.vue'
@@ -221,7 +221,11 @@ async function tokenizeTextBlock(block: TextBlock) {
 
 // Handle token click
 function handleTokenClick(token: Token, block: TextBlock) {
-  console.log('Token clicked:', token, 'in block:', block.id)
+  const uiEventBus = pluginUIRegistry()
+  uiEventBus.emit('ui:token-click', {
+    token,
+    block
+  })
 }
 
 function getAssetUrl(assetId: string): string {

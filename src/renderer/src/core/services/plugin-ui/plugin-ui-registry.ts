@@ -12,7 +12,7 @@ export class PluginUIRegistry extends EventBusService<PluginUIEvents> {
   private viewsByPlugin = reactive(new Map<string, Set<string>>())
 
   constructor() {
-    super('plugin-ui')
+    super('ui')
   } /**
    * Register a new UI view for a plugin
    */

@@ -10,7 +10,7 @@ import InteractiveSubtitles from '@renderer/features/user-library/components/vid
 
 import { createDemoLibraryItem } from '@renderer/features/user-library/utilities/video-extractor'
 import { useSubtitleManagement } from '@renderer/features/user-library/composables/useSubtitleManagement'
-import { storage } from '@renderer/core/services/service-container'
+import { storage, pluginUIRegistry } from '@renderer/core/services/service-container'
 
 interface Props {
   libraryItem?: LibraryItem
@@ -89,7 +89,18 @@ function handleWordClick(word: SubtitleWord, cue: SubtitleCue) {
 
 function handleTokenClick(token: Token, cue: SubtitleCue) {
   console.log('Token clicked:', token.text)
-  // Add custom token click logic here
+  
+  // Emit token click event for plugins
+  const uiEventBus = pluginUIRegistry()
+  uiEventBus.emit('ui:token-click', {
+    token,
+    block: {
+      id: cue.id,
+      type: 'text' as const,
+      content: cue.text,
+      order: 0 // Subtitle cues don't have order, so we default to 0
+    }
+  })
 }
 
 function handleTimeUpdate(currentTime: number) {

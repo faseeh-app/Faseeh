@@ -1,4 +1,3 @@
-import { LanguageDetector } from '@renderer/core/services/language-detection/language-detector'
 import type { IStorage } from '@shared/types/domain-storage'
 export type { IStorage }
 
@@ -661,6 +660,7 @@ export interface IContentAdapterRegistry {
 /* -------------------------------------------------------------------------- */
 
 import { MetadataScraper } from '@renderer/core/services/metadata-scraper/metadata-scraper'
+import { Token } from '@shared/types/text-tokenizer-types'
 /**
  * @public
  */
@@ -1294,6 +1294,7 @@ export type PluginUIEvents = {
   'ui:activated': { pluginId: string; viewId: string }
   'ui:deactivated': { pluginId: string; viewId: string }
   'ui:error': { pluginId: string; viewId: string; error: string }
+  'ui:token-click': { token: Token; block: TextBlock }
 }
 
 /**
@@ -1347,3 +1348,11 @@ export interface IPluginUIRegistry extends EventBus<PluginUIEvents> {
   /** Clean up all resources */
   destroy(): void
 }
+
+export type {
+  Token,
+  TokenizerRegistryFacade,
+  TokenizerInfo,
+  TokenizerFunction,
+  TokenizerRegistration
+} from '@shared/types/text-tokenizer-types'

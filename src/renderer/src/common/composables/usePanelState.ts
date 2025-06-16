@@ -1,8 +1,6 @@
 import { ref, computed, watch } from 'vue'
-import type {
-  PluginUIRegistry,
-  RegisteredPluginView
-} from '@renderer/core/services/plugin-ui/plugin-ui-registry'
+import type { PluginUIRegistry } from '@renderer/core/services/plugin-ui/plugin-ui-registry'
+import type { RegisteredPluginView } from '@shared/types/types'
 
 // Global panel state
 const panelWidth = ref(300)

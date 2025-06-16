@@ -22,8 +22,16 @@ export class EventBusService<Events extends Record<EventType, unknown>>
 
     if (this.ipcToLocalBridge.has(eventKey)) return
 
-    const bridgeHandler = (_event: any, payload: Events[Key]) => {
-      // When IPC receives an event from main process, emit it to local event bus
+    const bridgeHandler = (_event: any, serializedPayload: string) => {
+      // When IPC receives an event from main process, deserialize and emit it to local event bus
+      let payload: Events[Key]
+      try {
+        payload = JSON.parse(serializedPayload)
+      } catch (error) {
+        console.error(`Failed to deserialize payload for event ${String(eventName)}:`, error)
+        return
+      }
+
       const bus = this.getEventBus(eventName)
       bus.emit(payload)
 
@@ -65,12 +73,15 @@ export class EventBusService<Events extends Record<EventType, unknown>>
     // Also trigger wildcard handlers for local events
     this.wildcardHandlers.forEach((handler) => {
       handler(eventName, payload)
-    })
-
-    // Send to main process via IPC
+    }) // Send to main process via IPC
     if (ipcRenderer) {
       const eventKey = this.getEventKey(eventName)
-      ipcRenderer.send(eventKey, payload)
+      try {
+        const serializedPayload = JSON.stringify(payload)
+        ipcRenderer.send(eventKey, serializedPayload)
+      } catch (error) {
+        console.error(`Failed to serialize payload for event ${String(eventName)}:`, error)
+      }
     }
   }
 

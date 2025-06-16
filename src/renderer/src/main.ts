@@ -2,7 +2,6 @@ import '@renderer/common/assets/styles/main.css'
 import { createApp, App as VueApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, Router } from 'vue-router'
-import App from './App.vue'
 import { routes } from '@renderer/core/router/routes'
 import {
   storage,

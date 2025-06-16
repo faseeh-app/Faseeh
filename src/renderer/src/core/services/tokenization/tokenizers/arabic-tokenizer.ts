@@ -87,7 +87,7 @@ function basicArabicTokenization(text: string): Token[] {
 /**
  * Process an Arabic token to handle prefixes and suffixes
  */
-function processArabicToken(token: Token, originalText: string): Token[] {
+function processArabicToken(token: Token, _originalText: string): Token[] {
   const result: Token[] = [];
   let currentText = token.text;
   let currentStart = token.startIndex;

@@ -22,9 +22,17 @@ export class EventBusService<Events extends Record<EventType, unknown>>
 
     // Register with local event emitter
     this.localEmitter.on(eventKey, handler) // Setup IPC handler if not already done
-
     if (!this.ipcHandlers.has(eventKey) && ipcMain) {
-      const ipcHandler = (_event: any, payload: Events[Key]) => {
+      const ipcHandler = (_event: any, serializedPayload: string) => {
+        // Deserialize payload from renderer process
+        let payload: Events[Key]
+        try {
+          payload = JSON.parse(serializedPayload)
+        } catch (error) {
+          console.error(`Failed to deserialize payload for event ${String(eventName)}:`, error)
+          return
+        }
+
         // Emit to local event emitter
         this.localEmitter.emit(eventKey, payload)
 
@@ -58,18 +66,21 @@ export class EventBusService<Events extends Record<EventType, unknown>>
     // Also trigger wildcard handlers for local events
     this.wildcardHandlers.forEach((handler) => {
       handler(eventName, payload)
-    })
-
-    // Send to all renderer processes via IPC
+    }) // Send to all renderer processes via IPC
     if (webContents) {
-      webContents.getAllWebContents().forEach((contents: WebContents) => {
-        try {
-          contents.send(eventKey, payload)
-        } catch (error) {
-          // Handle destroyed webContents gracefully
-          console.warn(`Failed to send event ${eventKey} to renderer:`, error)
-        }
-      })
+      try {
+        const serializedPayload = JSON.stringify(payload)
+        webContents.getAllWebContents().forEach((contents: WebContents) => {
+          try {
+            contents.send(eventKey, serializedPayload)
+          } catch (error) {
+            // Handle destroyed webContents gracefully
+            console.warn(`Failed to send event ${eventKey} to renderer:`, error)
+          }
+        })
+      } catch (error) {
+        console.error(`Failed to serialize payload for event ${String(eventName)}:`, error)
+      }
     }
   }
 
