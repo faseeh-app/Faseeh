@@ -52,7 +52,7 @@
 }
 
 @utility faseeh-command-palette__command-content {
-  @apply flex flex-col;
+  @apply flex items-center justify-between w-full;
 }
 
 @utility faseeh-command-palette__command-title {
@@ -61,6 +61,10 @@
 
 @utility faseeh-command-palette__command-description {
   @apply text-base text-muted-foreground;
+}
+
+@utility faseeh-command-palette__command-shortcut {
+  @apply ml-2 text-xs opacity-60;
 }
 
 /* Mobile-specific utilities for drawer implementation */

@@ -21,6 +21,7 @@ import {
   DrawerTitle
 } from '@renderer/common/components/ui/drawer'
 import { Button } from '@renderer/common/components/ui/button'
+import { themeService } from '@renderer/core/services/service-container'
 
 interface CommandAction {
   id: string
@@ -28,6 +29,7 @@ interface CommandAction {
   description?: string
   keywords?: string[]
   category?: string
+  shortcut?: string
   action: () => void
 }
 
@@ -98,7 +100,8 @@ const commands: CommandAction[] = [
       console.log('Create collection action')
       handleOpenChange()
     }
-  },  {
+  },
+  {
     id: 'open-settings',
     title: 'Open Settings',
     description: 'Configure application settings',
@@ -112,13 +115,51 @@ const commands: CommandAction[] = [
     }
   },
   {
-    id: 'toggle-theme',
+    id: 'theme-toggle',
     title: 'Toggle Theme',
     description: 'Switch between light and dark theme',
-    keywords: ['theme', 'dark', 'light', 'appearance'],
-    category: 'Application',
+    keywords: ['theme', 'toggle', 'switch', 'appearance'],
+    category: 'Appearance',
+    shortcut: 'Ctrl+Shift+T',
     action: () => {
-      console.log('Toggle theme action')
+      const currentTheme = themeService.currentTheme.value
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
+      themeService.setTheme(newTheme)
+      handleOpenChange()
+    }
+  },
+  {
+    id: 'theme-light',
+    title: 'Set Light Theme',
+    description: 'Switch to light theme',
+    keywords: ['theme', 'light', 'bright', 'appearance'],
+    category: 'Appearance',
+    shortcut: 'Ctrl+Shift+L',
+    action: () => {
+      themeService.setTheme('light')
+      handleOpenChange()
+    }
+  },
+  {
+    id: 'theme-dark',
+    title: 'Set Dark Theme',
+    description: 'Switch to dark theme',
+    keywords: ['theme', 'dark', 'night', 'appearance'],
+    category: 'Appearance',
+    shortcut: 'Ctrl+Shift+D',
+    action: () => {
+      themeService.setTheme('dark')
+      handleOpenChange()
+    }
+  },
+  {
+    id: 'theme-auto',
+    title: 'Set Auto Theme',
+    description: 'Follow system theme preference',
+    keywords: ['theme', 'auto', 'system', 'automatic', 'appearance'],
+    category: 'Appearance',
+    action: () => {
+      themeService.setTheme('auto')
       handleOpenChange()
     }
   }
@@ -183,13 +224,21 @@ watch(
               @select="handleCommandSelect"
             >
               <div class="faseeh-command-palette__command-content">
-                <span class="faseeh-command-palette__command-title">{{ command.title }}</span>
-                <span
-                  v-if="command.description"
-                  class="faseeh-command-palette__command-description"
+                <div class="flex-1">
+                  <span class="faseeh-command-palette__command-title">{{ command.title }}</span>
+                  <span
+                    v-if="command.description"
+                    class="faseeh-command-palette__command-description"
+                  >
+                    {{ command.description }}
+                  </span>
+                </div>
+                <kbd
+                  v-if="command.shortcut"
+                  class="faseeh-command-palette__kbd faseeh-command-palette__command-shortcut"
                 >
-                  {{ command.description }}
-                </span>
+                  {{ command.shortcut }}
+                </kbd>
               </div>
             </CommandItem>
           </CommandGroup>

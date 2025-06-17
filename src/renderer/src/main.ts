@@ -7,6 +7,7 @@ import { routes } from '@renderer/core/router/routes'
 import {
   storage,
   pluginManager,
+  themeService,
   initializeServices,
   shutdownServices
 } from '@renderer/core/services/service-container'
@@ -43,6 +44,10 @@ class RendererLifecycle {
     if (!this.app) {
       throw new Error('Application not initialized. Call init() first.')
     }
+
+    // Initialize theme service (this will apply the saved theme or default theme)
+    // Theme service is initialized on import, but we reference it here to ensure it's loaded
+    console.log('Theme service initialized with theme:', themeService.currentTheme.value)
 
     // Initialize all services first (includes plugin manager)
     await initializeServices()

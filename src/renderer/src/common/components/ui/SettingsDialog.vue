@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue'
-import { pluginManager } from '@renderer/core/services/service-container'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
+import { pluginManager, themeService } from '@renderer/core/services/service-container'
 import type { PluginInfo } from '@shared/types/types'
+import type { Theme } from '@renderer/core/services/theme/theme.service'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,7 +28,7 @@ import {
   SidebarProvider
 } from '@renderer/common/components/ui/sidebar'
 import { Button } from '@renderer/common/components/ui/button'
-import { AlertTriangle, CheckCircle, Loader2, Package } from 'lucide-vue-next'
+import { AlertTriangle, CheckCircle, Loader2, Package, Sun, Moon, Monitor } from 'lucide-vue-next'
 
 interface SettingsSection {
   name: string
@@ -51,6 +52,10 @@ const activeSection = ref('Application')
 // Plugin management state
 const plugins = ref<PluginInfo[]>([])
 const loadingPlugins = ref<string[]>([])
+
+// Theme management state
+const currentTheme = computed(() => themeService.currentTheme.value)
+const effectiveTheme = computed(() => themeService.effectiveTheme.value)
 
 // Event cleanup functions
 let pluginEventCleanups: (() => void)[] = []
@@ -167,11 +172,11 @@ function setupPluginEvents(): void {
   const cleanup1 = pluginManager().on('plugin:listUpdated', (updatedPlugins) => {
     plugins.value = updatedPlugins
   })
-  
+
   const cleanup2 = pluginManager().on('plugin:enabled', () => {
     loadPluginsList()
   })
-  
+
   const cleanup3 = pluginManager().on('plugin:disabled', () => {
     loadPluginsList()
   })
@@ -182,6 +187,37 @@ function setupPluginEvents(): void {
 function cleanupPluginEvents(): void {
   pluginEventCleanups.forEach((cleanup) => cleanup())
   pluginEventCleanups = []
+}
+
+// Theme management functions
+function handleThemeChange(theme: Theme): void {
+  themeService.setTheme(theme)
+}
+
+function getThemeIcon(theme: Theme): any {
+  switch (theme) {
+    case 'light':
+      return Sun
+    case 'dark':
+      return Moon
+    case 'auto':
+      return Monitor
+    default:
+      return Monitor
+  }
+}
+
+function getThemeLabel(theme: Theme): string {
+  switch (theme) {
+    case 'light':
+      return 'Light'
+    case 'dark':
+      return 'Dark'
+    case 'auto':
+      return 'Auto'
+    default:
+      return 'Auto'
+  }
 }
 
 function handleSectionClick(section: SettingsSection): void {
@@ -295,29 +331,49 @@ watch(
                 </div>
               </div>
             </div>
-
             <!-- Appearance Settings -->
             <div v-else-if="activeSection === 'Appearance'" class="space-y-6">
               <div class="space-y-4">
                 <h3 class="text-lg font-semibold">Theme</h3>
-                <div class="space-y-2">
-                  <span class="text-sm font-medium">Color Theme</span>
-                  <div class="flex gap-2">
+                <div class="space-y-4">
+                  <div class="space-y-2">
+                    <span class="text-sm font-medium">Color Theme</span>
+                    <p class="text-xs text-muted-foreground">
+                      Choose between light, dark, or auto theme based on your system preference.
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-3 gap-3 max-w-md">
                     <button
-                      class="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-primary bg-background"
+                      v-for="theme in ['light', 'dark', 'auto'] as Theme[]"
+                      :key="theme"
+                      :class="[
+                        'flex flex-col items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all hover:scale-105',
+                        currentTheme === theme
+                          ? 'border-primary bg-primary/5 text-primary'
+                          : 'border-border hover:border-border/60'
+                      ]"
+                      @click="handleThemeChange(theme)"
                     >
-                      <span class="text-sm">Light</span>
+                      <component
+                        :is="getThemeIcon(theme)"
+                        :class="[
+                          'h-6 w-6',
+                          currentTheme === theme ? 'text-primary' : 'text-muted-foreground'
+                        ]"
+                      />
+                      <span class="text-sm font-medium">{{ getThemeLabel(theme) }}</span>
+                      <span v-if="theme === 'auto'" class="text-xs text-muted-foreground">
+                        ({{ effectiveTheme }})
+                      </span>
                     </button>
-                    <button
-                      class="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-muted bg-gray-900 text-white"
-                    >
-                      <span class="text-sm">Dark</span>
-                    </button>
-                    <button
-                      class="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-muted bg-gradient-to-br from-background to-gray-900"
-                    >
-                      <span class="text-sm">Auto</span>
-                    </button>
+                  </div>
+                  <div class="mt-4 p-3 rounded-md bg-muted/50">
+                    <p class="text-sm text-muted-foreground">
+                      <strong>Current:</strong> {{ getThemeLabel(currentTheme) }}
+                      <span v-if="currentTheme === 'auto'">
+                        (using {{ effectiveTheme }} based on system preference)
+                      </span>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -337,7 +393,7 @@ watch(
                   Manage community plugins to extend Faseeh's functionality with custom content
                   adapters, metadata scrapers, and other features.
                 </p>
-                
+
                 <div v-if="plugins.length === 0" class="text-center py-8">
                   <Package class="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                   <p class="text-sm text-muted-foreground">No plugins found</p>
@@ -345,7 +401,7 @@ watch(
                     Install plugins in the plugins directory to get started
                   </p>
                 </div>
-                
+
                 <div v-else class="space-y-3">
                   <div
                     v-for="plugin in plugins"

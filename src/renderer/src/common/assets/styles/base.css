@@ -1,10 +1,49 @@
 @import url('@renderer/common/assets/styles/faseeh-dark.css');
+@import url('@renderer/common/assets/styles/faseeh-light.css');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 [data-theme='dark'] {
+  /* --- MAP SHADCN/UI VARIABLES TO FASEEH VARIABLES --- */
+  --background: var(--faseeh-background-base);
+  --foreground: var(--faseeh-text-primary);
+  --card: var(--faseeh-background-secondary); /* Map Card to Secondary Bg */
+  --card-foreground: var(--faseeh-text-primary);
+  --popover: var(--faseeh-background-primary); /* Popover often matches main bg */
+  --popover-foreground: var(--faseeh-text-primary);
+  --primary: var(--faseeh-accent-primary);
+  --primary-foreground: var(--faseeh-text-on-accent-primary);
+  --secondary: var(--faseeh-accent-secondary); /* Map to your secondary accent */
+  --secondary-foreground: var(--faseeh-text-on-accent-secondary);
+  --muted: var(--faseeh-background-tertiary); /* Map Muted bg */
+  --muted-foreground: var(--faseeh-text-muted);
+  --accent: var(--faseeh-interactive-background-hover); /* Map Accent bg */
+  --accent-foreground: var(--faseeh-text-secondary); /* Map Accent text */
+  --destructive: var(--faseeh-color-destructive);
+  --destructive-foreground: var(--faseeh-text-on-destructive);
+  --border: var(--faseeh-border-primary);
+  --input: var(--faseeh-border-primary); /* Input border often same as primary border */
+  --ring: var(--faseeh-border-interactive); /* Focus ring color */
+  --radius: var(--faseeh-radius-md); /* Base radius */
+
+  /* Chart & Sidebar colors - map them to your semantic vars as needed */
+  /* Example - you might need more specific --faseeh vars for these */
+  --chart-1: var(--faseeh-color-cyan-mid);
+  --chart-2: var(--faseeh-color-green-mid);
+  /* ... map chart 3, 4, 5 ... */
+  --sidebar: var(--faseeh-background-secondary);
+  --sidebar-foreground: var(--faseeh-text-primary);
+  --sidebar-primary: var(--faseeh-accent-primary); /* Or a different sidebar accent */
+  --sidebar-primary-foreground: var(--faseeh-text-on-accent-primary);
+  --sidebar-accent: var(--faseeh-interactive-background-hover);
+  --sidebar-accent-foreground: var(--faseeh-text-primary);
+  --sidebar-border: var(--faseeh-border-secondary);
+  --sidebar-ring: var(--faseeh-border-interactive);
+}
+
+[data-theme='light'] {
   /* --- MAP SHADCN/UI VARIABLES TO FASEEH VARIABLES --- */
   --background: var(--faseeh-background-base);
   --foreground: var(--faseeh-text-primary);

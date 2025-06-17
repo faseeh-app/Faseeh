@@ -13,6 +13,7 @@ import {
 } from '@renderer/core/services/facades/service-facades'
 import { PluginUIRegistry } from '@renderer/core/services/plugin-ui/plugin-ui-registry'
 import { PluginUIFacade } from '@renderer/core/services/facades/plugin-ui-facade'
+import { themeService } from '@renderer/core/services/theme/theme.service'
 
 // Service tokens for dependency injection
 export const TOKENS = {
@@ -80,6 +81,7 @@ export const languageDetector = () => container.resolve<LanguageDetector>(TOKENS
 export const storage = () => container.resolve<StorageService>(TOKENS.Storage)
 export const pluginUIRegistry = () => container.resolve<PluginUIRegistry>(TOKENS.PluginUIRegistry)
 export const faseehApp = () => container.resolve<FaseehApp>(TOKENS.FaseehApp)
+export { themeService }
 
 // Track initialization state
 let isInitialized = false

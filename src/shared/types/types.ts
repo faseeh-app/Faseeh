@@ -225,6 +225,7 @@ export type PluginEvents = {
   'plugin:unloaded': { pluginId: string }
   'plugin:listUpdated': PluginInfo[]
   'plugin:disabled': { pluginId: string }
+  'plugin:enabled': { pluginId: string }
 }
 
 /**

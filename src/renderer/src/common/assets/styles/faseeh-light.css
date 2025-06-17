@@ -1,0 +1,162 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Colors                                   */
+/* -------------------------------------------------------------------------- */
+[data-theme='light'] {
+  /* Core Palette (Derived from logo) */
+  --faseeh-color-green-light: #45ffbc; /* Lighter end of logo-green */
+  --faseeh-color-green-mid: #3ddb8a; /* Mid-point of logo-green */
+  --faseeh-color-cyan-mid: #00c2d1; /* Mid-point of logo cyan/blue */
+  --faseeh-color-blue-deep: #00a9e0; /* Deeper end of logo-blue */
+
+  /* Backgrounds */
+  --faseeh-background-base: #f5f5f5; /* Pure white */
+  --faseeh-background-primary: #ffffff; /* Main content panels */
+  --faseeh-background-secondary: #f8fafc; /* Sidebars, cards, less prominent panels */
+  --faseeh-background-tertiary: #f1f5f9; /* Subtle backgrounds for grouped elements, hover */
+  --faseeh-background-quaternary: #e2e8f0; /* For inputs, buttons, and other interactive elements */
+  --faseeh-background-overlay: rgba(0, 0, 0, 0.4); /* For modal backdrops */
+
+  /* Text */
+  --faseeh-text-primary: #1e293b; /* Dark gray for primary text */
+  --faseeh-text-secondary: #475569; /* Medium gray for secondary text */
+  --faseeh-text-muted: #64748b; /* For less important info, placeholders */
+  --faseeh-text-disabled: #94a3b8; /* For disabled elements */
+  --faseeh-text-link: var(--faseeh-color-blue-deep);
+  --faseeh-text-link-hover: var(--faseeh-color-cyan-mid);
+
+  /* Accents (Using the logo colors) */
+  --faseeh-accent-primary: var(--faseeh-color-blue-deep);
+  --faseeh-accent-primary-hover: var(--faseeh-color-cyan-mid);
+  --faseeh-accent-secondary: var(--faseeh-color-green-mid);
+  --faseeh-accent-secondary-hover: var(--faseeh-color-green-light);
+  --faseeh-accent-gradient: linear-gradient(
+    to bottom,
+    var(--faseeh-color-green-mid),
+    var(--faseeh-color-blue-deep)
+  );
+
+  /* Text on Accents */
+  --faseeh-text-on-accent-primary: #ffffff; /* White text on primary accent */
+  --faseeh-text-on-accent-secondary: #0d1117; /* Dark text on secondary accent */
+
+  /* Borders & Dividers */
+  --faseeh-border-primary: #acb7c5; /* Subtle borders for inputs, panels */
+  --faseeh-border-secondary: var(--faseeh-border-primary); /* Even more subtle, for dividers */
+  --faseeh-border-interactive: var(--faseeh-accent-primary); /* For focus rings, selected items */
+
+  /* Interactive Elements (Buttons, Inputs, etc.) */
+  --faseeh-interactive-background: var(--faseeh-background-secondary);
+  --faseeh-interactive-background-hover: var(--faseeh-background-tertiary);
+  --faseeh-interactive-background-active: var(--faseeh-background-primary);
+  --faseeh-interactive-border: var(--faseeh-border-primary);
+  --faseeh-interactive-text: var(--faseeh-text-primary);
+
+  /* Specific for Primary Actions (e.g., Primary Buttons) */
+  --faseeh-button-primary-background: var(--faseeh-accent-primary);
+  --faseeh-button-primary-background-hover: var(--faseeh-accent-primary-hover);
+  --faseeh-button-primary-text: var(--faseeh-text-on-accent-primary);
+
+  /* Destructive Actions */
+  --faseeh-color-destructive: #dc2626;
+  --faseeh-color-destructive-hover: #ef4444;
+  --faseeh-text-on-destructive: #ffffff;
+
+  /* Semantic Status Colors */
+  --faseeh-color-success: #059669;
+  --faseeh-color-warning: #d97706;
+  --faseeh-color-error: var(--faseeh-color-destructive);
+  --faseeh-color-info: var(--faseeh-color-cyan-mid);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 Typorgraphy                                */
+/* -------------------------------------------------------------------------- */
+[data-theme='light'] {
+  --faseeh-font-family-base:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+    'Helvetica Neue', sans-serif;
+  --faseeh-font-family-monospace:
+    'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  --faseeh-font-size-xs: 0.75rem; /* 12px */
+  --faseeh-font-size-sm: 0.875rem; /* 14px */
+  --faseeh-font-size-base: 1rem; /* 16px (assuming base) */
+  --faseeh-font-size-md: 1rem; /* 16px */
+  --faseeh-font-size-lg: 1.125rem; /* 18px */
+  --faseeh-font-size-xl: 1.25rem; /* 20px */
+  --faseeh-font-size-h3: 1.5rem; /* 24px */
+  --faseeh-font-size-h2: 1.875rem; /* 30px */
+  --faseeh-font-size-h1: 2.25rem; /* 36px */
+
+  --faseeh-font-weight-light: 300;
+  --faseeh-font-weight-normal: 400;
+  --faseeh-font-weight-medium: 500;
+  --faseeh-font-weight-semibold: 600;
+  --faseeh-font-weight-bold: 700;
+
+  --faseeh-line-height-normal: 1.5;
+  --faseeh-line-height-tight: 1.25;
+  --faseeh-line-height-relaxed: 1.75;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Spacing & Sizing                              */
+/* -------------------------------------------------------------------------- */
+
+[data-theme='light'] {
+  --faseeh-spacing-1: 0.35rem; /* 4px */
+  --faseeh-spacing-2: 0.5rem; /* 8px */
+  --faseeh-spacing-3: 0.75rem; /* 12px */
+  --faseeh-spacing-4: 1rem; /* 16px */
+  --faseeh-spacing-5: 1.25rem; /* 20px */
+  --faseeh-spacing-6: 1.5rem; /* 24px */
+  --faseeh-spacing-8: 2rem; /* 32px */
+  --faseeh-spacing-10: 2.5rem; /* 40px */
+  --faseeh-spacing-12: 3rem; /* 48px */
+
+  --faseeh-control-height-sm: var(--faseeh-spacing-8); /* 32px */
+  --faseeh-control-height-md: var(--faseeh-spacing-10); /* 40px */
+  --faseeh-control-height-lg: var(--faseeh-spacing-12); /* 48px */
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Borders & Radius                              */
+/* -------------------------------------------------------------------------- */
+
+[data-theme='light'] {
+  --faseeh-border-width: 1px;
+  --faseeh-border-width-thick: 2px;
+
+  --faseeh-radius-sm: 0.25rem; /* 4px */
+  --faseeh-radius-md: 0.375rem; /* 6px - common for buttons, inputs */
+  --faseeh-radius-lg: 0.5rem; /* 8px - for cards, panels */
+  --faseeh-radius-xl: 0.75rem; /* 12px */
+  --faseeh-radius-full: 9999px; /* For pill shapes, circular elements */
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Shaow & Elevation                             */
+/* -------------------------------------------------------------------------- */
+
+[data-theme='light'] {
+  /* Light theme shadows */
+  --faseeh-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.04);
+  --faseeh-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --faseeh-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Using darker borders/highlights for elevation */
+  --faseeh-elevation-highlight: rgba(0, 0, 0, 0.05); /* For borders of elevated surface */
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   Z-Index                                  */
+/* -------------------------------------------------------------------------- */
+[data-theme='light'] {
+  --faseeh-z-index-dropdown: 1000;
+  --faseeh-z-index-sticky: 1020;
+  --faseeh-z-index-modal-backdrop: 1040;
+  --faseeh-z-index-modal: 1050;
+  --faseeh-z-index-popover: 1060;
+  --faseeh-z-index-tooltip: 1070;
+}

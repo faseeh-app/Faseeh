@@ -1,6 +1,7 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useTabRouter } from '@renderer/core/services/tabRouter'
 import { useTabStore } from '@renderer/core/stores/useTabStore'
+import { themeService } from '@renderer/core/services/service-container'
 
 export function useKeyboardShortcuts() {
   const tabStore = useTabStore()
@@ -17,13 +18,28 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      pressedKeys.add(keyCombo)
-
-      // Ctrl+T for new tab
+      pressedKeys.add(keyCombo) // Ctrl+T for new tab
       if (event.ctrlKey && event.key === 't') {
         event.preventDefault()
         handleAddTab()
-      } // Ctrl+W for close tab
+      } // Ctrl+Shift+T for theme toggle
+      else if (event.ctrlKey && event.shiftKey && event.key === 'T') {
+        event.preventDefault()
+        const currentTheme = themeService.currentTheme.value
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
+        themeService.setTheme(newTheme)
+      }
+      // Ctrl+Shift+L for light theme
+      else if (event.ctrlKey && event.shiftKey && event.key === 'L') {
+        event.preventDefault()
+        themeService.setTheme('light')
+      }
+      // Ctrl+Shift+D for dark theme
+      else if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+        event.preventDefault()
+        themeService.setTheme('dark')
+      }
+      // Ctrl+W for close tab
       else if (event.ctrlKey && event.key === 'w') {
         event.preventDefault()
         const activeTab = tabStore.activeTab
