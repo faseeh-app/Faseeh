@@ -209,6 +209,22 @@ export class StorageService extends EventBusService<StorageEvents> implements IS
   }
 
   // == Specific Config Files (Filesystem) ==
+  async getSettings(): Promise<Record<string, any>> {
+    return ipcRenderer.invoke('storage:getSettings')
+  }
+
+  async setSettings(settings: Record<string, any>): Promise<boolean> {
+    return ipcRenderer.invoke('storage:setSettings', settings)
+  }
+
+  async getSettingValue(key: string): Promise<any> {
+    return ipcRenderer.invoke('storage:getSettingValue', key)
+  }
+
+  async setSettingValue(key: string, value: any): Promise<boolean> {
+    return ipcRenderer.invoke('storage:setSettingValue', key, value)
+  }
+
   async getEnabledPluginIds(): Promise<string[]> {
     return ipcRenderer.invoke('storage:getEnabledPluginIds')
   }

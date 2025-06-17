@@ -14,6 +14,7 @@ import {
 import { PluginUIRegistry } from '@renderer/core/services/plugin-ui/plugin-ui-registry'
 import { PluginUIFacade } from '@renderer/core/services/facades/plugin-ui-facade'
 import { themeService } from '@renderer/core/services/theme/theme.service'
+import { keyboardShortcutService } from '@renderer/core/services/keyboard/keyboard-shortcut.service'
 
 // Service tokens for dependency injection
 export const TOKENS = {
@@ -81,7 +82,7 @@ export const languageDetector = () => container.resolve<LanguageDetector>(TOKENS
 export const storage = () => container.resolve<StorageService>(TOKENS.Storage)
 export const pluginUIRegistry = () => container.resolve<PluginUIRegistry>(TOKENS.PluginUIRegistry)
 export const faseehApp = () => container.resolve<FaseehApp>(TOKENS.FaseehApp)
-export { themeService }
+export { themeService, keyboardShortcutService }
 
 // Track initialization state
 let isInitialized = false
@@ -95,11 +96,14 @@ export async function initializeServices(): Promise<void> {
     return
   }
 
+  // Initialize keyboard shortcut service with storage
+  await keyboardShortcutService.initialize(storage())
+  keyboardShortcutService.startListening()
+
   const pluginMgr = pluginManager()
   if (pluginMgr.initialize) {
     await pluginMgr.initialize()
-  }
-  // Set up the plugin UI registry in the panel state
+  }  // Set up the plugin UI registry in the panel state
   const { usePanelState } = await import('@renderer/common/composables/usePanelState')
   const { setPluginUIRegistry } = usePanelState()
   setPluginUIRegistry(pluginUIRegistry())
@@ -118,6 +122,9 @@ export async function shutdownServices(): Promise<void> {
   isShuttingDown = true
 
   try {
+    // Shutdown keyboard shortcut service
+    keyboardShortcutService.stopListening()
+
     // Shutdown plugin manager
     const pluginMgr = pluginManager()
     if (pluginMgr.shutdown) {

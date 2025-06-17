@@ -25,6 +25,7 @@ const SUPPLEMENTARY_FILES_DIR_NAME = 'supplementary'
 const PLUGIN_DATA_SUBDIR_NAME = 'data'
 
 const ENABLED_PLUGINS_FILE_NAME = 'enabled_plugins.json'
+const SETTINGS_FILE_NAME = 'settings.json'
 const MANIFEST_FILE_NAME = 'manifest.json'
 
 /**
@@ -212,9 +213,11 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       const dbSetting = await this.setAppSetting(setting)
       return dbSetting ? converters.toAppSettingDomain(dbSetting) : undefined
     })
-    handle('storage:deleteAppSetting', (key: string) => this.deleteAppSetting(key))
-
-    // == Config Files ==
+    handle('storage:deleteAppSetting', (key: string) => this.deleteAppSetting(key))    // == Config Files ==
+    handle('storage:getSettings', () => this.getSettings())
+    handle('storage:setSettings', (settings: Record<string, any>) => this.setSettings(settings))
+    handle('storage:getSettingValue', (key: string) => this.getSettingValue(key))
+    handle('storage:setSettingValue', (key: string, value: any) => this.setSettingValue(key, value))
     handle('storage:getEnabledPluginIds', () => this.getEnabledPluginIds())
     handle('storage:setEnabledPluginIds', (ids: string[]) => this.setEnabledPluginIds(ids))
 
@@ -917,6 +920,48 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
   }
 
   // == Specific Config Files (Filesystem) ==
+
+  async getSettings(): Promise<Record<string, any>> {
+    const filePath = path.join(FASEEH_BASE_PATH, CONFIG_DIR_NAME, SETTINGS_FILE_NAME)
+    try {
+      const content = await fs.readFile(filePath, 'utf-8')
+      return JSON.parse(content)
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return {} // File doesn't exist, return empty object
+      }
+      console.error(`Failed to read ${SETTINGS_FILE_NAME}:`, error)
+      throw error
+    }
+  }
+
+  async setSettings(settings: Record<string, any>): Promise<boolean> {
+    const filePath = path.join(FASEEH_BASE_PATH, CONFIG_DIR_NAME, SETTINGS_FILE_NAME)
+    try {
+      await this.ensureDirExists(path.join(FASEEH_BASE_PATH, CONFIG_DIR_NAME))
+      await fs.writeFile(filePath, JSON.stringify(settings, null, 2), 'utf-8')
+      return true
+    } catch (error) {
+      console.error(`Failed to write ${SETTINGS_FILE_NAME}:`, error)
+      return false
+    }
+  }
+
+  async getSettingValue(key: string): Promise<any> {
+    const settings = await this.getSettings()
+    return settings[key]
+  }
+
+  async setSettingValue(key: string, value: any): Promise<boolean> {
+    try {
+      const settings = await this.getSettings()
+      settings[key] = value
+      return await this.setSettings(settings)
+    } catch (error) {
+      console.error(`Failed to set setting ${key}:`, error)
+      return false
+    }
+  }
 
   async getEnabledPluginIds(): Promise<string[]> {
     const filePath = path.join(FASEEH_BASE_PATH, CONFIG_DIR_NAME, ENABLED_PLUGINS_FILE_NAME)

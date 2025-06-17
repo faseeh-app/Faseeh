@@ -352,6 +352,39 @@ export interface IStorage extends EventBus<StorageEvents> {
   // == Specific Config Files (Filesystem) ==
 
   /**
+   * Retrieves all settings from the settings.json file.
+   * Returns an empty object if the file doesn't exist.
+   *
+   * @returns {Promise<Record<string, any>>} Object containing all settings
+   */
+  getSettings: () => Promise<Record<string, any>>
+
+  /**
+   * Saves all settings to the settings.json file.
+   *
+   * @param {Record<string, any>} settings - The complete settings object to save
+   * @returns {Promise<boolean>} True if the save operation was successful, false otherwise
+   */
+  setSettings: (settings: Record<string, any>) => Promise<boolean>
+
+  /**
+   * Retrieves a specific setting value by key from settings.json.
+   *
+   * @param {string} key - The setting key to retrieve
+   * @returns {Promise<any>} The setting value, or undefined if not found
+   */
+  getSettingValue: (key: string) => Promise<any>
+
+  /**
+   * Sets a specific setting value by key in settings.json.
+   *
+   * @param {string} key - The setting key to set
+   * @param {any} value - The value to set
+   * @returns {Promise<boolean>} True if the save operation was successful, false otherwise
+   */
+  setSettingValue: (key: string, value: any) => Promise<boolean>
+
+  /**
    * Retrieves the list of enabled plugin IDs from the configuration file.
    * Returns an empty array if the configuration file doesn't exist or is invalid.
    *

@@ -1,5 +1,5 @@
 import '@renderer/common/assets/styles/main.css'
-import { createApp, App as VueApp } from 'vue'
+import { createApp, App as VueApp, nextTick } from 'vue'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, Router } from 'vue-router'
 import App from './App.vue'
@@ -8,6 +8,7 @@ import {
   storage,
   pluginManager,
   themeService,
+  keyboardShortcutService,
   initializeServices,
   shutdownServices
 } from '@renderer/core/services/service-container'
@@ -57,6 +58,11 @@ class RendererLifecycle {
     console.log(pluginMgr.listPlugins())
 
     this.app.mount('#app')
+    
+    // Finalize shortcut loading after all components are mounted
+    await nextTick()
+    console.log('Finalizing shortcuts after component mount...')
+    await keyboardShortcutService.finalizeShortcutLoading()
   }
   test(): void {
     if (import.meta.env.DEV) {

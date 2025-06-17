@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { createReusableTemplate, useMediaQuery, useMagicKeys } from '@vueuse/core'
 import {
   Command,
@@ -21,7 +21,8 @@ import {
   DrawerTitle
 } from '@renderer/common/components/ui/drawer'
 import { Button } from '@renderer/common/components/ui/button'
-import { themeService } from '@renderer/core/services/service-container'
+import { themeService, keyboardShortcutService } from '@renderer/core/services/service-container'
+import type { KeyboardShortcut } from '@renderer/core/services/keyboard/keyboard-shortcut-service'
 
 interface CommandAction {
   id: string
@@ -53,21 +54,11 @@ const [UseCommandTemplate, CommandContent] = createReusableTemplate()
 const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const open = ref(false)
+const searchQuery = ref('')
 
-// Keyboard shortcut support
-const keys = useMagicKeys()
-const CmdJ = keys['Cmd+J']
-const CtrlJ = keys['Ctrl+J']
-
-// Watch for keyboard shortcuts
-watch([CmdJ, CtrlJ], ([cmdJ, ctrlJ]) => {
-  if ((cmdJ || ctrlJ) && !open.value) {
-    // Only open when currently closed to prevent immediate reopening
-    handleOpenChange()
-  }
-})
-
-const commands: CommandAction[] = [
+// Get commands from keyboard shortcut service
+const allShortcuts = ref<KeyboardShortcut[]>([])
+const staticCommands: CommandAction[] = [
   {
     id: 'search-media',
     title: 'Search Media',
@@ -113,70 +104,66 @@ const commands: CommandAction[] = [
       }
       handleOpenChange()
     }
-  },
-  {
-    id: 'theme-toggle',
-    title: 'Toggle Theme',
-    description: 'Switch between light and dark theme',
-    keywords: ['theme', 'toggle', 'switch', 'appearance'],
-    category: 'Appearance',
-    shortcut: 'Ctrl+Shift+T',
-    action: () => {
-      const currentTheme = themeService.currentTheme.value
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
-      themeService.setTheme(newTheme)
-      handleOpenChange()
-    }
-  },
-  {
-    id: 'theme-light',
-    title: 'Set Light Theme',
-    description: 'Switch to light theme',
-    keywords: ['theme', 'light', 'bright', 'appearance'],
-    category: 'Appearance',
-    shortcut: 'Ctrl+Shift+L',
-    action: () => {
-      themeService.setTheme('light')
-      handleOpenChange()
-    }
-  },
-  {
-    id: 'theme-dark',
-    title: 'Set Dark Theme',
-    description: 'Switch to dark theme',
-    keywords: ['theme', 'dark', 'night', 'appearance'],
-    category: 'Appearance',
-    shortcut: 'Ctrl+Shift+D',
-    action: () => {
-      themeService.setTheme('dark')
-      handleOpenChange()
-    }
-  },
-  {
-    id: 'theme-auto',
-    title: 'Set Auto Theme',
-    description: 'Follow system theme preference',
-    keywords: ['theme', 'auto', 'system', 'automatic', 'appearance'],
-    category: 'Appearance',
-    action: () => {
-      themeService.setTheme('auto')
-      handleOpenChange()
-    }
   }
 ]
 
+// Combine static commands with shortcuts from service
+const commands = computed(() => {
+  const shortcutCommands: CommandAction[] = allShortcuts.value.map((shortcut) => ({
+    id: shortcut.id,
+    title: shortcut.name,
+    description: shortcut.description,
+    keywords: [shortcut.name.toLowerCase(), shortcut.description.toLowerCase(), shortcut.category],
+    category: shortcut.category.charAt(0).toUpperCase() + shortcut.category.slice(1),
+    shortcut: shortcut.keys.map((key) => keyboardShortcutService.formatKeyCombo(key)).join(', '),
+    action: () => {
+      shortcut.handler()
+      handleOpenChange()
+    }
+  }))
+
+  return [...staticCommands, ...shortcutCommands]
+})
+
 // Group commands by category
-const groupedCommands = commands.reduce(
-  (groups, command) => {
-    const category = command.category || 'General'
+const groupedCommands = computed(() => {
+  const groups: Record<string, CommandAction[]> = {}
+
+  commands.value.forEach((command) => {
+    const category = command.category || 'Other'
     if (!groups[category]) {
       groups[category] = []
     }
     groups[category].push(command)
-    return groups
-  },
-  {} as Record<string, CommandAction[]>
-)
+  })
+
+  return groups
+})
+
+// Keyboard shortcut support
+const keys = useMagicKeys()
+const CmdJ = keys['Cmd+J']
+const CtrlJ = keys['Ctrl+J']
+
+// Watch for keyboard shortcuts
+watch([CmdJ, CtrlJ], ([cmdJ, ctrlJ]) => {
+  if ((cmdJ || ctrlJ) && !open.value) {
+    // Only open when currently closed to prevent immediate reopening
+    handleOpenChange()
+  }
+})
+
+onMounted(() => {
+  loadShortcuts()
+
+  // Listen for shortcuts changes
+  keyboardShortcutService.on('shortcut:registered', loadShortcuts)
+  keyboardShortcutService.on('shortcut:unregistered', loadShortcuts)
+})
+
+function loadShortcuts() {
+  allShortcuts.value = keyboardShortcutService.getAllShortcuts()
+}
 
 function handleOpenChange() {
   open.value = !open.value
@@ -194,7 +181,7 @@ function handleClose(newValue: boolean) {
 
 function handleCommandSelect(event: any) {
   const commandId = event.detail?.value || event
-  const command = commands.find((cmd) => cmd.id === commandId)
+  const command = commands.value.find((cmd) => cmd.id === commandId)
   if (command) {
     command.action()
   }
