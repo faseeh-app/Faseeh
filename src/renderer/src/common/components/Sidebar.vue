@@ -7,6 +7,7 @@ import {
   TooltipProvider
 } from '@renderer/common/components/ui/tooltip'
 import CommandPalette from '@renderer/common/components/CommandPalette.vue'
+import SettingsDialog from '@renderer/common/components/ui/SettingsDialog.vue'
 import { useTabStore } from '@renderer/core/stores/useTabStore'
 import { useTabRouter } from '@renderer/core/services/tabRouter'
 
@@ -15,6 +16,7 @@ const tabRouter = useTabRouter()
 
 // Command palette state
 const isCommandPaletteOpen = ref(false)
+const isSettingsDialogOpen = ref(false)
 
 const openCommandPalette = () => {
   isCommandPaletteOpen.value = true
@@ -22,6 +24,14 @@ const openCommandPalette = () => {
 
 const closeCommandPalette = () => {
   isCommandPaletteOpen.value = false
+}
+
+const openSettingsDialog = () => {
+  isSettingsDialogOpen.value = true
+}
+
+const closeSettingsDialog = () => {
+  isSettingsDialogOpen.value = false
 }
 
 const activeView = computed(() => {
@@ -67,15 +77,13 @@ const navButtons = [
     action: (_forceNew: boolean = false) => {
       openCommandPalette()
     }
-  },
-  {
+  },  {
     id: 'settings',
     icon: 'icon-[solar--settings-linear]',
     activeIcon: 'icon-[solar--settings-bold]',
     label: 'Settings',
-    action: (forceNew: boolean = false) => {
-      // TODO: Add settings route when settings component is implemented
-      console.log('Settings not implemented yet')
+    action: (_forceNew: boolean = false) => {
+      openSettingsDialog()
     }
   }
 ]
@@ -108,9 +116,14 @@ const handleNavButtonClick = (button: (typeof navButtons)[0], event: MouseEvent)
           <div class="text-xs text-muted-foreground mt-1">Hold Ctrl to open in new tab</div>
         </TooltipContent>
       </Tooltip>
-    </div>
+    </div>    <!-- Command Palette -->
+    <CommandPalette
+      :is-open="isCommandPaletteOpen"
+      :open-settings="openSettingsDialog"
+      @close="closeCommandPalette"
+    />
 
-    <!-- Command Palette -->
-    <CommandPalette :is-open="isCommandPaletteOpen" @close="closeCommandPalette" />
+    <!-- Settings Dialog -->
+    <SettingsDialog :is-open="isSettingsDialogOpen" @close="closeSettingsDialog" />
   </TooltipProvider>
 </template>
