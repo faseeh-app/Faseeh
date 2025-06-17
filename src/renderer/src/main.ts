@@ -58,7 +58,7 @@ class RendererLifecycle {
     console.log(pluginMgr.listPlugins())
 
     this.app.mount('#app')
-    
+
     // Finalize shortcut loading after all components are mounted
     await nextTick()
     console.log('Finalizing shortcuts after component mount...')

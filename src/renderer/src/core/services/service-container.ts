@@ -103,7 +103,7 @@ export async function initializeServices(): Promise<void> {
   const pluginMgr = pluginManager()
   if (pluginMgr.initialize) {
     await pluginMgr.initialize()
-  }  // Set up the plugin UI registry in the panel state
+  } // Set up the plugin UI registry in the panel state
   const { usePanelState } = await import('@renderer/common/composables/usePanelState')
   const { setPluginUIRegistry } = usePanelState()
   setPluginUIRegistry(pluginUIRegistry())

@@ -213,7 +213,7 @@ class StorageService extends EventBusService<StorageEvents> implements IStorageA
       const dbSetting = await this.setAppSetting(setting)
       return dbSetting ? converters.toAppSettingDomain(dbSetting) : undefined
     })
-    handle('storage:deleteAppSetting', (key: string) => this.deleteAppSetting(key))    // == Config Files ==
+    handle('storage:deleteAppSetting', (key: string) => this.deleteAppSetting(key)) // == Config Files ==
     handle('storage:getSettings', () => this.getSettings())
     handle('storage:setSettings', (settings: Record<string, any>) => this.setSettings(settings))
     handle('storage:getSettingValue', (key: string) => this.getSettingValue(key))

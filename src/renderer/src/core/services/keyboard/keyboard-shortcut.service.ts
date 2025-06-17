@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 // Simple event emitter implementation
 interface EventMap {
@@ -13,7 +13,7 @@ class EventEmitter<T extends EventMap> {
       this.listeners.set(event, new Set())
     }
     this.listeners.get(event)!.add(handler)
-    
+
     return () => this.off(event, handler)
   }
 
@@ -27,7 +27,7 @@ class EventEmitter<T extends EventMap> {
   emit<K extends keyof T>(event: K, data: T[K]): void {
     const handlers = this.listeners.get(event)
     if (handlers) {
-      handlers.forEach(handler => handler(data))
+      handlers.forEach((handler) => handler(data))
     }
   }
 }
@@ -102,7 +102,35 @@ class KeyboardShortcutService {
   private currentContext = ref<string>('global')
   private storage: any = null // Will be injected
   private isInitialized = false
-  
+
+  // Reactive computed properties for Vue components
+  readonly shortcutsArray = computed(() => Array.from(this.shortcuts.values()))
+  readonly categoriesArray = computed(() =>
+    Array.from(this.categories.values()).sort((a, b) => a.priority - b.priority)
+  )
+
+  // Method to create reactive filtered shortcuts
+  createFilteredShortcuts(searchQuery: { value: string }) {
+    return computed(() => {
+      if (!searchQuery.value) return this.shortcutsArray.value
+      return this.searchShortcuts(searchQuery.value)
+    })
+  }
+
+  // Method to create reactive shortcuts grouped by category
+  createShortcutsByCategory(filteredShortcuts: { value: KeyboardShortcut[] }) {
+    return computed(() => {
+      const grouped: Record<string, KeyboardShortcut[]> = {}
+      filteredShortcuts.value.forEach((shortcut) => {
+        if (!grouped[shortcut.category]) {
+          grouped[shortcut.category] = []
+        }
+        grouped[shortcut.category].push(shortcut)
+      })
+      return grouped
+    })
+  }
+
   constructor() {
     this.eventEmitter = new EventEmitter<KeyboardShortcutServiceEvents>()
     this.initializeDefaultCategories()
@@ -110,7 +138,7 @@ class KeyboardShortcutService {
   // Initialize with storage service
   async initialize(storageService: any): Promise<void> {
     if (this.isInitialized) return
-    
+
     console.log('Initializing keyboard shortcut service with storage...')
     this.storage = storageService
     await this.loadShortcutsFromStorage()
@@ -153,17 +181,19 @@ class KeyboardShortcutService {
       description: 'Media playback and management shortcuts',
       priority: 5
     })
-  }  // Load shortcuts from storage and merge with registrations
-  private async loadShortcutsFromStorage(): Promise<void> {    if (!this.storage) return
+  } // Load shortcuts from storage and merge with registrations
+  private async loadShortcutsFromStorage(): Promise<void> {
+    if (!this.storage) return
 
     try {
       console.log('Loading shortcuts from storage...')
-      const persistedShortcuts: PersistedShortcut[] = await this.storage.getSettingValue('keyboard-shortcuts') || []
+      const persistedShortcuts: PersistedShortcut[] =
+        (await this.storage.getSettingValue('keyboard-shortcuts')) || []
       console.log('Loaded shortcuts from storage:', persistedShortcuts)
-      
+
       // Create a map of persisted shortcuts for quick lookup
       const persistedMap = new Map<string, PersistedShortcut>()
-      persistedShortcuts.forEach(shortcut => {
+      persistedShortcuts.forEach((shortcut) => {
         persistedMap.set(shortcut.id, shortcut)
       })
 
@@ -186,7 +216,8 @@ class KeyboardShortcutService {
 
       this.eventEmitter.emit('shortcuts:loaded', persistedShortcuts)
     } catch (error) {
-      console.error('Failed to load shortcuts from storage:', error)    }
+      console.error('Failed to load shortcuts from storage:', error)
+    }
   }
 
   // Save shortcuts to storage
@@ -195,20 +226,22 @@ class KeyboardShortcutService {
 
     try {
       console.log('Saving shortcuts to storage...')
-      
+
       // Convert to serializable format (excluding handler functions)
-      const persistedShortcuts: PersistedShortcut[] = Array.from(this.shortcuts.values()).map(shortcut => ({
-        id: shortcut.id,
-        name: shortcut.name,
-        description: shortcut.description,
-        category: shortcut.category,
-        keys: [...shortcut.keys], // Convert proxy array to regular array
-        enabled: shortcut.enabled,
-        global: shortcut.global,
-        preventDefault: shortcut.preventDefault,
-        stopPropagation: shortcut.stopPropagation,
-        contexts: shortcut.contexts ? [...shortcut.contexts] : undefined
-      }))
+      const persistedShortcuts: PersistedShortcut[] = Array.from(this.shortcuts.values()).map(
+        (shortcut) => ({
+          id: shortcut.id,
+          name: shortcut.name,
+          description: shortcut.description,
+          category: shortcut.category,
+          keys: [...shortcut.keys], // Convert proxy array to regular array
+          enabled: shortcut.enabled,
+          global: shortcut.global,
+          preventDefault: shortcut.preventDefault,
+          stopPropagation: shortcut.stopPropagation,
+          contexts: shortcut.contexts ? [...shortcut.contexts] : undefined
+        })
+      )
 
       console.log('Shortcuts to save:', persistedShortcuts)
       await this.storage.setSettingValue('keyboard-shortcuts', persistedShortcuts)
@@ -227,12 +260,12 @@ class KeyboardShortcutService {
 
     // Check if we already have a runtime version of this shortcut
     const existingShortcut = this.shortcuts.get(registration.id)
-    
+
     if (existingShortcut) {
       // Update handler for existing shortcut (preserves user customizations)
       existingShortcut.handler = registration.handler
     }
-    // Note: We don't create shortcuts here anymore. 
+    // Note: We don't create shortcuts here anymore.
     // They will be created during finalizeShortcutLoading() with proper persistence handling
   }
 
@@ -240,7 +273,7 @@ class KeyboardShortcutService {
   unregisterShortcutHandler(id: string): void {
     this.registrations.delete(id)
     const shortcut = this.shortcuts.get(id)
-    
+
     if (shortcut) {
       this.removeKeyMappings(shortcut)
       this.shortcuts.delete(id)
@@ -312,7 +345,7 @@ class KeyboardShortcutService {
 
   // Helper methods for key mappings
   private updateKeyMappings(shortcut: KeyboardShortcut): void {
-    shortcut.keys.forEach(keyCombo => {
+    shortcut.keys.forEach((keyCombo) => {
       const normalizedKey = this.normalizeKeyCombo(keyCombo)
       if (!this.keyMappings.has(normalizedKey)) {
         this.keyMappings.set(normalizedKey, new Set())
@@ -322,7 +355,7 @@ class KeyboardShortcutService {
   }
 
   private removeKeyMappings(shortcut: KeyboardShortcut): void {
-    shortcut.keys.forEach(keyCombo => {
+    shortcut.keys.forEach((keyCombo) => {
       const normalizedKey = this.normalizeKeyCombo(keyCombo)
       const shortcuts = this.keyMappings.get(normalizedKey)
       if (shortcuts) {
@@ -366,7 +399,7 @@ class KeyboardShortcutService {
   }
 
   getShortcutsByCategory(categoryId: string): KeyboardShortcut[] {
-    return Array.from(this.shortcuts.values()).filter(s => s.category === categoryId)
+    return Array.from(this.shortcuts.values()).filter((s) => s.category === categoryId)
   }
 
   getShortcutsByKeys(keyCombo: string): KeyboardShortcut[] {
@@ -375,18 +408,19 @@ class KeyboardShortcutService {
     if (!shortcutIds) return []
 
     return Array.from(shortcutIds)
-      .map(id => this.shortcuts.get(id))
+      .map((id) => this.shortcuts.get(id))
       .filter((s): s is KeyboardShortcut => s !== undefined)
   }
 
   // Search functionality
   searchShortcuts(query: string): KeyboardShortcut[] {
     const lowerQuery = query.toLowerCase()
-    return Array.from(this.shortcuts.values()).filter(shortcut => 
-      shortcut.name.toLowerCase().includes(lowerQuery) ||
-      shortcut.description.toLowerCase().includes(lowerQuery) ||
-      shortcut.keys.some(key => key.toLowerCase().includes(lowerQuery)) ||
-      shortcut.category.toLowerCase().includes(lowerQuery)
+    return Array.from(this.shortcuts.values()).filter(
+      (shortcut) =>
+        shortcut.name.toLowerCase().includes(lowerQuery) ||
+        shortcut.description.toLowerCase().includes(lowerQuery) ||
+        shortcut.keys.some((key) => key.toLowerCase().includes(lowerQuery)) ||
+        shortcut.category.toLowerCase().includes(lowerQuery)
     )
   }
 
@@ -394,11 +428,11 @@ class KeyboardShortcutService {
   findConflicts(shortcut: KeyboardShortcut): KeyboardShortcutConflict[] {
     const conflicts: KeyboardShortcutConflict[] = []
 
-    shortcut.keys.forEach(keyCombo => {
+    shortcut.keys.forEach((keyCombo) => {
       const normalizedKey = this.normalizeKeyCombo(keyCombo)
       const existingShortcuts = this.getShortcutsByKeys(normalizedKey)
-      
-      existingShortcuts.forEach(existing => {
+
+      existingShortcuts.forEach((existing) => {
         if (existing.id !== shortcut.id && this.hasContextOverlap(shortcut, existing)) {
           conflicts.push({
             shortcut1: shortcut,
@@ -421,7 +455,7 @@ class KeyboardShortcutService {
         const shortcut1 = shortcuts[i]
         const shortcut2 = shortcuts[j]
         const conflictingKeys = this.getConflictingKeys(shortcut1, shortcut2)
-        
+
         if (conflictingKeys.length > 0 && this.hasContextOverlap(shortcut1, shortcut2)) {
           conflicts.push({
             shortcut1,
@@ -437,9 +471,9 @@ class KeyboardShortcutService {
 
   private getConflictingKeys(shortcut1: KeyboardShortcut, shortcut2: KeyboardShortcut): string[] {
     const conflicting: string[] = []
-    
-    shortcut1.keys.forEach(key1 => {
-      shortcut2.keys.forEach(key2 => {
+
+    shortcut1.keys.forEach((key1) => {
+      shortcut2.keys.forEach((key2) => {
         if (this.normalizeKeyCombo(key1) === this.normalizeKeyCombo(key2)) {
           conflicting.push(key1)
         }
@@ -452,8 +486,8 @@ class KeyboardShortcutService {
   private hasContextOverlap(shortcut1: KeyboardShortcut, shortcut2: KeyboardShortcut): boolean {
     if (shortcut1.global || shortcut2.global) return true
     if (!shortcut1.contexts || !shortcut2.contexts) return true
-    
-    return shortcut1.contexts.some(ctx => shortcut2.contexts!.includes(ctx))
+
+    return shortcut1.contexts.some((ctx) => shortcut2.contexts!.includes(ctx))
   }
 
   // Key normalization
@@ -461,7 +495,7 @@ class KeyboardShortcutService {
     const parts = keyCombo.toLowerCase().split('+')
     const modifiers = parts.slice(0, -1).sort()
     const key = parts[parts.length - 1]
-    
+
     return [...modifiers, key].join('+')
   }
 
@@ -469,18 +503,16 @@ class KeyboardShortcutService {
   private handleKeyDown = (event: KeyboardEvent): void => {
     const keyCombo = this.buildKeyCombo(event)
     const normalizedKey = this.normalizeKeyCombo(keyCombo)
-    
+
     if (this.pressedKeys.has(normalizedKey)) return
     this.pressedKeys.add(normalizedKey)
 
     const shortcuts = this.getShortcutsByKeys(normalizedKey)
-    const activeShortcuts = shortcuts.filter(s => 
-      s.enabled && this.isShortcutActiveInContext(s)
-    )
+    const activeShortcuts = shortcuts.filter((s) => s.enabled && this.isShortcutActiveInContext(s))
 
     if (activeShortcuts.length > 0) {
       const shortcut = activeShortcuts[0] // Use first matching shortcut
-      
+
       if (shortcut.preventDefault !== false) {
         event.preventDefault()
       }
@@ -504,35 +536,35 @@ class KeyboardShortcutService {
 
     // Clear modifier-specific keys when modifiers are released
     if (!event.ctrlKey || !event.shiftKey || !event.altKey || !event.metaKey) {
-      const keysToRemove = Array.from(this.pressedKeys).filter(key => {
+      const keysToRemove = Array.from(this.pressedKeys).filter((key) => {
         if (!event.ctrlKey && key.includes('ctrl+')) return true
         if (!event.shiftKey && key.includes('shift+')) return true
         if (!event.altKey && key.includes('alt+')) return true
         if (!event.metaKey && key.includes('meta+')) return true
         return false
       })
-      
-      keysToRemove.forEach(key => this.pressedKeys.delete(key))
+
+      keysToRemove.forEach((key) => this.pressedKeys.delete(key))
     }
   }
 
   private buildKeyCombo(event: KeyboardEvent): string {
     const parts: string[] = []
-    
+
     if (event.ctrlKey) parts.push('ctrl')
     if (event.shiftKey) parts.push('shift')
     if (event.altKey) parts.push('alt')
     if (event.metaKey) parts.push('meta')
-    
+
     parts.push(event.key.toLowerCase())
-    
+
     return parts.join('+')
   }
 
   private isShortcutActiveInContext(shortcut: KeyboardShortcut): boolean {
     if (shortcut.global) return true
     if (!shortcut.contexts) return true
-    
+
     return shortcut.contexts.includes(this.currentContext.value)
   }
 
@@ -573,13 +605,18 @@ class KeyboardShortcutService {
   formatKeyCombo(keyCombo: string): string {
     return keyCombo
       .split('+')
-      .map(part => {
+      .map((part) => {
         switch (part.toLowerCase()) {
-          case 'ctrl': return 'Ctrl'
-          case 'shift': return 'Shift'
-          case 'alt': return 'Alt'
-          case 'meta': return 'Cmd'
-          default: return part.charAt(0).toUpperCase() + part.slice(1)
+          case 'ctrl':
+            return 'Ctrl'
+          case 'shift':
+            return 'Shift'
+          case 'alt':
+            return 'Alt'
+          case 'meta':
+            return 'Cmd'
+          default:
+            return part.charAt(0).toUpperCase() + part.slice(1)
         }
       })
       .join('+')
@@ -587,17 +624,17 @@ class KeyboardShortcutService {
   isValidKeyCombo(keyCombo: string): boolean {
     const parts = keyCombo.toLowerCase().split('+')
     if (parts.length === 0) return false
-    
+
     const validModifiers = ['ctrl', 'shift', 'alt', 'meta']
-    const modifiers = parts.slice(0, -1)    
-    return modifiers.every(mod => validModifiers.includes(mod))
+    const modifiers = parts.slice(0, -1)
+    return modifiers.every((mod) => validModifiers.includes(mod))
   }
 
   // Reset shortcuts to defaults
   async resetToDefaults(): Promise<void> {
     // Clear all persisted shortcuts
     this.shortcuts.clear()
-    this.keyMappings.clear()    // Re-register all handlers with their default keys
+    this.keyMappings.clear() // Re-register all handlers with their default keys
     for (const [id, registration] of Array.from(this.registrations.entries())) {
       const shortcut: KeyboardShortcut = {
         id: registration.id,
@@ -608,7 +645,8 @@ class KeyboardShortcutService {
         enabled: true,
         global: registration.global,
         preventDefault: registration.preventDefault,
-        stopPropagation: registration.stopPropagation,        contexts: registration.contexts,
+        stopPropagation: registration.stopPropagation,
+        contexts: registration.contexts,
         handler: registration.handler
       }
 
@@ -625,19 +663,20 @@ class KeyboardShortcutService {
 
     try {
       console.log('Number of registered shortcuts:', this.registrations.size)
-      const persistedShortcuts: PersistedShortcut[] = await this.storage.getSettingValue('keyboard-shortcuts') || []
+      const persistedShortcuts: PersistedShortcut[] =
+        (await this.storage.getSettingValue('keyboard-shortcuts')) || []
       const persistedMap = new Map<string, PersistedShortcut>()
-      
+
       // Build a map of persisted shortcuts
-      persistedShortcuts.forEach(shortcut => {
+      persistedShortcuts.forEach((shortcut) => {
         persistedMap.set(shortcut.id, shortcut)
       })
 
-      let hasNewShortcuts = false      // For each registered shortcut, create the runtime version
+      let hasNewShortcuts = false // For each registered shortcut, create the runtime version
       for (const [id, registration] of Array.from(this.registrations.entries())) {
         if (!this.shortcuts.has(id)) {
           const persisted = persistedMap.get(id)
-          
+
           const shortcut: KeyboardShortcut = {
             id: registration.id,
             name: registration.name,

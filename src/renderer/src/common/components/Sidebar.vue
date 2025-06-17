@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import {
   Tooltip,
   TooltipTrigger,
@@ -33,6 +33,25 @@ const openSettingsDialog = () => {
 const closeSettingsDialog = () => {
   isSettingsDialogOpen.value = false
 }
+
+// Event listeners for keyboard shortcuts
+const handleOpenCommandPalette = () => {
+  openCommandPalette()
+}
+
+const handleOpenSettings = () => {
+  openSettingsDialog()
+}
+
+onMounted(() => {
+  document.addEventListener('open-command-palette', handleOpenCommandPalette)
+  document.addEventListener('open-settings', handleOpenSettings)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('open-command-palette', handleOpenCommandPalette)
+  document.removeEventListener('open-settings', handleOpenSettings)
+})
 
 const activeView = computed(() => {
   const activeTab = tabStore.activeTab
@@ -77,7 +96,8 @@ const navButtons = [
     action: (_forceNew: boolean = false) => {
       openCommandPalette()
     }
-  },  {
+  },
+  {
     id: 'settings',
     icon: 'icon-[solar--settings-linear]',
     activeIcon: 'icon-[solar--settings-bold]',
@@ -116,7 +136,8 @@ const handleNavButtonClick = (button: (typeof navButtons)[0], event: MouseEvent)
           <div class="text-xs text-muted-foreground mt-1">Hold Ctrl to open in new tab</div>
         </TooltipContent>
       </Tooltip>
-    </div>    <!-- Command Palette -->
+    </div>
+    <!-- Command Palette -->
     <CommandPalette
       :is-open="isCommandPaletteOpen"
       :open-settings="openSettingsDialog"

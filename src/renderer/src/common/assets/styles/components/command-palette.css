@@ -60,7 +60,7 @@
 }
 
 @utility faseeh-command-palette__command-description {
-  @apply text-base text-muted-foreground;
+  @apply text-sm text-muted-foreground;
 }
 
 @utility faseeh-command-palette__command-shortcut {

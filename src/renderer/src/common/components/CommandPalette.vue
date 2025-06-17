@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { createReusableTemplate, useMediaQuery, useMagicKeys } from '@vueuse/core'
 import {
   Command,
@@ -56,8 +56,8 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 const open = ref(false)
 const searchQuery = ref('')
 
-// Get commands from keyboard shortcut service
-const allShortcuts = ref<KeyboardShortcut[]>([])
+// Get commands from keyboard shortcut service using reactive properties
+const allShortcuts = keyboardShortcutService.shortcutsArray
 const staticCommands: CommandAction[] = [
   {
     id: 'search-media',
@@ -153,18 +153,6 @@ watch([CmdJ, CtrlJ], ([cmdJ, ctrlJ]) => {
   }
 })
 
-onMounted(() => {
-  loadShortcuts()
-
-  // Listen for shortcuts changes
-  keyboardShortcutService.on('shortcut:registered', loadShortcuts)
-  keyboardShortcutService.on('shortcut:unregistered', loadShortcuts)
-})
-
-function loadShortcuts() {
-  allShortcuts.value = keyboardShortcutService.getAllShortcuts()
-}
-
 function handleOpenChange() {
   open.value = !open.value
   if (!open.value) {
@@ -211,7 +199,7 @@ watch(
               @select="handleCommandSelect"
             >
               <div class="faseeh-command-palette__command-content">
-                <div class="flex-1">
+                <div class="flex-1 flex flex-col">
                   <span class="faseeh-command-palette__command-title">{{ command.title }}</span>
                   <span
                     v-if="command.description"
