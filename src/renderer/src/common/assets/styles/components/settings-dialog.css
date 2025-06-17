@@ -1,0 +1,370 @@
+/* -------------------------------------------------------------------------- */
+/*                              Settings Dialog                               */
+/* -------------------------------------------------------------------------- */
+
+/* Main Dialog Container */
+@utility faseeh-settings-dialog__container {
+  @apply overflow-hidden p-0 h-[90vh] w-[95vw] max-w-[1200px] sm:max-w-[800px] md:max-w-[900px] lg:max-w-[1100px] xl:max-w-[1200px] border-input;
+}
+
+@utility faseeh-settings-dialog__sidebar-provider {
+  @apply items-start h-full;
+}
+
+@utility faseeh-settings-dialog__sidebar {
+  @apply hidden sm:flex w-64 lg:w-72;
+}
+
+@utility faseeh-settings-dialog__main {
+  @apply flex flex-1 flex-col overflow-hidden h-full;
+}
+
+@utility faseeh-settings-dialog__mobile-nav {
+  @apply sm:hidden border-b border-border px-4 py-2;
+}
+
+@utility faseeh-settings-dialog__mobile-select {
+  @apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+}
+
+@utility faseeh-settings-dialog__header {
+  @apply flex h-12 shrink-0 items-center gap-2;
+}
+
+@utility faseeh-settings-dialog__breadcrumb-container {
+  @apply flex items-center gap-2 px-4;
+}
+
+@utility faseeh-settings-dialog__content {
+  @apply flex-1 overflow-y-auto scrollbar-hide p-4 pt-0;
+}
+
+@utility faseeh-settings-dialog__section {
+  @apply space-y-8;
+}
+
+/* Navigation Menu */
+@utility faseeh-settings-dialog__nav-button {
+  @apply w-full;
+}
+
+/* General Section */
+@utility faseeh-settings-dialog__section-title {
+  @apply text-xl font-semibold mb-6;
+}
+
+@utility faseeh-settings-dialog__section-subtitle {
+  @apply text-sm text-muted-foreground mt-2;
+}
+
+@utility faseeh-settings-dialog__form-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+}
+
+@utility faseeh-settings-dialog__form-group {
+  @apply space-y-2;
+}
+
+@utility faseeh-settings-dialog__label {
+  @apply block text-sm font-medium;
+}
+
+@utility faseeh-settings-dialog__select {
+  @apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+}
+
+@utility faseeh-settings-dialog__checkbox-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4 mt-6;
+}
+
+@utility faseeh-settings-dialog__checkbox-group {
+  @apply flex items-center space-x-3;
+}
+
+@utility faseeh-settings-dialog__checkbox {
+  @apply rounded border-input w-4 h-4 text-primary focus:ring-2 focus:ring-primary;
+}
+
+/* Theme Section */
+@utility faseeh-settings-dialog__theme-description {
+  @apply text-xs text-muted-foreground;
+}
+
+@utility faseeh-settings-dialog__theme-grid {
+  @apply grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl;
+}
+
+@utility faseeh-settings-dialog__theme-button {
+  @apply flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 transition-all hover:scale-105;
+}
+
+@utility faseeh-settings-dialog__theme-button--active {
+  @apply border-primary bg-primary/5 text-primary;
+}
+
+@utility faseeh-settings-dialog__theme-button--inactive {
+  @apply border-border hover:border-border/60;
+}
+
+@utility faseeh-settings-dialog__theme-icon {
+  @apply h-8 w-8;
+}
+
+@utility faseeh-settings-dialog__theme-icon--active {
+  @apply text-primary;
+}
+
+@utility faseeh-settings-dialog__theme-icon--inactive {
+  @apply text-muted-foreground;
+}
+
+@utility faseeh-settings-dialog__theme-label {
+  @apply text-sm font-medium;
+}
+
+@utility faseeh-settings-dialog__theme-auto-label {
+  @apply text-xs text-muted-foreground;
+}
+
+@utility faseeh-settings-dialog__theme-status {
+  @apply p-4 rounded-md bg-muted/50;
+}
+
+@utility faseeh-settings-dialog__theme-status-text {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Plugin Section */
+@utility faseeh-settings-dialog__plugin-empty {
+  @apply text-center py-16;
+}
+
+@utility faseeh-settings-dialog__plugin-empty-icon {
+  @apply mx-auto h-16 w-16 text-muted-foreground mb-4;
+}
+
+@utility faseeh-settings-dialog__plugin-empty-title {
+  @apply text-sm text-muted-foreground;
+}
+
+@utility faseeh-settings-dialog__plugin-empty-subtitle {
+  @apply text-xs text-muted-foreground mt-1;
+}
+
+@utility faseeh-settings-dialog__plugin-list {
+  @apply space-y-4;
+}
+
+@utility faseeh-settings-dialog__plugin-card {
+  @apply flex flex-col sm:flex-row sm:items-center justify-between p-6 border rounded-lg hover:bg-muted/50 transition-colors gap-4;
+}
+
+@utility faseeh-settings-dialog__plugin-content {
+  @apply flex-1 min-w-0;
+}
+
+@utility faseeh-settings-dialog__plugin-header {
+  @apply flex flex-col sm:flex-row sm:items-center gap-3 mb-3;
+}
+
+@utility faseeh-settings-dialog__plugin-name {
+  @apply font-medium text-lg;
+}
+
+@utility faseeh-settings-dialog__plugin-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shrink-0 w-fit;
+}
+
+@utility faseeh-settings-dialog__plugin-badge--active {
+  @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+}
+
+@utility faseeh-settings-dialog__plugin-badge--error {
+  @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+@utility faseeh-settings-dialog__plugin-badge--disabled {
+  @apply bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200;
+}
+
+@utility faseeh-settings-dialog__plugin-badge--enabled {
+  @apply bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700;
+}
+
+@utility faseeh-settings-dialog__plugin-description {
+  @apply text-sm text-muted-foreground mb-3;
+}
+
+@utility faseeh-settings-dialog__plugin-meta {
+  @apply flex flex-wrap items-center gap-4 text-xs text-muted-foreground;
+}
+
+@utility faseeh-settings-dialog__plugin-error {
+  @apply mt-3 text-xs text-destructive bg-destructive/10 p-3 rounded;
+}
+
+@utility faseeh-settings-dialog__plugin-actions {
+  @apply flex items-center gap-3 sm:ml-4;
+}
+
+@utility faseeh-settings-dialog__plugin-loading {
+  @apply w-5 h-5 animate-spin text-muted-foreground;
+}
+
+@utility faseeh-settings-dialog__plugin-button {
+  @apply w-20;
+}
+
+/* Keyboard Shortcuts Section */
+@utility faseeh-settings-dialog__shortcuts-container {
+  @apply h-full flex flex-col;
+}
+
+@utility faseeh-settings-dialog__shortcuts-header {
+  @apply shrink-0 pb-4 border-b border-border mb-4;
+}
+
+@utility faseeh-settings-dialog__shortcuts-search-group {
+  @apply mt-4;
+}
+
+@utility faseeh-settings-dialog__shortcuts-search-label {
+  @apply block text-sm font-medium mb-2;
+}
+
+@utility faseeh-settings-dialog__shortcuts-search-input {
+  @apply w-full max-w-md rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+}
+
+@utility faseeh-settings-dialog__shortcuts-list {
+  @apply flex-1 overflow-y-auto scrollbar-hide pr-2;
+}
+
+@utility faseeh-settings-dialog__shortcuts-empty {
+  @apply text-center py-8;
+}
+
+@utility faseeh-settings-dialog__shortcuts-empty-icon {
+  @apply mx-auto h-12 w-12 text-muted-foreground mb-4;
+}
+
+@utility faseeh-settings-dialog__shortcuts-empty-text {
+  @apply text-sm text-muted-foreground;
+}
+
+@utility faseeh-settings-dialog__shortcuts-categories {
+  @apply space-y-3 pb-4;
+}
+
+@utility faseeh-settings-dialog__shortcuts-category-title {
+  @apply font-medium text-sm mb-2 text-muted-foreground uppercase tracking-wide;
+}
+
+@utility faseeh-settings-dialog__shortcuts-category-list {
+  @apply space-y-1.5;
+}
+
+@utility faseeh-settings-dialog__shortcut-card {
+  @apply flex flex-col lg:flex-row lg:items-center justify-between p-2.5 rounded-md border transition-colors gap-2;
+}
+
+@utility faseeh-settings-dialog__shortcut-card--enabled {
+  @apply hover:bg-muted/50;
+}
+
+@utility faseeh-settings-dialog__shortcut-card--disabled {
+  @apply opacity-60 bg-muted/30;
+}
+
+@utility faseeh-settings-dialog__shortcut-content {
+  @apply flex-1 min-w-0;
+}
+
+@utility faseeh-settings-dialog__shortcut-header {
+  @apply flex flex-col sm:flex-row sm:items-center gap-2 mb-1;
+}
+
+@utility faseeh-settings-dialog__shortcut-name {
+  @apply font-medium text-sm;
+}
+
+@utility faseeh-settings-dialog__shortcut-badges {
+  @apply flex items-center gap-1;
+}
+
+@utility faseeh-settings-dialog__shortcut-badge--disabled {
+  @apply inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200;
+}
+
+@utility faseeh-settings-dialog__shortcut-badge--conflict {
+  @apply inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+@utility faseeh-settings-dialog__shortcut-description {
+  @apply text-xs text-muted-foreground mb-1.5;
+}
+
+@utility faseeh-settings-dialog__shortcut-keys-container {
+  @apply flex flex-col sm:flex-row sm:items-center gap-2;
+}
+
+@utility faseeh-settings-dialog__shortcut-keys {
+  @apply flex items-center gap-1 flex-wrap;
+}
+
+@utility faseeh-settings-dialog__shortcut-key {
+  @apply px-1.5 py-0.5 text-xs font-mono bg-muted rounded border;
+}
+
+@utility faseeh-settings-dialog__shortcut-key-separator {
+  @apply text-muted-foreground text-xs;
+}
+
+@utility faseeh-settings-dialog__shortcut-edit {
+  @apply flex items-center gap-1.5;
+}
+
+@utility faseeh-settings-dialog__shortcut-edit-input {
+  @apply px-2 py-1 text-xs border border-input rounded focus:outline-none focus:ring-1 focus:ring-primary min-w-40;
+}
+
+@utility faseeh-settings-dialog__shortcut-edit-button {
+  @apply h-6 w-6 p-0;
+}
+
+@utility faseeh-settings-dialog__shortcut-conflict {
+  @apply mt-1.5 text-xs text-destructive bg-destructive/10 p-1.5 rounded;
+}
+
+@utility faseeh-settings-dialog__shortcut-actions {
+  @apply flex items-center gap-1.5 lg:ml-3;
+}
+
+@utility faseeh-settings-dialog__shortcut-action-button {
+  @apply h-7 px-2 text-xs;
+}
+
+@utility faseeh-settings-dialog__shortcut-toggle-button {
+  @apply h-7 px-2 text-xs w-14;
+}
+
+/* Placeholder Section */
+@utility faseeh-settings-dialog__placeholder-container {
+  @apply space-y-8;
+}
+
+@utility faseeh-settings-dialog__placeholder-skeleton {
+  @apply h-20 rounded-lg bg-muted/50 animate-pulse;
+}
+
+/* Scrollbar utilities */
+@utility scrollbar-hide {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* WebKit */
+}

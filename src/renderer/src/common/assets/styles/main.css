@@ -14,6 +14,7 @@
 @import './components/media-cards.css';
 @import './components/filter-menu.css';
 @import './components/command-palette.css';
+@import './components/settings-dialog.css';
 @import '../../../features/user-library/styles/import-dialog.css';
 @import '../../../features/user-library/styles/import-progress.css';
 @import '../../../features/user-library/styles/user-library.css';
