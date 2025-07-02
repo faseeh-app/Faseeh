@@ -1,52 +1,60 @@
-import { Token, TokenizerFunction } from '@shared/types/text-tokenizer-types';
-import TinySegmenter from 'tiny-segmenter';
+import { Token, TokenizerFunction } from '@shared/types/text-tokenizer-types'
+import TinySegmenter from 'tiny-segmenter'
 
-// Initialize the segmenter once
-// @ts-ignore - TinySegmenter is a CommonJS module
-export const segmenter = new (TinySegmenter.default || TinySegmenter)();
+// Initialize the segmenter once with proper error handling
+const createSegmenter = () => {
+  try {
+    // Handle both CommonJS and ES module exports
+    const SegmenterClass = TinySegmenter.default || TinySegmenter
+    return new SegmenterClass()
+  } catch (error) {
+    console.error('Failed to initialize TinySegmenter:', error)
+    throw new Error('Japanese tokenizer initialization failed')
+  }
+}
+
+export const segmenter = createSegmenter()
 
 /**
  * Japanese text tokenizer using TinySegmenter
  */
 export const japaneseTokenizer: TokenizerFunction = (text: string): Token[] => {
   if (!text || typeof text !== 'string') {
-    return [];
+    return []
   }
 
-  const tokens: Token[] = [];
-  const segments = segmenter.segment(text);
-  let currentPos = 0;
-  
+  const tokens: Token[] = []
+  const segments = segmenter.segment(text)
+  let currentPos = 0
+
   for (const segment of segments) {
-    if (!segment.trim()) {
-      currentPos += segment.length;
-      continue;
+    // Skip empty segments but still advance position
+    if (!segment) {
+      continue
     }
-    
-    const startIndex = text.indexOf(segment, currentPos);
-    if (startIndex === -1) {
-      // Shouldn't happen, but just in case
-      currentPos += segment.length;
-      continue;
+
+    // More reliable position tracking
+    const startIndex = currentPos
+    const endIndex = startIndex + segment.length - 1
+
+    // Only create tokens for non-whitespace segments
+    if (segment.trim()) {
+      // Simple heuristic: a token is a word if it's not just punctuation/whitespace
+      const isWord = !/^[\s\p{P}\p{S}]+$/u.test(segment)
+
+      tokens.push({
+        text: segment,
+        startIndex,
+        endIndex,
+        isWord
+      })
     }
-    
-    const endIndex = startIndex + segment.length - 1;
-    
-    // Simple heuristic: a token is a word if it's not just punctuation/whitespace
-    const isWord = !/^[\s\p{P}\p{S}]+$/u.test(segment);
-    
-    tokens.push({
-      text: segment,
-      startIndex,
-      endIndex,
-      isWord
-    });
-    
-    currentPos = endIndex + 1;
+
+    currentPos += segment.length
   }
-  
-  return tokens;
-};
+
+  return tokens
+}
 
 export const japaneseTokenizerInfo = {
   id: 'japanese-tinysegmenter',
@@ -54,7 +62,7 @@ export const japaneseTokenizerInfo = {
   description: 'Tokenizes Japanese text using TinySegmenter',
   languageCodes: ['ja', 'ja-JP', 'ja-Hira', 'ja-Hrkt'],
   priority: 10
-};
+}
 
 /**
  * Register the Japanese tokenizer with the application
@@ -64,9 +72,9 @@ export function registerJapaneseTokenizer(app: any): void {
   app.tokenizers.register({
     ...japaneseTokenizerInfo,
     tokenize: japaneseTokenizer
-  });
-  
-  console.log('Japanese tokenizer registered successfully');
+  })
+
+  console.log('Japanese tokenizer registered successfully')
 }
 
 /**
@@ -74,11 +82,11 @@ export function registerJapaneseTokenizer(app: any): void {
  * @param app The application instance
  */
 export function unregisterJapaneseTokenizer(app: any): void {
-  app.tokenizers.unregister(japaneseTokenizerInfo.id);
-  console.log('Japanese tokenizer unregistered');
+  app.tokenizers.unregister(japaneseTokenizerInfo.id)
+  console.log('Japanese tokenizer unregistered')
 }
 
 export default {
   ...japaneseTokenizerInfo,
   tokenize: japaneseTokenizer
-};
+}

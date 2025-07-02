@@ -3,6 +3,7 @@ import { ref, onUnmounted } from 'vue'
 import { cn } from '@renderer/common/lib/utils'
 import { usePanelState } from '@renderer/common/composables/usePanelState'
 import PluginUIContainer from './PluginUIContainer.vue'
+import ScrollArea from './scroll-area/ScrollArea.vue'
 
 interface Props {
   initialWidth?: number
@@ -109,6 +110,21 @@ onUnmounted(() => {
       @mousedown="handleMouseDown"
     />
     <!-- Panel content -->
-    <PluginUIContainer class="flex-1 overflow-hidden" />
+    <ScrollArea class="flex-1 h-1">
+      <PluginUIContainer class="h-full" />
+    </ScrollArea>
   </div>
 </template>
+
+<style scoped>
+/* Apply scrollbar-hide to the ScrollArea viewport */
+:deep([data-reka-scroll-area-viewport]) {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+:deep([data-reka-scroll-area-viewport]::-webkit-scrollbar) {
+  display: none; /* WebKit */
+}
+</style>
